@@ -70,6 +70,9 @@ public class Engine {
         function = Search.replace(function, " ", "");
         function = Search.replace(function, "P", "npr");
         function = Search.replace(function, "C", "ncr");
+        function = Search.replace(function, "}T", "}τ");
+        function = Search.replace(function, "}I", "}ι");
+        function = Search.replace(function, "C", "ncr");
         function = Search.replace(function, "ED", "dist");
         function = Search.replace(function, "E", "*10^");
         function = Search.replace(function, "Σ", "sum");
@@ -537,16 +540,18 @@ public class Engine {
                     } else if (c == '{') {
                         int end = Search.indexOf(infixFunction, '}', a);
                         if (end != -1){
-                            output.push(infixFunction.substring(a, end+1));
-                            a = end;
+                            if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'τ' || infixFunction.charAt(end+1) == 'ι')){
+                                output.push(infixFunction.substring(a, end+2));
+                                a = end+1;
+                            }
+                            else{
+                                output.push(infixFunction.substring(a, end+1));
+                                a = end;
+                            }
                             continue PARSE;
                         }
-                        else {
-                            if (end == -1){
-                                error = "Bracket Count Error - Unclosed Curly Bracket";
-                                return error;
-                            }
-                        }
+                        error = "Bracket Count Error - Unclosed Curly Bracket";
+                        return error;
                     } else if (c == '[') {
                         int unitIndex = infixFunction.indexOf("→", a);
                         if (unitIndex != -1){
@@ -567,16 +572,23 @@ public class Engine {
                                 }
                             }
                         }
+                        char cPlus1 = infixFunction.charAt(a+1);
                         int semicolon = infixFunction.indexOf(";", a);
-                        if (semicolon != -1){
+                        if (semicolon != -1 || cPlus1 == '['){
                             int end = infixFunction.indexOf("]", a);
-                            if (end == -1){
-                                error = "Bracket Count Error - Unclosed Hard Bracket";
-                                return error;
+                            if (end != -1){
+                                if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'τ' || infixFunction.charAt(end+1) == 'ι')){
+                                    output.push(infixFunction.substring(a, end+2));
+                                    a = end+1;
+                                }
+                                else{
+                                    output.push(infixFunction.substring(a, end+1));
+                                    a = end;
+                                }
+                                continue PARSE;
                             }
-                            output.push(infixFunction.substring(a, end+1));
-                            a = end;
-                            continue PARSE;
+                            error = "Bracket Count Error - Unclosed Hard Bracket";
+                            return error;
                         }
                         int comma1 = infixFunction.indexOf(",", a);
                         int close = infixFunction.indexOf("]", a);

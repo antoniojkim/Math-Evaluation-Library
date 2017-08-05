@@ -7,6 +7,7 @@ import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
 import org.jblas.DoubleMatrix;
+import org.jblas.Solve;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,12 +95,71 @@ public class _Matrix_ {
         }
         return matrix;
     }
-
     private static void addReductionStep(String step, Matrix matrix){
         rowReductionSteps.add(step);
         rowReductionStates.add(new Matrix(matrix));
 //        System.out.println(step);
 //        print(matrix);
+    }
+
+//    public static DoubleMatrix rowReduce(DoubleMatrix matrix){
+//        int firstNonZeroColumn = getFirstNonZeroColumn(matrix)-1;
+//        for (int row = 0; row<matrix.rows; row++){
+//            firstNonZeroColumn++;
+//            if (firstNonZeroColumn >= matrix.columns){
+//                break;
+//            }
+//
+//            Fraction factor = rowReduced.get(firstNonZeroColumn, row);
+//            if (factor.equals(0)){
+//                for (int restof_rows = row+1; restof_rows<matrix.rows; restof_rows++){
+//                    if (!rowReduced.get(firstNonZeroColumn, restof_rows).equals(0)){
+//                        rowReduced.switchRows(row, restof_rows);
+//                        addReductionStep("Switch Row "+row+" with Row "+restof_rows, rowReduced);
+//                        factor = rowReduced.get(firstNonZeroColumn, row);
+//                        if (!factor.equals(0) || row == matrix.rows-1){
+//                            break;
+//                        }
+//                        else{
+//                            restof_rows = row;
+//                        }
+//                    }
+//                }
+//                factor = rowReduced.get(firstNonZeroColumn, row);
+//                if (factor.equals(0)){
+//                    if (firstNonZeroColumn < matrix.columns-1){
+//                        row--;
+//                    }
+//                    continue;
+//                }
+//            }
+//            if (!factor.equals(1)){
+//                Fraction reciprocal = factor.getReciprocal();
+//                rowReduced.multiplyRow(row, reciprocal);
+//                addReductionStep("Row "+(row+1)+" × ("+reciprocal.getString()+")", rowReduced);
+//            }
+//            for (int restof_row = 0; restof_row<matrix.rows; restof_row++){
+//                if (row != restof_row){
+//                    Fraction multiple = rowReduced.get(firstNonZeroColumn, restof_row).getCopy();
+//                    if (!multiple.equals(0)){
+//                        multiple.multiply(-1);
+//                        rowReduced.addMultipleRow(restof_row, multiple, row);
+//                        addReductionStep("Row "+(restof_row+1)+" + ("+multiple.getString()+")×Row "+(row+1), rowReduced);
+//                    }
+//                }
+//            }
+//        }
+//    }
+    public static int getFirstNonZeroColumn(DoubleMatrix matrix){
+        for (int c = 0; c<matrix.columns; c++){
+            double[] column = matrix.getColumn(c).toArray();
+            for (double elem : column){
+                if (elem != 0){
+                    return c;
+                }
+            }
+        }
+        return -1;
     }
 
     public static Fraction getDeterminant(Matrix matrix){
@@ -245,11 +305,33 @@ public class _Matrix_ {
             strMatrix = strMatrix.substring(0, doubleSpace)+strMatrix.substring(doubleSpace+1);
             doubleSpace = strMatrix.indexOf("  ");
         }
-        if (strMatrix.charAt(0) == '{' && strMatrix.charAt(lengthSub1) == '}'){
+        char first = strMatrix.charAt(0);
+        char lastSub1 = strMatrix.charAt(strMatrix.length()-2);
+        char last = strMatrix.charAt(strMatrix.length()-1);
+        if (first == '{' && last == '}'){
             return toDoubleMatrixSemicolon(Search.replace(strMatrix, "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", ""));
         }
-        if (strMatrix.charAt(0) == '[' && strMatrix.charAt(lengthSub1) == ']'){
+        if (first == '[' && last == ']'){
             return toDoubleMatrixSemicolon(Search.replace(strMatrix, "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", ""));
+        }
+        if (first == '{' && lastSub1 == '}' && last == 'τ'){
+            DoubleMatrix matrix = toDoubleMatrixSemicolon(Search.replace(strMatrix, "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", ""));
+            return matrix.transpose();
+        }
+        if (first == '{' && lastSub1 == '}' && last == 'ι'){
+            DoubleMatrix matrix = toDoubleMatrixSemicolon(Search.replace(strMatrix, "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", ""));
+            if (matrix.rows == matrix.columns){
+                return Solve.pinv(matrix);
+            }
+        }
+        if (first == '[' && lastSub1 == ']' && last == 'τ'){
+            return toDoubleMatrixSemicolon(Search.replace(strMatrix, "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", "")).transpose();
+        }
+        if (first == '[' && lastSub1 == ']' && last == 'ι'){
+            DoubleMatrix matrix = toDoubleMatrixSemicolon(Search.replace(strMatrix, "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", ""));
+            if (matrix.rows == matrix.columns){
+                return Solve.pinv(matrix);
+            }
         }
         return null;
     }
@@ -297,16 +379,7 @@ public class _Matrix_ {
     }
     public static String toStrMatrix(double[][] values){
         if (values.length == 1){
-            String strMatrix = "{";
-            for (int i = 0; i<values[0].length; i++){
-                if (i != 0){
-                    strMatrix += ", "+ Fraction.calculateFraction(values[0][i], false, true);
-                }
-                else{
-                    strMatrix += Fraction.calculateFraction(values[0][i], false, true);
-                }
-            }
-            return strMatrix+"}";
+            return toStrMatrix(values[0]);
         }
         else{
             String strMatrix = "{";
@@ -315,12 +388,12 @@ public class _Matrix_ {
                     strMatrix += ", ";
                 }
                 strMatrix += "{";
-                for (int j = 0; j<values.length; j++){
+                for (int j = 0; j<values[i].length; j++){
                     if (j != 0){
-                        strMatrix += ", "+ Fraction.calculateFraction(values[i][j], false, true);
+                        strMatrix += ", "+ Fraction.calculateFraction(values[i][j], false, false);
                     }
                     else{
-                        strMatrix += Fraction.calculateFraction(values[i][j], false, true);
+                        strMatrix += Fraction.calculateFraction(values[i][j], false, false);
                     }
                 }
                 strMatrix += "}";

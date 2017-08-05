@@ -5,6 +5,7 @@ import Math_Evaluation_Library.Miscellaneous.Scripts;
 import Math_Evaluation_Library.Miscellaneous.Simplify;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Trigonometry.Trig;
 import org.jblas.DoubleMatrix;
 
@@ -149,6 +150,12 @@ public class MathEngine extends Engine{
                         a = -1;
                     }
                     else if (outputs.get(a).contains("∞")){ }
+                    else if (outputs.get(a).charAt(0) == '{' || outputs.get(a).charAt(0) == '['){
+                        char last = outputs.get(a).charAt(outputs.get(a).length()-1);
+                        if (last == 'τ' || last == 'ι'){
+                            outputs.set(a, _Matrix_.toStrMatrix(_Matrix_.toDoubleMatrix(outputs.get(a))));
+                        }
+                    }
                     else{
                         try {
                             if (outputs.get(a + 1).equals("unit") || outputs.get(a + 2).equals("unit")) {

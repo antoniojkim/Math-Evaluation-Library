@@ -371,7 +371,7 @@ public class Fraction{
         return calculateFraction(num, brackets, checkOther, time);
     }
     public static String calculateFraction(double num, boolean brackets, boolean checkOther, int time){
-        if (num%1 == 0){
+        if (num%1 == 0 || num == 0){
             return _Number_.format(num);
         }
         if (num == Math.PI){        return String.valueOf(num);                            }
@@ -387,23 +387,24 @@ public class Fraction{
             @Override
             public void run() {
                 int accuracy = 16;
+                double a = 1;
                 double number = MathRound.round(num, accuracy);
-                if (num > 0){
-                    OUTER:  for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
-                        for (int b = 1; b<a && (System.currentTimeMillis()-start <= time) && exp.equals(""); b++){
-                            if (number == MathRound.round(b/(double)a, accuracy)){          exp = b+"/"+a;   break OUTER;   }
-                            if (number == MathRound.round(a/(double)b, accuracy)){          exp = a+"/"+b;   break OUTER;   }
-                            if (number == MathRound.round(a/(double)b*Math.PI, accuracy)){  exp = a+"π/"+b;  break OUTER;   }
+                while((System.currentTimeMillis()-start <= time) && exp.equals("")){
+                    a++;
+                    double num = MathRound.round(number*a, accuracy);
+                    if (num%1 == 0){
+                        double gcd = Mod.gcd(num, a);
+                        a /= gcd;
+                        if (a == 1){
+                            exp = _Number_.format(num/gcd);
                         }
-                    }
-                }
-                else{
-                    OUTER:  for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
-                        for (int b = 1; b<a && (System.currentTimeMillis()-start <= time) && exp.equals(""); b++){
-                            if (number == MathRound.round(-b/(double)a, accuracy)){          exp = -b+"/"+a;   break OUTER;   }
-                            if (number == MathRound.round(-a/(double)b, accuracy)){          exp = -a+"/"+b;   break OUTER;   }
-                            if (number == MathRound.round(-a/(double)b*Math.PI, accuracy)){  exp = -a+"π/"+b;  break OUTER;   }
+                        else if (a == -1){
+                            exp = _Number_.format(-num/gcd);
                         }
+                        else{
+                            exp = _Number_.format(num/gcd)+"/"+_Number_.format(a);
+                        }
+                        break;
                     }
                 }
             }
@@ -411,18 +412,26 @@ public class Fraction{
         threads.add(new Thread(new Runnable() {
             @Override
             public void run() {
-                if ((""+num).contains(".") && (""+num).substring((""+num).indexOf(".")+1).length() < 10){
-                    for (int a = 1; a<10 && (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
-                        double power = Math.pow(10, a);
-                        double number = (num*power);
-                        if (number%1 == 0){
-                            double gcd = Mod.gcd(number, power);
-                            if (gcd != 1) {
-                                String division = _Number_.format((number / gcd) + "") + "/" + _Number_.format((power / gcd) + "");
-                                exp = division;
-                            }
-                            break;
+                int accuracy = 14;
+                double a = 1;
+                double number = MathRound.round(num, accuracy);
+                double limit = 1E16;
+                while((System.currentTimeMillis()-start <= time) && exp.equals("") && a<limit){
+                    a *= 10;
+                    double num = MathRound.round(number*a, accuracy);
+                    if (num%1 == 0){
+                        double gcd = Mod.gcd(num, a);
+                        a /= gcd;
+                        if (a == 1){
+                            exp = _Number_.format(num/gcd);
                         }
+                        else if (a == -1){
+                            exp = _Number_.format(-num/gcd);
+                        }
+                        else{
+                            exp = _Number_.format(num/gcd)+"/"+_Number_.format(a);
+                        }
+                        break;
                     }
                 }
             }
@@ -488,7 +497,7 @@ public class Fraction{
                 return exp;
             }
         }catch(InterruptedException e){}
-        return _Number_.format(num);
+        return _Number_.format(MathRound.round(num, 14));
     }
 
 }
