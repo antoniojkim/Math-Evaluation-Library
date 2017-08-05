@@ -35,6 +35,7 @@ public class Matrix_Tests extends _Tests_{
         matrixOperationTest("4-{3, 4}×3", "{-5, -8}");
         matrixOperationTest("{{1, 2, 3}, {3, 4, 5}}T", "{{1, 3}, {2, 4}, {3, 5}}");
         matrixOperationTest("{{2,3},{4,5}}I", "{{-5/2, 3/2}, {2, -1}}");
+        matrixOperationTest("{{2,3},{4,5}}^-1", "{{-5/2, 3/2}, {2, -1}}");
 
     }
     private void eigenvalueTest1(){

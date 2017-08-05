@@ -261,6 +261,9 @@ public class _Matrix_ {
             }
             else if (_Number_.isNumber(matrix2)){
                 double num = _Number_.getNumber(matrix2);
+                if (operator == '^' && num == -1 && doubleMatrix1.rows == doubleMatrix1.columns){
+                    return toStrMatrix(Solve.pinv(doubleMatrix1));
+                }
                 switch (operator){
                     case '+':   return toStrMatrix(doubleMatrix1.add(num));
                     case '-':   return toStrMatrix(doubleMatrix1.sub(num));
