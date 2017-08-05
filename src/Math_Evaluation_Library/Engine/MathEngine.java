@@ -17,7 +17,7 @@ import static java.lang.Double.NaN;
 /**
  * Created by Antonio on 2017-07-23.
  */
-public class NumericalEngine extends Engine{
+public class MathEngine extends Engine{
 
 
     public static String evaluate(List<String> list){
@@ -72,7 +72,9 @@ public class NumericalEngine extends Engine{
                         } else {
                             String param1 = outputs.get(a - 2);
                             String param2 = outputs.get(a - 1);
-                            if (param1.contains("{") || param1.contains("}") || param2.contains("{") || param2.contains("}")){
+                            char param1char0 = param1.charAt(0);
+                            char param2char0 = param2.charAt(0);
+                            if (param1char0 == '{' || param2char0 == '{' || param1char0 == '[' || param2char0 == '['){
                                 String newMatrix = _Matrix_.matrixArithmeticOperations(outputs.get(a).charAt(0), param1, param2);
                                 outputs.set(a - 2, newMatrix);
                                 Simplify.remove(outputs, a, a-1);

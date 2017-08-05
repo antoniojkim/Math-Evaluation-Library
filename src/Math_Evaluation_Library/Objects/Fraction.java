@@ -366,8 +366,11 @@ public class Fraction{
         return fraction;
     }
     static String exp = "";
-    static final int time = 75;
+    static final int time = 50;
     public static String calculateFraction(double num, boolean brackets, boolean checkOther){
+        return calculateFraction(num, brackets, checkOther, time);
+    }
+    public static String calculateFraction(double num, boolean brackets, boolean checkOther, int time){
         if (num%1 == 0){
             return _Number_.format(num);
         }

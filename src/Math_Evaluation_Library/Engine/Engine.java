@@ -423,7 +423,7 @@ public class Engine {
     }
 
     public static String evaluate (List<String> list){
-        return NumericalEngine.evaluate(list);
+        return MathEngine.evaluate(list);
     }
 
 
@@ -542,7 +542,10 @@ public class Engine {
                             continue PARSE;
                         }
                         else {
-                            return "Variable Syntax Error";
+                            if (end == -1){
+                                error = "Bracket Count Error - Unclosed Curly Bracket";
+                                return error;
+                            }
                         }
                     } else if (c == '[') {
                         int unitIndex = infixFunction.indexOf("→", a);
@@ -563,6 +566,17 @@ public class Engine {
                                     return error;
                                 }
                             }
+                        }
+                        int semicolon = infixFunction.indexOf(";", a);
+                        if (semicolon != -1){
+                            int end = infixFunction.indexOf("]", a);
+                            if (end == -1){
+                                error = "Bracket Count Error - Unclosed Hard Bracket";
+                                return error;
+                            }
+                            output.push(infixFunction.substring(a, end+1));
+                            a = end;
+                            continue PARSE;
                         }
                         int comma1 = infixFunction.indexOf(",", a);
                         int close = infixFunction.indexOf("]", a);

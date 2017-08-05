@@ -800,7 +800,6 @@ public class TextSolutionEngine extends Engine{
                 v[2]*w[0]-w[2]*v[0],
                 v[0]*w[1]-w[0]*v[1]};
         return cross;
-        //return "["+_Number_.format(()+"")+", "+_Number_.format(()+"")+", "+_Number_.format(()+"")+"]";
     }
 
     public static String getProjection(String[] parameters){

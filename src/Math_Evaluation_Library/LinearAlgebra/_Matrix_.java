@@ -170,18 +170,27 @@ public class _Matrix_ {
                         return toStrMatrix(doubleMatrix1.mmul(doubleMatrix2));
                     }
                     else if (equalNumRows && equalNumColumns){
-                        if ((doubleMatrix1.rows > 1 && doubleMatrix1.columns == 1) || (doubleMatrix1.rows == 1 && doubleMatrix1.columns > 1)){
-                            return String.valueOf(doubleMatrix1.dot(doubleMatrix2));
+                        if (doubleMatrix1.rows > 1 && doubleMatrix1.columns == 1){
+                            if (doubleMatrix1.rows == 3){
+                                return toStrMatrix(_Vector_.crossProduct(doubleMatrix1.toArray(), doubleMatrix2.toArray()));
+                            }
+                            return _Number_.format(doubleMatrix1.dot(doubleMatrix2));
+                        }
+                        else if (doubleMatrix1.rows == 1 && doubleMatrix1.columns > 1){
+                            if (doubleMatrix1.columns == 3) {
+                                return toStrMatrix(_Vector_.crossProduct(doubleMatrix1.toArray(), doubleMatrix2.toArray()));
+                            }
+                            return _Number_.format(doubleMatrix1.dot(doubleMatrix2));
                         }
                         else {
                             return toStrMatrix(doubleMatrix1.mul(doubleMatrix2));
                         }
                     }
                 }
+                else if (operator == '·' && (doubleMatrix1.rows == 1 || doubleMatrix1.columns == 1)){
+                    return _Number_.format(doubleMatrix1.dot(doubleMatrix2));
+                }
                 else if (equalNumRows && equalNumColumns){
-                    if (operator == '·' && doubleMatrix1.columns == 1){
-                        return _Number_.format(doubleMatrix1.dot(doubleMatrix2));
-                    }
                     switch (operator){
                         case '+':   return toStrMatrix(doubleMatrix1.add(doubleMatrix2));
                         case '-':   return toStrMatrix(doubleMatrix1.sub(doubleMatrix2));
@@ -219,46 +228,74 @@ public class _Matrix_ {
         return "NaN";
     }
 
+    // The following formats are valid:
+    //      [1 2 3; 3 2 1; 1 2 3]
+    //      {1 2 3; 3 2 1; 1 2 3}
+    //      [[1,2,3],[3,2,1],[1,2,3]]*[[4,5,6],[6,5,4],[4,6,5]]
+    //      {{1,2,3},{3,2,1},{1,2,3}}*{{4,5,6},{6,5,4},{4,6,5}}
     public static DoubleMatrix toDoubleMatrix(String strMatrix){
         try{
             if (_Number_.isNumber(strMatrix)){
                 return null;
             }
         } catch (NumberFormatException e){}
-        String[] parameters = strMatrix.split(",");
-        List<List<String>> matrix = new ArrayList<>();
-        List<String> row = new ArrayList<>();
-        for (int a = 0 ; a<parameters.length; a++){
-            if (parameters[a].contains("}")){
-                row.add(Search.replace(parameters[a], "{", "",  "}", "",  " ", ""));
-                if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                    matrix.add(new ArrayList<>(row));
-                    row.clear();
-                }
-                else if (row.size() != matrix.get(0).size()){
-                    return null;
-                }
-            }
-            else if (parameters[a].contains("{")){
-                row.add(Search.replace(parameters[a], "{", "",  " ", ""));
-            }
-            else if (!row.isEmpty()){
-                row.add(parameters[a].replaceAll(" ", ""));
-            }
+        int lengthSub1 = strMatrix.length()-1;
+        int doubleSpace = strMatrix.indexOf("  ");
+        while (doubleSpace != -1){
+            strMatrix = strMatrix.substring(0, doubleSpace)+strMatrix.substring(doubleSpace+1);
+            doubleSpace = strMatrix.indexOf("  ");
         }
-        if (!matrix.isEmpty()) {
-            double[][] values = new double[matrix.size()][matrix.get(0).size()];
-            for (int i = 0; i<values.length; i++){
-                for (int j = 0; j<values[i].length; j++){
-                    values[i][j] = Engine.evaluate(matrix.get(i).get(j));
-                }
-            }
-            return new DoubleMatrix(values);
+        if (strMatrix.charAt(0) == '{' && strMatrix.charAt(lengthSub1) == '}'){
+            return toDoubleMatrixSemicolon(Search.replace(strMatrix, "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", ""));
+        }
+        if (strMatrix.charAt(0) == '[' && strMatrix.charAt(lengthSub1) == ']'){
+            return toDoubleMatrixSemicolon(Search.replace(strMatrix, "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", ""));
         }
         return null;
     }
+    public static DoubleMatrix toDoubleMatrixSemicolon(String strMatrix){
+        String[] rows = strMatrix.split(";");
+        int rowLength = -1;
+        double[][] values = new double[rows.length][0];
+        for(int i = 0; i<values.length; i++){
+            String[] strRow = rows[i].split(",");
+            double[] row = new double[strRow.length];
+            if (rowLength == -1){
+                rowLength = row.length;
+                for (int j = 0; j<rowLength; j++){
+                    row[j] = Engine.evaluate(strRow[j]);
+                }
+                values[i] = row;
+            }
+            else if (row.length == rowLength){
+                for (int j = 0; j<rowLength; j++){
+                    row[j] = Engine.evaluate(strRow[j]);
+                }
+                values[i] = row;
+            }
+            else{
+                return null;
+            }
+        }
+        return new DoubleMatrix(values);
+    }
+
     public static String toStrMatrix(DoubleMatrix matrix){
-        double[][] values = matrix.toArray2();
+        return toStrMatrix(matrix.toArray2());
+    }
+    public static String toStrMatrix(double[] values){
+        String strMatrix = "{";
+        for (int i = 0; i<values.length; i++){
+            if (i != 0){
+                strMatrix += ", "+ Fraction.calculateFraction(values[i], false, true);
+            }
+            else{
+                strMatrix += Fraction.calculateFraction(values[i], false, true);
+            }
+        }
+        return strMatrix+"}";
+    }
+    public static String toStrMatrix(double[][] values){
         if (values.length == 1){
             String strMatrix = "{";
             for (int i = 0; i<values[0].length; i++){
