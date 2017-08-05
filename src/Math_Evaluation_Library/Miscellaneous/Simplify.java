@@ -175,7 +175,7 @@ public class Simplify {
                     // Case:  Both Numbers
                     double pow = Math.pow(num1, num2);
                     if (pow % 1 == 0) {
-                        postfix.set(eIndex - 2, _Number_.removeEnding0(pow));
+                        postfix.set(eIndex - 2, _Number_.format(pow));
                         remove(postfix, eIndex, eIndex - 1);
                         return true;
                     }
@@ -198,7 +198,7 @@ public class Simplify {
 
             if (_Number_.isNumber(num2)) {
                 if (_Number_.isNumber(num1)) {
-                    postfix.set(mIndex - 2, _Number_.removeEnding0(num1 * num2));
+                    postfix.set(mIndex - 2, _Number_.format(num1 * num2));
                     remove(postfix, mIndex, mIndex - 1);
                     return true;
                 }
@@ -231,7 +231,7 @@ public class Simplify {
                 for (int i = 0; i<size; i++){
                     product *= numbers.get(i);
                 }
-                postfix.set(0, _Number_.removeEnding0(product));
+                postfix.set(0, _Number_.format(product));
                 for (int i = 1; i<size; i++){
                     postfix.remove(1);
                 }
@@ -249,7 +249,7 @@ public class Simplify {
             double num1 = _Number_.getNumber(postfix.get(dIndex-2), true), num2 = _Number_.getNumber(postfix.get(dIndex-1), true);
             // Case:  Both Numbers
             if (_Number_.isNumber(num1) && _Number_.isNumber(num2) && num1%num2 == 0){
-                postfix.set(dIndex-2, _Number_.removeEnding0(num1/num2));
+                postfix.set(dIndex-2, _Number_.format(num1/num2));
                 remove(postfix, dIndex, dIndex-1);
                 return true;
             }
@@ -261,7 +261,7 @@ public class Simplify {
             double num1 = _Number_.getNumber(postfix.get(dIndex-2), true), num2 = _Number_.getNumber(postfix.get(dIndex-1), true);
             // Case:  Both Numbers
             if (_Number_.isNumber(num1) && _Number_.isNumber(num2)){
-                postfix.set(dIndex-2, _Number_.removeEnding0(num1%num2));
+                postfix.set(dIndex-2, _Number_.format(num1%num2));
                 remove(postfix, dIndex, dIndex-1);
                 return true;
             }
@@ -273,7 +273,7 @@ public class Simplify {
             double num1 = _Number_.getNumber(postfix.get(aIndex-2), true), num2 = _Number_.getNumber(postfix.get(aIndex-1), true);
             // Case:  Both Numbers
             if (_Number_.isNumber(num1) && _Number_.isNumber(num2)){
-                postfix.set(aIndex-2, _Number_.removeEnding0(num1+num2));
+                postfix.set(aIndex-2, _Number_.format(num1+num2));
                 remove(postfix, aIndex, aIndex-1);
                 return true;
             }
@@ -285,7 +285,7 @@ public class Simplify {
             double num1 = _Number_.getNumber(postfix.get(sIndex-2), true), num2 = _Number_.getNumber(postfix.get(sIndex-1), true);
             // Case:  Both Numbers
             if (_Number_.isNumber(num1) && _Number_.isNumber(num2)){
-                postfix.set(sIndex-2, _Number_.removeEnding0(num1-num2));
+                postfix.set(sIndex-2, _Number_.format(num1-num2));
                 remove(postfix, sIndex, sIndex-1); return true;
             }
         }

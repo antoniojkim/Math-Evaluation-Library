@@ -60,10 +60,10 @@ public class MultiParamFunctions extends Engine{
     // Flexible number of arguments
     private static String log(String[] parameters){
         if (parameters.length == 1){
-            return _Number_.removeEnding0(  Math.log10(evaluate(parameters[0])) );
+            return _Number_.format(  Math.log10(evaluate(parameters[0])) );
         }
         else if (parameters.length == 2){
-            return _Number_.removeEnding0(  Math.log10(evaluate(parameters[0]))/Math.log10(evaluate(parameters[1])));
+            return _Number_.format(  Math.log10(evaluate(parameters[0]))/Math.log10(evaluate(parameters[1])));
         }
         return INVALID;
     }
@@ -73,7 +73,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = 1; b<parameters.length; b++){
                 largest = Math.max(largest, evaluate(parameters[b]));
             }
-            return _Number_.removeEnding0(largest);
+            return _Number_.format(largest);
         }
         return INVALID;
     }
@@ -83,7 +83,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = 1; b<parameters.length; b++){
                 smallest = Math.min(smallest, evaluate(parameters[b]));
             }
-            return _Number_.removeEnding0(smallest);
+            return _Number_.format(smallest);
         }
         return INVALID;
     }
@@ -104,7 +104,7 @@ public class MultiParamFunctions extends Engine{
                         return INVALID;
                     }
                 }
-                return _Number_.removeEnding0(gcd);
+                return _Number_.format(gcd);
             }
         }
         return INVALID;
@@ -126,7 +126,7 @@ public class MultiParamFunctions extends Engine{
                         return INVALID;
                     }
                 }
-                return _Number_.removeEnding0(lcm);
+                return _Number_.format(lcm);
             }
         }
         return INVALID;
@@ -137,7 +137,7 @@ public class MultiParamFunctions extends Engine{
             double B = evaluate(parameters[1]);
             double C = evaluate(parameters[2]);
             double s = (A+B+C) / 2;
-            return _Number_.removeEnding0(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
+            return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
         }
         else if (parameters.length == 6){
             double x1 = evaluate(parameters[0]);
@@ -150,7 +150,7 @@ public class MultiParamFunctions extends Engine{
             double B = Geometric.pointDistance(x1, y1, x3, y3);
             double C = Geometric.pointDistance(x2, y2, x3, y3);
             double s = (A+B+C) / 2;
-            return _Number_.removeEnding0(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
+            return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
         }
         return INVALID;
     }
@@ -164,7 +164,7 @@ public class MultiParamFunctions extends Engine{
                 double temp = evaluate(parameter);
                 ED += temp*temp;
             }
-            return _Number_.removeEnding0(Math.sqrt(ED));
+            return _Number_.format(Math.sqrt(ED));
         }
         return INVALID;
     }
@@ -175,7 +175,7 @@ public class MultiParamFunctions extends Engine{
                 sum += evaluate(parameter);
             }
             sum /= parameters.length;
-            return _Number_.removeEnding0(sum);
+            return _Number_.format(sum);
         }
         return INVALID;
     }
@@ -185,7 +185,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = 0; b<data.length; b++){
                 data[b] = evaluate(parameters[b]);
             }
-            return _Number_.removeEnding0(Stats.variance(data));
+            return _Number_.format(Stats.variance(data));
         }
         return INVALID;
     }
@@ -195,7 +195,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = 0; b<data.length; b++){
                 data[b] = evaluate(parameters[b]);
             }
-            return _Number_.removeEnding0(Stats.stnDev(data));
+            return _Number_.format(Stats.stnDev(data));
         }
         return INVALID;
     }
@@ -224,7 +224,7 @@ public class MultiParamFunctions extends Engine{
                     sum += f.of(start+h*(2*b+1)/2.0);
                 }
             }
-            return _Number_.removeEnding0(sum*h);
+            return _Number_.format(sum*h);
         }
         return INVALID;
     }
@@ -234,7 +234,7 @@ public class MultiParamFunctions extends Engine{
         if (parameters.length == 2){
             double low = evaluate(parameters[0]);
             double high = evaluate(parameters[1]);
-            return _Number_.removeEnding0(_Random_.random(low, high));
+            return _Number_.format(_Random_.random(low, high));
         }
         return INVALID;
     }
@@ -242,7 +242,7 @@ public class MultiParamFunctions extends Engine{
         if (parameters.length == 2){
             int low = Integer.parseInt(parameters[0]);
             int high = Integer.parseInt(parameters[1]);
-            return _Number_.removeEnding0(_Random_.randomint(low, high));
+            return _Number_.format(_Random_.randomint(low, high));
         }
         return INVALID;
     }
@@ -264,7 +264,7 @@ public class MultiParamFunctions extends Engine{
             double q2 = evaluate(parameters[1]);
             double p1 = evaluate(parameters[2]);
             double p2 = evaluate(parameters[3]);
-            return _Number_.removeEnding0((((q2 - q1) / (q2 + q1)) / ((p2 - p1) / (p2 + p1))));
+            return _Number_.format((((q2 - q1) / (q2 + q1)) / ((p2 - p1) / (p2 + p1))));
         }
         return INVALID;
     }
@@ -273,7 +273,7 @@ public class MultiParamFunctions extends Engine{
             String fx = parameters[0];
             double lower = evaluate(parameters[1]);
             double higher = evaluate(parameters[2]);
-            return _Number_.removeEnding0(Integral.nint(fx, lower, higher));
+            return _Number_.format(Integral.nint(fx, lower, higher));
         }
         return INVALID;
     }
@@ -281,7 +281,7 @@ public class MultiParamFunctions extends Engine{
         if (parameters.length == 2){
             String fx = parameters[0];
             double x = evaluate(parameters[1]);
-            return _Number_.removeEnding0(Derivative.value(fx, x));
+            return _Number_.format(Derivative.value(fx, x));
         }
         return INVALID;
     }
@@ -297,7 +297,7 @@ public class MultiParamFunctions extends Engine{
             }
             String finalDerivative = derivatives[derivatives.length-1];
             if (finalDerivative.charAt(finalDerivative.length()-1) != '\''){
-                return _Number_.removeEnding0(evaluate(derivatives[derivatives.length-1], x));
+                return _Number_.format(evaluate(derivatives[derivatives.length-1], x));
             }
         }
         return INVALID;
@@ -311,7 +311,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = start; b <= end; b++) {
                 sum += f.of(b);
             }
-            return _Number_.removeEnding0(sum);
+            return _Number_.format(sum);
         }
         return INVALID;
     }
@@ -324,7 +324,7 @@ public class MultiParamFunctions extends Engine{
             for (int b = start; b <= end; b++) {
                 product *= f.of(b);
             }
-            return _Number_.removeEnding0(product);
+            return _Number_.format(product);
         }
         return INVALID;
     }
@@ -332,7 +332,7 @@ public class MultiParamFunctions extends Engine{
         if (parameters.length == 2){
             String fx = parameters[0];
             double x = evaluate(parameters[1]);
-            return _Number_.removeEnding0(Roots.NewtonsMethod(fx, x));
+            return _Number_.format(Roots.NewtonsMethod(fx, x));
         }
         return INVALID;
     }
@@ -341,7 +341,7 @@ public class MultiParamFunctions extends Engine{
             double b = evaluate(parameters[0]);
             double c = evaluate(parameters[1]);
             double theta = evaluate(parameters[2]);
-            return _Number_.removeEnding0(Math.sqrt(b*b+c*c-2*b*c*Math.cos(theta)));
+            return _Number_.format(Math.sqrt(b*b+c*c-2*b*c*Math.cos(theta)));
         }
         return INVALID;
     }

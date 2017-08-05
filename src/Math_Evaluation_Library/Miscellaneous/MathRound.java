@@ -40,28 +40,27 @@ public class MathRound {
         if (bounded){
             num = round(num, place);
         }
-        return roundf(num+"", place, true);
+        return roundf(String.valueOf(num), place, true);
     }
     public static String roundf (String num, int place){
         return roundf(num, place, true);
     }
     public static String roundf(String number, int place, boolean bounded){
         try{
-            double num = Double.parseDouble(number);
-            if (number.endsWith(".0")){
-                number = number.substring(0, number.length()-2);
-            }
-            if (number.contains("E") && (!bounded || num < Math.pow(10, 15))){
+            double num = _Number_.getNumber(number);
+            number = String.valueOf(round(num, place));
+            boolean containsE = number.contains("E");
+            if (containsE && (!bounded || num < Math.pow(10, 15))){
                 BigDecimal bi = new BigDecimal(num);
                 number = bi.toPlainString();
             }
-            if (num%1 == 0 && number.contains(".") && !number.contains("E")){
+            if (num%1 == 0 && number.contains(".") && !containsE){
                 number = number.substring(0, number.indexOf("."));
             }
             if (bounded){
                 number = _Number_.commaFormat(number);
             }
         }catch(NumberFormatException e){}
-        return number;
+        return _Number_.format(number);
     }
 }

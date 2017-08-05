@@ -85,6 +85,40 @@ public class Search {
         return -1;
     }
 
+    public static int indexOf(String str, char search){
+        return indexOf(str, search, 0);
+    }
+        public static int indexOf(String str, char search, int start){
+        char[] values = str.toCharArray();
+        int bracket = 0, cBracket = 0;
+        for (int i = start; i<values.length; i++){
+            char c = values[i];
+            boolean brackets = bracket == 0 && cBracket == 0;
+            if (brackets && c == search){
+                return i;
+            }
+            if (c == '('){
+                bracket++;
+            }
+            else if (c == ')'){
+                bracket--;
+                if (bracket == 0 && cBracket == 0){
+                    return i;
+                }
+            }
+            else if (c == '{'){
+                cBracket++;
+            }
+            else if (c == '}'){
+                cBracket--;
+                if (bracket == 0 && cBracket == 0){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public static List<Integer> getIndices(String function, String split){
         return getIndices(function, split.toCharArray());
     }
@@ -92,22 +126,32 @@ public class Search {
         Sort.quicksort(split);
         char[] c = function.toCharArray();
         List<Integer> indices = new ArrayList<>();
-        int bracket = 0, absBracket = 0;
+        int bracket = 0, absBracket = 0, cBracket = 0;
 //        int operator = 0;
 
         for (int i = 0; i<c.length; i++){
-            if(contains(split, c[i]) && ((bracket == 0 && absBracket%2 == 0) || c[i] == '|') && !(c[i] == '-' && i == 0)){ //&& operator == 0
+            boolean equalsAbsBracket = c[i] == '|';
+            if(contains(split, c[i]) && (equalsAbsBracket || (bracket == 0 && cBracket == 0 && absBracket%2 == 0)) && !(c[i] == '-' && i == 0)){ //&& operator == 0
                 indices.add(i);
             }
-            if (c[i] == '|'){
+            if (equalsAbsBracket){
                 absBracket++;
+            }
+            else if (c[i] == '{'){
+                cBracket++;
+            }
+            else if (c[i] == '}'){
+                cBracket--;
+                if(contains(split, c[i]) && (equalsAbsBracket || (bracket == 0 && cBracket == 0 && absBracket%2 == 0)) && !(c[i] == '-' && i == 0)){ // && operator == 0
+                    indices.add(i);
+                }
             }
             else if (c[i] == '('){
                 bracket++;
             }
             else if (c[i] == ')'){
                 bracket--;
-                if(contains(split, c[i]) && ((bracket == 0 && absBracket%2 == 0) || c[i] == '|') && !(c[i] == '-' && i == 0)){ // && operator == 0
+                if(contains(split, c[i]) && (equalsAbsBracket || (bracket == 0 && cBracket == 0 && absBracket%2 == 0)) && !(c[i] == '-' && i == 0)){ // && operator == 0
                     indices.add(i);
                 }
             }
@@ -145,10 +189,22 @@ public class Search {
         return true;
     }
 
+    public static String replace(String text, String... searchReplace) {
+        for (int i = 1; i<searchReplace.length; i+=2){
+            text = replace(text, searchReplace[i-1], searchReplace[i]);
+        }
+        return text;
+    }
+    public static String replace(String text, String[] searchString, String[] replacement) {
+        int length = Math.min(searchString.length, replacement.length);
+        for (int i = 0; i<length; i++){
+            text = replace(text, searchString[i], replacement[i]);
+        }
+        return text;
+    }
     public static String replace(String text, String searchString, String replacement) {
         return replace(text, searchString, replacement, -1);
     }
-
     public static String replace(String text, String searchString, String replacement, int max) {
         if (text.length() == 0 || searchString.length() == 0 || replacement == null || max == 0) {
             return text;
@@ -173,6 +229,21 @@ public class Search {
         }
         buf.append(text.substring(start));
         return buf.toString();
+    }
+
+    public static void replace(List<String> list, String searchString, String replacement) {
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i<list.size(); i++){
+            if (list.get(i).equals(searchString)){
+                indices.add(i);
+            }
+        }
+        replace(list, indices, replacement);
+    }
+    public static void replace(List<String> list, List<Integer> indices, String replacement) {
+        for(int index : indices){
+            list.set(index, replacement);
+        }
     }
 
 //    private static int binarySearch(int[] array, int low, int high, int item, boolean ascending){

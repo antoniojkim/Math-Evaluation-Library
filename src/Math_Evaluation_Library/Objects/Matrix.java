@@ -54,6 +54,7 @@ public class Matrix{
         if (elements.length > 0){
             this.elements = new Fraction[elements.length][1];
             for (int a = 0; a<elements.length; a++){
+                this.elements[a] = new Fraction[elements[a].length];
                 System.arraycopy(elements[a], 0, this.elements[a], 0, elements[a].length);
             }
             numColumns = elements[0].length;

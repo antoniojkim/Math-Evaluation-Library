@@ -166,7 +166,7 @@ public class Integral {
             }
         }
         else if (numbers.size() == 1){
-            String formattedNumber = _Number_.removeEnding0(numbers.get(0));
+            String formattedNumber = _Number_.format(numbers.get(0));
             for (int i = 0; i<database1.length; i+=2){
                 if (parsed.equals(Format.format(database1[i], "{0}:"+formattedNumber))){
                     return Format.format(database1[i+1], "{0}:"+formattedNumber);
@@ -184,11 +184,11 @@ public class Integral {
             }
         }
         else if (numbers.size() == 2){
-            String formattedNumber0 = _Number_.removeEnding0(numbers.get(0));
-            String formattedNumber1 = _Number_.removeEnding0(numbers.get(1));
+            String formattedNumber0 = _Number_.format(numbers.get(0));
+            String formattedNumber1 = _Number_.format(numbers.get(1));
             for (int i = 0; i<database0.length; i+=2){
                 if (parsed.equals(formattedNumber0+" "+Format.format(database0[i], "{x}:"+formattedNumber1+" x *")+" *")){
-                    return _Number_.removeEnding0(numbers.get(0)*numbers.get(1))+"*"+
+                    return _Number_.format(numbers.get(0)*numbers.get(1))+"*"+
                             Format.format(database0[i+1], "{x}:("+formattedNumber1+"x)");
                 }
             }

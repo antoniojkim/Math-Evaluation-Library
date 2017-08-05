@@ -31,6 +31,9 @@ public class Function {
     private String derivative = "";
     private String integral = "";
 
+    private boolean containsVar = false;
+    private boolean containsVarOp = false;
+
 
     public Function(Function f){
         function = f.function();
@@ -45,6 +48,8 @@ public class Function {
         integrable = f.isIntegrable();
         integral = f.getIntegral();
         derivative = f.getDerivative();
+        containsVar = f.isContainsVar();
+        containsVarOp = f.isContainsVarOp();
     }
     public Function(String fx){
         this(fx, true);
@@ -76,6 +81,8 @@ public class Function {
                         }
                         outputs.add(split[i]);
                     }
+                    containsVar = !varIndices.isEmpty();
+                    containsVarOp = !varOpIndices.isEmpty();
                     value = evaluate();
                 }
             }
@@ -142,7 +149,7 @@ public class Function {
                 return value;
             }
             try{
-                return Double.parseDouble(evaluateString(x));
+                return _Number_.getNumber(evaluateString(x));
             }catch(NumberFormatException e){}
         }
         return NaN;
@@ -153,7 +160,7 @@ public class Function {
                 return value;
             }
             try{
-                return Double.parseDouble(evaluateString(x, y));
+                return _Number_.getNumber(evaluateString(x, y));
             }catch(NumberFormatException e){}
         }
         return NaN;
@@ -167,13 +174,18 @@ public class Function {
         }
         return "NaN";
     }
-    public String evaluateString(double x){
+    public String evaluateString(double num){
         if (isNumber) {
             return String.valueOf(value);
         }
-        if (isFunction() && varOpIndices.size() == 0){
+        if (isFunction() && !containsVarOp){
             List<String> list = new ArrayList<>(outputs);
-            Collections.replaceAll(list, Engine.var, String.valueOf(x));
+            Search.replace(list, varIndices, String.valueOf(num));
+            return Engine.evaluate(list);
+        }
+        if (containsVarOp && !containsVar){
+            List<String> list = new ArrayList<>(outputs);
+            Search.replace(list, varOpIndices, String.valueOf(num));
             return Engine.evaluate(list);
         }
         return "NaN";
@@ -319,6 +331,13 @@ public class Function {
             }
         }
         return integral;
+    }
+
+    public boolean isContainsVar() {
+        return containsVar;
+    }
+    public boolean isContainsVarOp() {
+        return containsVarOp;
     }
 
     public double value(){

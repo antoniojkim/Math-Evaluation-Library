@@ -1,5 +1,7 @@
 package Tests;
 
+import org.jblas.DoubleMatrix;
+
 /**
  * Created by Antonio on 2017-07-11.
  */
@@ -22,7 +24,8 @@ public class _Math_Evaluation_Library_Tests_ {
                 new Engine_Tests("Engine"),
                 new Simplify_Tests("Simplify"),
                 new Derivative_Tests("Derivative"),
-                new Integral_Tests("Integral")
+                new Integral_Tests("Integral"),
+                new Matrix_Tests("Matrix")
         };
 
         long overallStart = System.currentTimeMillis();

@@ -10,15 +10,18 @@ import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Trigonometry.Trig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
 
-@author Antonio
-*/
+ @author Antonio
+ */
 public class Fraction{
-    
+
     private int numerator = 0, denominator = 1;
     private double value = 1;
-    
+
     public Fraction(){
     }
     public Fraction(int num){
@@ -71,7 +74,7 @@ public class Fraction{
         }
         value = fraction.getValue();
     }
-    
+
     private boolean convertString(String frac){
         try{
             numerator = Integer.parseInt(frac);
@@ -93,7 +96,7 @@ public class Fraction{
         }
         return false;
     }
-    
+
     public int getNumerator(){
         return numerator;
     }
@@ -115,7 +118,7 @@ public class Fraction{
     public boolean isFraction(){
         return denominator != 0;
     }
-    
+
     public void reduce(){
         if (isFraction() && !(numerator == 0 || denominator == 0)){
             if ((numerator < 0 && denominator < 0) || (numerator > 0 && denominator < 0)){
@@ -127,7 +130,7 @@ public class Fraction{
             denominator /= gcd;
         }
     }
-    
+
     public Fraction add(Fraction fraction){
         //System.out.println(numerator+"*"+fraction.getDenominator()+" + "+fraction.getNumerator()+"*"+denominator);
         if (isFraction() && fraction.isFraction()){
@@ -206,7 +209,7 @@ public class Fraction{
     public Fraction sqrt(){
         return expt(new Fraction(1, 2));
     }
-    
+
     public Fraction add(int num){
         if (isFraction()){
             numerator = numerator + num*denominator;
@@ -264,7 +267,7 @@ public class Fraction{
         value = Math.pow(value, num);
         return this;
     }
-    
+
     public Fraction add(double num){
         if (num%1 == 0){
             add((int)num);
@@ -305,7 +308,7 @@ public class Fraction{
         }
         return this;
     }
-    
+
     public boolean equals(Fraction fraction){
         if (getValue() == fraction.getValue()){
             return true;
@@ -318,7 +321,7 @@ public class Fraction{
         }
         return false;
     }
-    
+
     public String getString(){
         if (denominator != 0){
             reduce();
@@ -349,140 +352,60 @@ public class Fraction{
     }
 
     public static String getFraction(double num){
-        String fraction = calculateFraction(num, false);
+        String fraction = calculateFraction(num, false, false);
         if (fraction.endsWith(".0")){
             return fraction.substring(0, fraction.length()-2);
         }
         return fraction;
     }
     public static String getFraction(double num, boolean brackets){
-        String fraction = calculateFraction(num, brackets);
+        String fraction = calculateFraction(num, brackets, false);
         if (fraction.endsWith(".0")){
             return fraction.substring(0, fraction.length()-2);
         }
         return fraction;
     }
     static String exp = "";
-    static final int time = 100;
-    public static String calculateFraction(double num, boolean brackets){
-        String number = _Number_.removeEnding0(num+"");
-        if (num%1 == 0 || !number.contains(".") || num == Math.PI || num == Math.E){
-            return MathRound.roundf(num, 15);
+    static final int time = 75;
+    public static String calculateFraction(double num, boolean brackets, boolean checkOther){
+        if (num%1 == 0){
+            return _Number_.format(num);
         }
-        if (num%Math.PI == 0){
-            return _Number_.removeEnding0(num/Math.PI+"")+"π";
-        }
-        else if (MathRound.round(Math.PI/num, 14)%1 == 0){
-            return ("π/"+MathRound.round(Math.PI/num, 14));
-        }
-        else if (num%Math.E == 0){
-            return _Number_.removeEnding0(num/Math.E+"")+"e";
-        }
-        else if ((Math.E/num)%1 == 0){
-            return ("e/"+(Math.E/num)).replaceAll("/1", "");
-        }
+        if (num == Math.PI){        return String.valueOf(num);                            }
+        if (num == Math.E){         return String.valueOf(num);                            }
+        if (num%Math.PI == 0){      return _Number_.format(num/Math.PI+"")+"π";     }
+        if ((Math.PI/num)%1 == 0){  return ("π/"+_Number_.format(Math.PI/num));       }
+        if (num%Math.E == 0){       return _Number_.format(num/Math.E+"")+"e";      }
+        if ((Math.E/num)%1 == 0){   return "e"+_Number_.format(Math.E/num);           }
         long start = System.currentTimeMillis();
         exp = "";
-        Thread thread3 = new Thread(new Runnable() {
+        List<Thread> threads = new ArrayList<>();
+        threads.add(new Thread(new Runnable() {
             @Override
             public void run() {
                 int accuracy = 16;
                 double number = MathRound.round(num, accuracy);
                 if (num > 0){
-                    for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
+                    OUTER:  for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
                         for (int b = 1; b<a && (System.currentTimeMillis()-start <= time) && exp.equals(""); b++){
-                            if (MathRound.round(b/(double)a, accuracy) == number){
-                                exp = b+"/"+a;
-                                break;
-                            }
-                            else if (MathRound.round(a/(double)b, accuracy) == number){
-                                exp = a+"/"+b;
-                                //System.out.println(exp);
-                                break;
-                            }
-                            else if (MathRound.round(a/(double)b*Math.PI, accuracy) == number){
-                                exp = "("+a+"/"+b+")π";
-                                //System.out.println(exp);
-                                break;
-                            }
+                            if (number == MathRound.round(b/(double)a, accuracy)){          exp = b+"/"+a;   break OUTER;   }
+                            if (number == MathRound.round(a/(double)b, accuracy)){          exp = a+"/"+b;   break OUTER;   }
+                            if (number == MathRound.round(a/(double)b*Math.PI, accuracy)){  exp = a+"π/"+b;  break OUTER;   }
                         }
                     }
                 }
                 else{
-                    for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
+                    OUTER:  for (int a = 2; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
                         for (int b = 1; b<a && (System.currentTimeMillis()-start <= time) && exp.equals(""); b++){
-                            if(MathRound.round(-b/(double)a, accuracy)  == number){
-                                exp = "-"+b+"/"+a;
-                                break;
-                            }
-                            else if(MathRound.round(-a/(double)b, accuracy)  == number){
-                                exp = "-"+a+"/"+b;
-                                break;
-                            }
-                            else if (MathRound.round(-a/(double)b*Math.PI, accuracy) == number){
-                                exp = "(-"+a+"/"+b+")π";
-                                //System.out.println(exp);
-                                break;
-                            }
+                            if (number == MathRound.round(-b/(double)a, accuracy)){          exp = -b+"/"+a;   break OUTER;   }
+                            if (number == MathRound.round(-a/(double)b, accuracy)){          exp = -a+"/"+b;   break OUTER;   }
+                            if (number == MathRound.round(-a/(double)b*Math.PI, accuracy)){  exp = -a+"π/"+b;  break OUTER;   }
                         }
                     }
                 }
             }
-        });
-        thread3.start();
-        Thread thread1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int accuracy = 16;
-                double number = MathRound.round(num, accuracy);
-                for (int a = 1; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
-                    if (number == MathRound.round(Math.PI-a, accuracy)){
-                        exp = "π-"+a;
-                    }
-                    else if (number == MathRound.round(Math.PI+a, accuracy)){
-                        exp = "π+"+a;
-                    }
-                    else if (number == MathRound.round(Math.E-a, accuracy)){
-                        exp = "e-"+a;
-                    }
-                    else if (number == MathRound.round(Math.E+a, accuracy)){
-                        exp = "e+"+a;
-                    }
-                    else if (number == MathRound.round(Math.sin(a), accuracy)){
-                        exp = "sin"+a;
-                    }
-                    else if (number == MathRound.round(Math.cos(a), accuracy)){
-                        exp = "cos"+a;
-                    }
-                    else if (number == MathRound.round(Math.tan(a), accuracy)){
-                        exp = "tan"+a;
-                    }
-                    else if (number == MathRound.round(Trig.sec(a), accuracy)){
-                        exp = "sec"+a;
-                    }
-                    else if (number == MathRound.round(Trig.csc(a), accuracy)){
-                        exp = "csc"+a;
-                    }
-                    else if (number == MathRound.round(Trig.cot(a), accuracy)){
-                        exp = "cot"+a;
-                    }
-                    else if (number == MathRound.round(Math.log(a), accuracy)){
-                        exp = "ln"+a;
-                    }
-                    else if (number == MathRound.round(1.0/Math.log(a), accuracy)){
-                        exp = "1/ln"+a;
-                    }
-                    else if (number == MathRound.round(Math.log10(a), accuracy)){
-                        exp = "log"+a;
-                    }
-                    else if (number == MathRound.round(1.0/Math.log10(a), accuracy)){
-                        exp = "1/log"+a;
-                    }
-                }
-            }
-        });
-        thread1.start();
-        Thread thread2 = new Thread(new Runnable() {
+        }));
+        threads.add(new Thread(new Runnable() {
             @Override
             public void run() {
                 if ((""+num).contains(".") && (""+num).substring((""+num).indexOf(".")+1).length() < 10){
@@ -492,7 +415,7 @@ public class Fraction{
                         if (number%1 == 0){
                             double gcd = Mod.gcd(number, power);
                             if (gcd != 1) {
-                                String division = _Number_.removeEnding0((number / gcd) + "") + "/" + _Number_.removeEnding0((power / gcd) + "");
+                                String division = _Number_.format((number / gcd) + "") + "/" + _Number_.format((power / gcd) + "");
                                 exp = division;
                             }
                             break;
@@ -500,58 +423,61 @@ public class Fraction{
                     }
                 }
             }
-        });
-        thread2.start();
-        Thread thread4 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int accuracy = 16;
-                double number = MathRound.round(num, accuracy);
-                int sign = _Number_.getSign(num);
-                String[] stringSign = {"-", "", ""};
-                String[] stringSign2 = {"-", "", "+"};
-                for (int a = 2;  exp.equals("") && (System.currentTimeMillis()-start <= time); a++){
-                    for (int b = 1; b<=a && exp.equals("") && (System.currentTimeMillis()-start <= time); b++){
-                        if (number == MathRound.round(sign*b*Math.sqrt(a), accuracy)){
-                            exp = stringSign[sign+1]+b+"√"+a;
-                            break;
-                        }
-                        if (b != 1 && number == MathRound.round(sign*a*Math.sqrt(b), accuracy)){
-                            exp = stringSign[sign+1]+a+"√"+b;
-                            break;
-                        }
-                        if (number == MathRound.round(sign*Math.abs(b-Math.sqrt(a)), accuracy)){
-                            exp = stringSign[-1*sign+1]+b+stringSign2[sign+1]+"√"+a;
-                            break;
-                        }
-                        if (b != 1 && number == MathRound.round(sign*Math.abs(a-Math.sqrt(b)), accuracy)){
-                            exp = stringSign[-1*sign+1]+a+stringSign2[sign+1]+"√"+b;
-                            break;
-                        }
-                        if (number == MathRound.round(sign*Math.abs(b+Math.sqrt(a)), accuracy)){
-                            exp = stringSign[sign+1]+b+stringSign2[sign+1]+"√"+a;
-                            break;
-                        }
-                        if (b != 1 && number == MathRound.round(sign*Math.abs(a+Math.sqrt(b)), accuracy)){
-                            exp = stringSign[sign+1]+a+stringSign2[sign+1]+"√"+b;
-                            break;
-                        }
-                    }
-                    if (number == MathRound.round(sign*Math.sqrt(a), accuracy)){
-                        exp = stringSign[sign+1]+"√"+a;
-                    }
-                    else if (number == MathRound.round(sign*1.0/Math.sqrt(a), accuracy)){
-                        exp = stringSign[sign+1]+"1/√"+a;
+        }));
+        if (checkOther){
+            threads.add(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int accuracy = 16;
+                    double number = MathRound.round(num, accuracy);
+                    OUTER:  for (int a = 1; (System.currentTimeMillis()-start <= time) && exp.equals(""); a++){
+                        if (number == MathRound.round(Math.PI-a, accuracy)){            exp = "π-"+a;    break OUTER;   }
+                        if (number == MathRound.round(Math.PI+a, accuracy)){            exp = "π+"+a;    break OUTER;   }
+                        if (number == MathRound.round(Math.E-a, accuracy)){             exp = "e-"+a;    break OUTER;   }
+                        if (number == MathRound.round(Math.E+a, accuracy)){             exp = "e+"+a;    break OUTER;   }
+                        if (number == MathRound.round(Math.sin(a), accuracy)){          exp = "sin"+a;   break OUTER;   }
+                        if (number == MathRound.round(Math.cos(a), accuracy)){          exp = "cos"+a;   break OUTER;   }
+                        if (number == MathRound.round(Math.tan(a), accuracy)){          exp = "tan"+a;   break OUTER;   }
+                        if (number == MathRound.round(Trig.sec(a), accuracy)){          exp = "sec"+a;   break OUTER;   }
+                        if (number == MathRound.round(Trig.csc(a), accuracy)){          exp = "csc"+a;   break OUTER;   }
+                        if (number == MathRound.round(Trig.cot(a), accuracy)){          exp = "cot"+a;   break OUTER;   }
+                        if (number == MathRound.round(Math.log(a), accuracy)){          exp = "ln"+a;    break OUTER;   }
+                        if (number == MathRound.round(1.0/Math.log(a), accuracy)){      exp = "1/ln"+a;  break OUTER;   }
+                        if (number == MathRound.round(Math.log10(a), accuracy)){        exp = "log"+a;   break OUTER;   }
+                        if (number == MathRound.round(1.0/Math.log10(a), accuracy)){    exp = "1/log"+a; break OUTER;   }
                     }
                 }
-            }
-        });
-        thread4.start();
+            }));
+            threads.add(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int accuracy = 16;
+                    double number = MathRound.round(num, accuracy);
+                    int sign = _Number_.getSign(num);
+                    String[] stringSign = {"-", "", ""};
+                    String[] stringSign2 = {"-", "", "+"};
+                    OUTER:  for (int a = 2;  exp.equals("") && (System.currentTimeMillis()-start <= time); a++){
+                        if (number == MathRound.round(sign*Math.sqrt(a), accuracy)){                exp = stringSign[sign+1]+"√"+a;                                break;  };
+                        if (number == MathRound.round(sign*1.0/Math.sqrt(a), accuracy)){            exp = stringSign[sign+1]+"1/√"+a;                              break;  };
+                        if (number == MathRound.round(sign*Math.abs(1-Math.sqrt(a)), accuracy)){    exp = stringSign[-1*sign+1]+1+stringSign2[sign+1]+"√"+a;       break;  };
+                        if (number == MathRound.round(sign*Math.abs(1+Math.sqrt(a)), accuracy)){    exp = stringSign[sign+1]+1+stringSign2[sign+1]+"√"+a;          break;  };
+                        for (int b = 2; b<=a && exp.equals("") && (System.currentTimeMillis()-start <= time); b++){
+                            if (number == MathRound.round(sign*a*Math.sqrt(b), accuracy)){              exp = stringSign[sign+1]+a+"√"+b;                              break;  };
+                            if (number == MathRound.round(sign*a/Math.sqrt(b), accuracy)){              exp = stringSign[sign+1]+a+"/√"+b;                             break;  };
+                            if (number == MathRound.round(sign*Math.abs(a-Math.sqrt(b)), accuracy)){    exp = stringSign[-1*sign+1]+a+stringSign2[sign+1]+"√"+b;       break;  };
+                            if (number == MathRound.round(sign*Math.abs(a+Math.sqrt(b)), accuracy)){    exp = stringSign[sign+1]+b+stringSign2[sign+1]+"√"+a;          break;  };
+                        }
+                    }
+                }
+            }));
+        }
         try{
-            thread1.join();
-            thread3.join();
-            thread4.join();
-            thread2.interrupt();
+            for (Thread thread : threads){
+                thread.start();
+            }
+            for (Thread thread : threads){
+                thread.join();
+            }
             if (!exp.trim().equals("")){
                 if (brackets){
                     return "("+exp+")";
@@ -559,7 +485,7 @@ public class Fraction{
                 return exp;
             }
         }catch(InterruptedException e){}
-        return MathRound.roundf(num, 15);
+        return _Number_.format(num);
     }
-    
+
 }

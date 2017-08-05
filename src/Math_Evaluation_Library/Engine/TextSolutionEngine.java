@@ -39,7 +39,7 @@ public class TextSolutionEngine extends Engine{
             "long", "scint", "sci", "mod", "line", "complex", "cmplx", "int", "antideriv", "antidiff", "simplify",
             "volume", "area", "congruence", "dot", "cross", "proj", "projection", "perp", "perpendicular",
             "RREF", "RREf", "RCEF", "RCEf", "Inv", "inv", "det", "slopeF", "directF", "sf", "df", "sort",
-            "dict", "thes", "plot", "plt", "parse"
+            "dict", "thes", "plot", "plt", "parse", "postfix"
     };
 
     public static String solve(String string){
@@ -159,19 +159,19 @@ public class TextSolutionEngine extends Engine{
                             if(Desktop.isDesktopSupported()){
                                 try {
                                     Desktop.getDesktop().browse(new URI("http://www.dictionary.com/browse/"+parameters[1]));
+                                    return "Redirected to definitions of "+parameters[1];
                                 } catch (IOException ex) {} catch (URISyntaxException ex) {}
                             }
-                            return "Redirected to definitions of "+parameters[1];
                         }
                         else if (type.equalsIgnoreCase("thes") && parameters.length == 2){
                             if(Desktop.isDesktopSupported()){
                                 try {
                                     Desktop.getDesktop().browse(new URI("http://www.thesaurus.com/browse/"+parameters[1]));
+                                    return "Redirected to synonyms of "+parameters[1];
                                 } catch (IOException ex) {} catch (URISyntaxException ex) {}
                             }
-                            return "Redirected to synonyms of "+parameters[1];
                         }
-                        else if (type.equalsIgnoreCase("parse") && parameters.length == 2){
+                        else if ((type.equalsIgnoreCase("parse") || type.equalsIgnoreCase("postfix")) && parameters.length == 2){
                             return toPostfix(parameters[1]);
                         }
                     }
@@ -485,7 +485,7 @@ public class TextSolutionEngine extends Engine{
                 if (!frac.equals(zeros[i]+"")){
                     simplified = true;
                 }
-                string += frac;//_Number_.removeEnding0(roots.get(i)+"");
+                string += frac;//_Number_.format(roots.get(i)+"");
             }
             if (roots.size() == 1){
                 string += "  is the only real root found for "+function;
@@ -499,7 +499,7 @@ public class TextSolutionEngine extends Engine{
                     if (i != 0){
                         string += ", ";
                     }
-                    string += zeros[i];//_Number_.removeEnding0(roots.get(i)+"");
+                    string += zeros[i];//_Number_.format(roots.get(i)+"");
                 }
             }
             return string;
@@ -765,18 +765,18 @@ public class TextSolutionEngine extends Engine{
         for (int a = 1+v.length; a-1-v.length<v.length; a++){
             w[a-1-v.length] = evaluate(parameters[a].replaceAll(" ", "").replaceAll("\\[", "").replaceAll("\\]", ""));
         }
-        String vVector = "["+_Number_.removeEnding0(v[0]+"");
+        String vVector = "["+_Number_.format(v[0]+"");
         for (int a = 1; a<v.length; a++){
-            vVector += ", "+_Number_.removeEnding0(v[a]+"");
+            vVector += ", "+_Number_.format(v[a]+"");
         }
         vVector += "]";
-        String wVector = "["+_Number_.removeEnding0(w[0]+"");
+        String wVector = "["+_Number_.format(w[0]+"");
         for (int a = 1; a<v.length; a++){
-            wVector += ", "+_Number_.removeEnding0(w[a]+"");
+            wVector += ", "+_Number_.format(w[a]+"");
         }
         wVector += "]";
         double dot = _Vector_.dotProduct(v, w);
-        return _Number_.removeEnding0(dot+"")+" = "+vVector+"·"+wVector;
+        return _Number_.format(dot+"")+" = "+vVector+"·"+wVector;
     }
 
     public static String getCrossProduct (String[] parameters){
@@ -790,9 +790,9 @@ public class TextSolutionEngine extends Engine{
                 evaluate(parameters[5].replaceAll(" ", "").replaceAll("\\[", "").replaceAll("\\]", "")),
                 evaluate(parameters[6].replaceAll(" ", "").replaceAll("\\[", "").replaceAll("\\]", ""))};
         double[] cross = crossProduct(v, w);
-        return "["+_Number_.removeEnding0(cross[0]+"")+", "+_Number_.removeEnding0(cross[1]+"")+", "+_Number_.removeEnding0(cross[2]+"")+"] = "
-                + "["+_Number_.removeEnding0(v[0]+"")+", "+_Number_.removeEnding0(v[1]+"")+", "+_Number_.removeEnding0(v[2]+"")+"]"
-                + "×["+_Number_.removeEnding0(w[0]+"")+", "+_Number_.removeEnding0(w[1]+"")+", "+_Number_.removeEnding0(w[2]+"")+"]";
+        return "["+_Number_.format(cross[0]+"")+", "+_Number_.format(cross[1]+"")+", "+_Number_.format(cross[2]+"")+"] = "
+                + "["+_Number_.format(v[0]+"")+", "+_Number_.format(v[1]+"")+", "+_Number_.format(v[2]+"")+"]"
+                + "×["+_Number_.format(w[0]+"")+", "+_Number_.format(w[1]+"")+", "+_Number_.format(w[2]+"")+"]";
     }
     public static double[] crossProduct(double[] v, double[] w){
         double[] cross = {
@@ -800,7 +800,7 @@ public class TextSolutionEngine extends Engine{
                 v[2]*w[0]-w[2]*v[0],
                 v[0]*w[1]-w[0]*v[1]};
         return cross;
-        //return "["+_Number_.removeEnding0(()+"")+", "+_Number_.removeEnding0(()+"")+", "+_Number_.removeEnding0(()+"")+"]";
+        //return "["+_Number_.format(()+"")+", "+_Number_.format(()+"")+", "+_Number_.format(()+"")+"]";
     }
 
     public static String getProjection(String[] parameters){
@@ -823,14 +823,14 @@ public class TextSolutionEngine extends Engine{
         if (v_is_zero_vector){
             return "v cannot be the zero vector";
         }
-        String uVector = "["+_Number_.removeEnding0(u[0]+"");
+        String uVector = "["+_Number_.format(u[0]+"");
         for (int a = 1; a<u.length; a++){
-            uVector += ", "+_Number_.removeEnding0(u[a]+"");
+            uVector += ", "+_Number_.format(u[a]+"");
         }
         uVector += "]";
-        String vVector = "["+_Number_.removeEnding0(v[0]+"");
+        String vVector = "["+_Number_.format(v[0]+"");
         for (int a = 1; a<v.length; a++){
-            vVector += ", "+_Number_.removeEnding0(v[a]+"");
+            vVector += ", "+_Number_.format(v[a]+"");
         }
         vVector += "]";
 
@@ -874,14 +874,14 @@ public class TextSolutionEngine extends Engine{
         if (v_is_zero_vector){
             return "v cannot be the zero vector";
         }
-        String uVector = "["+_Number_.removeEnding0(u[0]+"");
+        String uVector = "["+_Number_.format(u[0]+"");
         for (int a = 1; a<u.length; a++){
-            uVector += ", "+_Number_.removeEnding0(u[a]+"");
+            uVector += ", "+_Number_.format(u[a]+"");
         }
         uVector += "]";
-        String vVector = "["+_Number_.removeEnding0(v[0]+"");
+        String vVector = "["+_Number_.format(v[0]+"");
         for (int a = 1; a<v.length; a++){
-            vVector += ", "+_Number_.removeEnding0(v[a]+"");
+            vVector += ", "+_Number_.format(v[a]+"");
         }
         vVector += "]";
 
@@ -891,13 +891,13 @@ public class TextSolutionEngine extends Engine{
         numerator /= gcd;
         denominator /= gcd;
 
-        String perpendicular = "(1/"+_Number_.removeEnding0(denominator+"")+")·["+_Number_.removeEnding0((u[0]*denominator-v[0]*numerator)+"");
+        String perpendicular = "(1/"+_Number_.format(denominator+"")+")·["+_Number_.format((u[0]*denominator-v[0]*numerator)+"");
         for (int a = 1; a<vector_size; a++){
-            perpendicular += ", "+_Number_.removeEnding0((u[a]*denominator-v[a]*numerator)+"");
+            perpendicular += ", "+_Number_.format((u[a]*denominator-v[a]*numerator)+"");
         }
-        perpendicular += "] = ["+_Number_.removeEnding0((u[0]*denominator-v[0]*numerator)+"")+"/"+_Number_.removeEnding0(denominator+"");
+        perpendicular += "] = ["+_Number_.format((u[0]*denominator-v[0]*numerator)+"")+"/"+_Number_.format(denominator+"");
         for (int a = 1; a<vector_size; a++){
-            perpendicular += ", "+_Number_.removeEnding0((u[a]*denominator-v[a]*numerator)+"")+"/"+_Number_.removeEnding0(denominator+"");
+            perpendicular += ", "+_Number_.format((u[a]*denominator-v[a]*numerator)+"")+"/"+_Number_.format(denominator+"");
         }
         perpendicular += "]";
 

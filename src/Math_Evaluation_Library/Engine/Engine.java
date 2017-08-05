@@ -2,11 +2,11 @@ package Math_Evaluation_Library.Engine;
 
 import Math_Evaluation_Library.Constants.Constants;
 import Math_Evaluation_Library.Miscellaneous.*;
-import Math_Evaluation_Library.Objects.Function;
+import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
-import Math_Evaluation_Library.Trigonometry.Trig;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
 import static java.lang.Double.NaN;
@@ -44,8 +44,8 @@ public class Engine {
         sorted = true;
     }
 
-    static char[] implicit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ')', 'π', 'η', 'ϕ', 'γ', var(), varOp()};
-    static char[] checkImplicit = {'(', var(), varOp(), 'π', 'η', 'ϕ', 'γ', '√'};
+    static char[] implicit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ')', '}', 'π', 'η', 'ϕ', 'γ', var(), varOp()};
+    static char[] checkImplicit = {'(', '{', var(), varOp(), 'π', 'η', 'ϕ', 'γ', '√'};
 
     public static String fixSyntax(String function) {
         if (function.length() == 0){
@@ -81,6 +81,20 @@ public class Engine {
         function = Search.replace(function, "÷", "/");
         function = Search.replace(function, "×", "*");
         function = Search.replace(function, "**", "^");
+        function = Search.replace(function, "\\.", "·");
+        function = Search.replace(function, "\\dot", "·");
+        function = Search.replace(function, "··", "^");
+        function = Search.replace(function, "^o", "°");
+        function = Search.replace(function, "^deg", "°");
+        function = Search.replace(function, "〖", "(");
+        function = Search.replace(function, "〗", ")");
+        function = Search.replace(function, "_r", "ʳ");
+        function = Search.replace(function, "^r", "ʳ");
+        function = Search.replace(function, "->", "→");
+        //function = Search.replace(function, "=>", "⇒");
+        //function = Search.replace(function, "\=", "≈");
+        //function = Search.replace(function, "!=", "≠");
+        //function = Search.replace(function, "_=", "≡");
         function = Search.replace(function, "coslaw", "c_law");
         function = Search.replace(function, "ave", "avg");
         function = Search.replace(function, "mean", "avg");
@@ -95,8 +109,8 @@ public class Engine {
         function = Search.replace(function, "nderiv", "dx");
         function = Search.replace(function, "deriv", "diff");
         function = Search.replace(function, "riemann", "riman");
-        function = Search.replace(function, "elasy", "elasd");
-        function = Search.replace(function, "elasx", "elasd");
+        function = Search.replace(function, "elasy", "lasd");
+        function = Search.replace(function, "elasx", "lasd");
         function = Search.replace(function, "elasd", "lasd");
         function = Search.replace(function, "prime", "nconst");
         function = Search.replace(function, "heron", "hron");
@@ -329,11 +343,21 @@ public class Engine {
     public static String evaluateString(String function){
         function = function.trim();
         if (function.length() == 0){
-            return "";
+            return "NaN";
         }
-        double evaluated = evaluate(function);
-        if (_Number_.isNumber(evaluated)){
-            return _Number_.removeEnding0(evaluated);
+        try {
+            return String.valueOf(_Number_.getNumber(function));
+        } catch (NumberFormatException e){}
+        String format = toPostfix(function);
+        if (!format.toLowerCase().contains("Error")) {
+            List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
+            String evaluated = evaluate(outputs);
+            if (evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
+                return evaluated;
+            }
+            if (_Number_.isNumber(evaluated)){
+                return _Number_.format(evaluated);
+            }
         }
         //Check text cases
         int index = function.indexOf("(");
@@ -345,6 +369,57 @@ public class Engine {
             }
         }
         return "NaN";
+    }
+    public static String evaluateDF (String function){
+        function = function.trim();
+        if (function.length() == 0){
+            return "NaN";
+        }
+        try {
+            return String.valueOf(_Number_.getNumber(function));
+        } catch (NumberFormatException e){}
+        String format = toPostfix(function);
+        if (!format.contains("Error")) {
+            List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
+            String evaluated = evaluate(outputs);
+            if (evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
+                return "=  "+evaluated;
+            }
+            if (_Number_.isNumber(evaluated)){
+                int index = evaluated.indexOf("E");
+                if (index != -1){
+                    String standard = _Number_.convertToStandard(evaluated);
+                    if (!evaluated.equals(standard)){
+                        return "= "+evaluated+" = "+standard;
+                    }
+                    else{
+                        return "= "+evaluated;
+                    }
+                }
+                else{
+                    String f = Fraction.calculateFraction(_Number_.getNumber(evaluated, true), false, true).trim();
+                    if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12){
+                        return "= "+_Number_.format(evaluated);
+                    }
+                    else if (evaluated.length() > 13){
+                        return "=  "+f+" ≈ "+Engine.evaluate(f);
+                    }
+                    else {
+                        return "=  "+f+" = "+_Number_.format(evaluated);
+                    }
+                }
+            }
+        }
+        //Check text cases
+        int index = function.indexOf("(");
+        if (index != -1){
+            String eqn = function.substring(0, index);
+            index = TextSolutionEngine.indexOf(eqn);
+            if (index != -1){
+                return TextSolutionEngine.solve("=("+eqn+", "+function.substring(eqn.length()+1));
+            }
+        }
+        return "= NaN";
     }
 
     public static String evaluate (List<String> list){
@@ -363,12 +438,15 @@ public class Engine {
             "arctan", "tanh", "tan", "arccsc", "csch", "csc", "arcsec", "sech", "sec", "arccot", "coth", "cot", "ln", "lp", "log", "aexp",
             "abs", "rad", "deg", "floor", "ceil", "prime", "fib", "smfib", "bin", "tobin", "strln"};
     protected static int max_order_string = 6;
-    static char[] operators = {'√', '^', '°', 'ʳ', '/', '%', '*', '!', 'P', 'C', '-', '+'};
-    static int[] precedence = { 4,   4,   4,   4,   3,   3,   3,   3,   3,   3,   2,   2};
-    public static boolean[] singleOperator = {true, false, false, false, false, false, false, false, false, false, false, false};
-    static boolean[] associability = {false, false, false, false, true, true, true, true, true, true, true, true};
+    static char[] operators = {'√', '^', '°', 'ʳ', '/', '%', '*', '·', '!', 'P', 'C', '-', '+'};
+    static int[] precedence = { 4,   4,   4,   4,   3,   3,   3,   3,   3,   3,   3,   2,   2};
+    public static boolean[] singleOperator = {true, false, false, false, false, false, false, false, false, false, false, false, false};
+    static boolean[] associability = {false, false, false, false, true, true, true, true, true, true, true, true, true};
 
     public static String toPostfix(String infixFunction) {
+        if (!sorted){
+            sortFunctions();
+        }
         infixFunction = fixSyntax(infixFunction);
         if (infixFunction.toLowerCase().contains("error")) {
             return error;
@@ -381,12 +459,12 @@ public class Engine {
         Stack<String> output = new Stack<>();
         Stack<String> stack = new Stack<>();
         String token = "";
-        for (int a = 0; a < infixFunction.length(); a++) {
+        PARSE:  for (int a = 0; a < infixFunction.length(); a++) {
             char c = infixFunction.charAt(a);
             try {
                 if (c == '.') {
                     token += ".";
-                } else if (c == '-' && (a == 0 || implicitIndex(infixFunction.charAt(a - 1)) == -1)) {
+                } else if (c == '-' && (a == 0 || !implicitContains(infixFunction.charAt(a - 1)))) {
                     token += "-";
                 } else if (c == ',') {
                     if (token.length() < 1) {
@@ -435,14 +513,13 @@ public class Engine {
                     token = "";
                 }
                 try {
-                    boolean parsed = false;
                     if (c == '(') {
                         stack.push("(");
                         if (infixFunction.indexOf(")", a + 1) == -1) {
                             error = "Bracket Count Error:  Missing ')' Bracket";
                             return error;
                         }
-                        parsed = true;
+                        continue PARSE;
                     } else if (c == ')') {
                         if (stack.contains("(")) {
                             while (!stack.isEmpty()) {
@@ -456,12 +533,13 @@ public class Engine {
                             error = "Bracket Count Error:  Missing '(' Bracket";
                             return error;
                         }
-                        parsed = true;
+                        continue PARSE;
                     } else if (c == '{') {
-                        int end = infixFunction.indexOf("}", a);
+                        int end = Search.indexOf(infixFunction, '}', a);
                         if (end != -1){
                             output.push(infixFunction.substring(a, end+1));
-                            a = end+1;
+                            a = end;
+                            continue PARSE;
                         }
                         else {
                             return "Variable Syntax Error";
@@ -478,7 +556,7 @@ public class Engine {
                                     }
                                     output.push("unit");
                                     a = close;
-                                    parsed = true;
+                                    continue PARSE;
                                 }
                                 else{
                                     error = "Invalid Input Error - Invalid Unit Conversion:  "+infixFunction.substring(a+1, close);
@@ -486,118 +564,111 @@ public class Engine {
                                 }
                             }
                         }
-                        if (!parsed){
-                            int comma1 = infixFunction.indexOf(",", a);
-                            int close = infixFunction.indexOf("]", a);
-                            if (comma1 == -1 || close == -1) {
-                                error = "Syntax Error - Evaluate";
-                                return error;
-                            }
-                            int comma2 = infixFunction.indexOf(",", comma1 + 1);
-                            if (comma2 == -1) {
-                                output.push(infixFunction.substring(a + 1, comma1));
-                                output.push("" + evaluate(infixFunction.substring(comma1 + 1, close)));
-                                output.push("eval");
-                            } else {
-                                output.push(infixFunction.substring(a + 1, comma1));
-                                output.push("" + evaluate(infixFunction.substring(comma1 + 1, comma2)));
-                                output.push("" + evaluate(infixFunction.substring(comma2 + 1, close)));
-                                output.push("evalint");
-                            }
-                            a = close;
-                            parsed = true;
+                        int comma1 = infixFunction.indexOf(",", a);
+                        int close = infixFunction.indexOf("]", a);
+                        if (comma1 == -1 || close == -1) {
+                            error = "Syntax Error - Evaluate";
+                            return error;
                         }
+                        int comma2 = infixFunction.indexOf(",", comma1 + 1);
+                        if (comma2 == -1) {
+                            output.push(infixFunction.substring(a + 1, comma1));
+                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, close)));
+                            output.push("eval");
+                        } else {
+                            output.push(infixFunction.substring(a + 1, comma1));
+                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, comma2)));
+                            output.push("" + evaluate(infixFunction.substring(comma2 + 1, close)));
+                            output.push("evalint");
+                        }
+                        a = close;
+                        continue PARSE;
                     }
-                    if (!parsed) {
-                        int fnIndex = -1;
-                        for (int b = 2; b<=max_fn_string && a+b <= infixFunction.length(); b++){
-                            fnIndex = multiParamFunctionNamesIndex(infixFunction.substring(a, a+b));
-                            if (fnIndex != -1){
-                                int lb = infixFunction.indexOf("(", a);
-                                try{
-                                    int rb = lb+Search.getIndices(infixFunction.substring(lb), ")").get(0);
-                                    String[] parameters = infixFunction.substring(lb+1, a+rb).split(",");
-                                    for (int i = 0; i < parameters.length; i++) {
-                                        output.push(parameters[i].trim());
-                                    }
-                                    if (numParameters[fnIndex] == -1){
-                                        output.push(parameters.length+"");
-                                    }
-                                    else if (numParameters[fnIndex] != parameters.length) {
-                                        error = "Syntax Error";
-                                        return error;
-                                    }
-                                    output.push(multiParamFunctions[fnIndex]);
-                                    a = rb;
-                                    parsed = true;
-                                    break;
-                                }catch(IndexOutOfBoundsException parameterLengthError){
+                    int fnIndex = -1;
+                    for (int b = 2; b<=max_fn_string && a+b <= infixFunction.length(); b++){
+                        fnIndex = multiParamFunctionNamesIndex(infixFunction.substring(a, a+b));
+                        if (fnIndex != -1){
+                            int lb = infixFunction.indexOf("(", a);
+                            try{
+                                int rb = lb+Search.getIndices(infixFunction.substring(lb), ")").get(0);
+                                String[] parameters = infixFunction.substring(lb+1, a+rb).split(",");
+                                for (int i = 0; i < parameters.length; i++) {
+                                    output.push(parameters[i].trim());
+                                }
+                                if (numParameters[fnIndex] == -1){
+                                    output.push(parameters.length+"");
+                                }
+                                else if (numParameters[fnIndex] != parameters.length) {
                                     error = "Syntax Error";
                                     return error;
                                 }
+                                output.push(multiParamFunctions[fnIndex]);
+                                a = rb;
+                                continue PARSE;
+                            }catch(IndexOutOfBoundsException parameterLengthError){
+                                error = "Syntax Error";
+                                return error;
                             }
                         }
-                        if (!parsed) {
-                            int o1 = -1;
-                            if (a+1 <= infixFunction.length()){
-                                o1 = operatorIndex(c);
-                            }
-                            if (o1 != -1){
-                                while (!stack.isEmpty() && operatorIndex(stack.peek()) == -1 && !stack.peek().equals("(")) {
-                                    output.push(stack.pop());
-                                }
-                                if (stack.isEmpty() || operatorIndex(stack.peek()) == -1) {
+                    }
+                    int o1 = -1;
+                    if (a+1 <= infixFunction.length()){
+                        o1 = operatorIndex(c);
+                    }
+                    if (o1 != -1){
+                        while (!stack.isEmpty() && operatorIndex(stack.peek()) == -1 && !stack.peek().equals("(")) {
+                            output.push(stack.pop());
+                        }
+                        if (stack.isEmpty() || operatorIndex(stack.peek()) == -1) {
+                            stack.push(String.valueOf(operators[o1]));
+                        } else {
+                            while (true) {
+                                if (stack.empty()) {
                                     stack.push(String.valueOf(operators[o1]));
+                                    break;
+                                }
+                                int o2 = operatorIndex(stack.peek());
+                                if (o2 >= 0 && ((associability[o1] && precedence[o1] <= precedence[o2]) || (!associability[o1] && precedence[o1] < precedence[o2]))) {
+                                    output.push(stack.pop());
                                 } else {
-                                    while (true) {
-                                        if (stack.empty()) {
-                                            stack.push(String.valueOf(operators[o1]));
-                                            break;
+                                    stack.push(String.valueOf(operators[o1]));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        for (int b = max_order_string; b>=2; b--){
+                            if (a+b <= infixFunction.length()){
+                                String mathf = infixFunction.substring(a, a+b);
+                                int orderIndex = orderIndex(mathf);
+                                if (orderIndex != -1){
+                                    String superScript = "";
+                                    for (int i = a + mathf.length(); i<infixFunction.length(); i++){
+                                        int index = Scripts.getSuperScriptNumIndex(infixFunction.charAt(i));
+                                        if (index != -1){
+                                            superScript += Scripts.regularScriptNums[index];
                                         }
-                                        int o2 = operatorIndex(stack.peek());
-                                        if (o2 >= 0 && ((associability[o1] && precedence[o1] <= precedence[o2]) || (!associability[o1] && precedence[o1] < precedence[o2]))) {
-                                            output.push(stack.pop());
-                                        } else {
-                                            stack.push(String.valueOf(operators[o1]));
+                                        else{
                                             break;
                                         }
                                     }
-                                }
-                            }
-                            else{
-                                for (int b = max_order_string; b>=2; b--){
-                                    if (a+b <= infixFunction.length()){
-                                        String mathf = infixFunction.substring(a, a+b);
-                                        int orderIndex = orderIndex(mathf);
-                                        if (orderIndex != -1){
-                                            String superScript = "";
-                                            for (int i = a + mathf.length(); i<infixFunction.length(); i++){
-                                                int index = Scripts.getSuperScriptNumIndex(infixFunction.charAt(i));
-                                                if (index != -1){
-                                                    superScript += Scripts.regularScriptNums[index];
-                                                }
-                                                else{
-                                                    break;
-                                                }
-                                            }
-                                            if (stack.empty() || stack.peek().equals("(")
-                                                    || (stack.size() > 0 && (orderIndex(stack.peek()) >= orderIndex) || operatorIndex(stack.peek()) != -1)) {
-                                                if (superScript.length() > 0) {
-                                                    stack.push("^");
-                                                    stack.push(superScript);
-                                                }
-                                                stack.push(mathf);
-                                                a += mathf.length()+superScript.length() - 1;
-                                            } else if (stack.size() > 0 && orderIndex(stack.peek()) < orderIndex) {
-                                                while (!stack.isEmpty()) {
-                                                    String str = stack.peek();
-                                                    if (orderIndex(stack.peek()) < orderIndex) {
-                                                        output.push(stack.pop());
-                                                    } else {
-                                                        output.push(stack.pop());
-                                                        break;
-                                                    }
-                                                }
+                                    if (stack.empty() || stack.peek().equals("(")
+                                            || (stack.size() > 0 && (orderIndex(stack.peek()) >= orderIndex) || operatorIndex(stack.peek()) != -1)) {
+                                        if (superScript.length() > 0) {
+                                            stack.push("^");
+                                            stack.push(superScript);
+                                        }
+                                        stack.push(mathf);
+                                        a += mathf.length()+superScript.length() - 1;
+                                    } else if (stack.size() > 0 && orderIndex(stack.peek()) < orderIndex) {
+                                        while (!stack.isEmpty()) {
+                                            String str = stack.peek();
+                                            if (orderIndex(stack.peek()) < orderIndex) {
+                                                output.push(stack.pop());
+                                            } else {
+                                                output.push(stack.pop());
+                                                break;
                                             }
                                         }
                                     }

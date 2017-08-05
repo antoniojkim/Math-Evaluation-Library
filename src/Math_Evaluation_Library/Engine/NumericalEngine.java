@@ -1,12 +1,15 @@
 package Math_Evaluation_Library.Engine;
 
+import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.Miscellaneous.Scripts;
 import Math_Evaluation_Library.Miscellaneous.Simplify;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Trigonometry.Trig;
+import org.jblas.DoubleMatrix;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Double.NaN;
@@ -66,10 +69,19 @@ public class NumericalEngine extends Engine{
                             } catch (NumberFormatException num) {
                                 return "NaN";
                             }
-                        } else{
-                            String value = getArithmeticValue(outputs.get(a), outputs.get(a - 2), outputs.get(a - 1));
-                            outputs.set(a - 2, value);
-                            Simplify.remove(outputs, a, a-1);
+                        } else {
+                            String param1 = outputs.get(a - 2);
+                            String param2 = outputs.get(a - 1);
+                            if (param1.contains("{") || param1.contains("}") || param2.contains("{") || param2.contains("}")){
+                                String newMatrix = _Matrix_.matrixArithmeticOperations(outputs.get(a).charAt(0), param1, param2);
+                                outputs.set(a - 2, newMatrix);
+                                Simplify.remove(outputs, a, a-1);
+                            }
+                            else{
+                                String value = getArithmeticValue(outputs.get(a).charAt(0), param1, param2);
+                                outputs.set(a - 2, value);
+                                Simplify.remove(outputs, a, a-1);
+                            }
                         }
                         a = -1;
                     }
@@ -121,8 +133,11 @@ public class NumericalEngine extends Engine{
                         double av = _Number_.getNumber(outputs.get(a - 2));
                         double bv = _Number_.getNumber(outputs.get(a - 1));
                         double eval = NaN;
-                        if (f.function().contains(varOp)){
+                        if (f.isContainsVar() && f.isContainsVarOp()){
                             eval = f.of(av, bv);
+                        }
+                        else if (!f.isContainsVar() && f.isContainsVarOp()){
+                            eval = f.of(bv)-f.of(av);
                         }
                         else{
                             eval = f.of(bv)-f.of(av);
@@ -215,7 +230,7 @@ public class NumericalEngine extends Engine{
         return NaN;
     }
 
-    public static String getArithmeticValue(String operator, String xString, String yString){
+    public static String getArithmeticValue(char operator, String xString, String yString){
         try {
             double x;
             if (xString.equals("∞")){
@@ -237,14 +252,14 @@ public class NumericalEngine extends Engine{
             else{
                 y = _Number_.getNumber(yString);
             }
-            if (operator.equals("^")) {
+            if (operator == '^') {
                 if (x == Math.E){
                     return (Math.exp(y)+"").replaceAll("Infinity", "∞");
                 }
                 return (Math.pow(x, y)+"").replaceAll("Infinity", "∞");
-            } else if (operator.equals("*")) {
+            } else if (operator == '*' || operator == '·') {
                 return ((x * y)+"").replaceAll("Infinity", "∞");
-            } else if (operator.equals("/")) {
+            } else if (operator == '/') {
                 if (y == Double.POSITIVE_INFINITY || y == Double.NEGATIVE_INFINITY){
                     if (x == Double.POSITIVE_INFINITY || x == Double.NEGATIVE_INFINITY){
                         return "NaN";
@@ -267,7 +282,7 @@ public class NumericalEngine extends Engine{
                     return "-∞";
                 }
                 return ((x / y)+"").replaceAll("Infinity", "∞");
-            } else if (operator.equals("%")) {
+            } else if (operator == '%') {
                 if (y == Double.POSITIVE_INFINITY || y == Double.NEGATIVE_INFINITY){
                     if (x == Double.POSITIVE_INFINITY || x == Double.NEGATIVE_INFINITY){
                         return "NaN";
@@ -281,7 +296,7 @@ public class NumericalEngine extends Engine{
                     return "-∞";
                 }
                 return ((x % y)+"").replaceAll("Infinity", "∞");
-            } else if (operator.equals("P")) {
+            } else if (operator == 'P') {
                 if (x % 1 == 0 && y % 1 == 0) {
                     int n = (int) x;
                     int r = (int) y;
@@ -290,7 +305,7 @@ public class NumericalEngine extends Engine{
                     }
                     return (_Number_.fact(n) / _Number_.fact(n - r))+"";
                 }
-            } else if (operator.equals("C")) {
+            } else if (operator == 'C') {
                 if (x % 1 == 0 && y % 1 == 0) {
                     int n = (int) x;
                     int r = (int) y;
@@ -299,9 +314,9 @@ public class NumericalEngine extends Engine{
                     }
                     return (_Number_.fact(n) / (_Number_.fact(n - r) * _Number_.fact(r)))+"";
                 }
-            } else if (operator.equals("-")) {
+            } else if (operator == '-') {
                 return ((x - y)+"").replaceAll("Infinity", "∞");
-            } else if (operator.equals("+")) {
+            } else if (operator == '+') {
                 return ((x + y)+"").replaceAll("Infinity", "∞");
             }
         } catch (NumberFormatException | ArithmeticException e) {}

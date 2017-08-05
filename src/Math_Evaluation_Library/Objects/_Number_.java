@@ -184,10 +184,14 @@ public class _Number_ {
     }
 
 
-    public static String removeEnding0 (double num){
-        return removeEnding0(String.valueOf(num));
+    public static String format(double num){
+        return format(String.valueOf(num));
     }
-    public static String removeEnding0 (String number){
+    public static String format(String number){
+        return removeEnding0(number);
+    }
+
+    private static String removeEnding0(String number){
         if (number.endsWith(".0")){
             return number.substring(0, number.length()-2);
         }
