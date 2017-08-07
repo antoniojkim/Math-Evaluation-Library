@@ -14,8 +14,10 @@ import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects.Matrix;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.Search;
+import org.jblas.DoubleMatrix;
 
 import java.awt.*;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class TextSolutionEngine extends Engine{
             "graph", "EEA", "LDE", "deriv", "diff", "prime", "primef", "primf", "randomf", "tangent", "quad", "cubic",
             "long", "scint", "sci", "mod", "line", "complex", "cmplx", "int", "antideriv", "antidiff", "simplify",
             "volume", "area", "congruence", "dot", "cross", "proj", "projection", "perp", "perpendicular",
-            "RREF", "RREf", "RCEF", "RCEf", "Inv", "inv", "det", "slopeF", "directF", "sf", "df", "sort",
+            "RREF", "RREf", "RCEF", "RCEf", "det", "slopeF", "directF", "sf", "df", "sort",
             "dict", "thes", "plot", "plt", "parse", "postfix"
     };
 
@@ -136,16 +138,13 @@ public class TextSolutionEngine extends Engine{
                             return getPerpendicular(parameters);
                         }
                         else if (type.equalsIgnoreCase("RREF") && parameters.length > 1){
-                            return getReducedRowEchelonForm(parameters);
+                            return getReducedRowEchelonForm(string.substring(string.indexOf(",")+1, rb).trim());
                         }
                         else if (type.equalsIgnoreCase("RCEF") && parameters.length > 1){
-                            return getReducedColumnEchelonForm(parameters);
-                        }
-                        else if (type.equalsIgnoreCase("Inv") && parameters.length > 1){
-                            return getMatrixInverse(parameters);
+                            return getReducedColumnEchelonForm(string.substring(string.indexOf(",")+1, rb).trim());
                         }
                         else if (type.equalsIgnoreCase("det") && parameters.length > 1){
-                            return getMatrixDeterminant(parameters);
+                            return getMatrixDeterminant(string.substring(string.indexOf(",")+1, rb).trim());
                         }
                         else if ((type.equalsIgnoreCase("slopeF") || type.equalsIgnoreCase("directF")
                                 || type.equalsIgnoreCase("sf") || type.equalsIgnoreCase("df")) && parameters.length == 2){
@@ -903,222 +902,20 @@ public class TextSolutionEngine extends Engine{
         return perpendicular+" is the perpendicular of "+uVector+" onto "+vVector;
     }
 
-    private static String getReducedRowEchelonForm(String[] parameters){
-        List<List<String>> matrix = new ArrayList<>();
-        List<String> row = new ArrayList<>();
-        for (int a = 1; a<parameters.length; a++){
-            if (parameters[a].contains("[")){
-                row.add(parameters[a].replaceAll("\\[", "").replaceAll(" ", ""));
-            }
-            else if (parameters[a].contains("]")){
-                row.add(parameters[a].replaceAll("\\]", "").replaceAll(" ", ""));
-                if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                    matrix.add(new ArrayList<>(row));
-                    row.clear();
-                }
-                else if (row.size() != matrix.get(0).size()){
-                    return "Invalid Input Error - All Rows must be of the same size";
-                }
-            }
-            else if (!row.isEmpty()){
-                row.add(parameters[a].replaceAll(" ", ""));
-            }
-        }
-        if (!row.isEmpty()){
-            if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                matrix.add(row);
-                row.clear();
-            }
-            else if (row.size() != matrix.get(0).size()){
-                return "Invalid Input Error - All Rows must be of the same size";
-            }
-        }
-        if (!matrix.isEmpty()){
-//            Main.w.minimizeHeight();
-//            Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
-//            Main.w.centerAlign();
-//            Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
-            String[][] elements = new String[matrix.size()][matrix.get(0).size()];
-            for (int a = 0; a<elements.length; a++){
-                for (int b = 0; b<elements[a].length; b++){
-                    elements[a][b] = matrix.get(a).get(b);
-                }
-            }
-            _Matrix_.rowReduce(new Matrix(elements));
-//            MatrixCalculator matrixCalculator = new MatrixCalculator(elements);
-//            matrixCalculator.rowReduce();
-            return "";
-        }
-        return "Invalid Matrix";
+    private static String getReducedRowEchelonForm(String strMatrix){
+        DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
+        return _Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
     }
-    private static String getMatrixInverse(String[] parameters){
-        List<List<String>> matrixStr = new ArrayList<>();
-        List<String> rows = new ArrayList<>();
-        for (int a = 1; a<parameters.length; a++){
-            if (parameters[a].contains("[")){
-                rows.add(parameters[a].replaceAll("\\[", "").replaceAll(" ", ""));
-            }
-            else if (parameters[a].contains("]")){
-                rows.add(parameters[a].replaceAll("\\]", "").replaceAll(" ", ""));
-                if (matrixStr.isEmpty() || rows.size() == matrixStr.get(0).size()){
-                    matrixStr.add(new ArrayList<>(rows));
-                    rows.clear();
-                }
-                else if (rows.size() != matrixStr.get(0).size()){
-                    return "Invalid Input Error - All Rows must be of the same size";
-                }
-            }
-            else if (!rows.isEmpty()){
-                rows.add(parameters[a].replaceAll(" ", ""));
-            }
-        }
-        if (!rows.isEmpty()){
-            if (matrixStr.isEmpty() || rows.size() == matrixStr.get(0).size()){
-                matrixStr.add(rows);
-                rows.clear();
-            }
-            else if (rows.size() != matrixStr.get(0).size()){
-                return "Invalid Input Error - All Rows must be of the same size";
-            }
-        }
-        if (!matrixStr.isEmpty()){
-            if (matrixStr.size() != matrixStr.get(0).size()){
-                return "Invalid Input Error - Matrix must be Square";
-            }
-//            Main.w.minimizeHeight();
-//            Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
-//            Main.w.centerAlign();
-//            Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
-            String[][] elements = new String[matrixStr.size()][2*matrixStr.size()];
-            for (int a = 0; a<matrixStr.size(); a++){
-                for (int b = 0; b<matrixStr.size(); b++){
-                    elements[a][b] = matrixStr.get(a).get(b);
-                }
-                for (int b = matrixStr.size(); b<2*matrixStr.size(); b++){
-                    if ((b-matrixStr.size()) == a){
-                        elements[a][b] = "1";
-                    }
-                    else{
-                        elements[a][b] = "0";
-                    }
-                }
-            }
-            Matrix matrix = new Matrix(elements);
-
-            Fraction[][] originalFractions = new Fraction[matrix.numRows()][matrix.numColumns()/2];
-            Fraction[][] inverseFractions = new Fraction[matrix.numRows()][matrix.numColumns()/2];
-            for (int row = 0; row<originalFractions.length; row++){
-                for (int column = 0; column<originalFractions[row].length; column++){
-                    originalFractions[row][column] = matrix.get(column, row).getCopy();
-                    inverseFractions[row][column] = matrix.get(column+matrix.numColumns()/2, row).getCopy();
-                }
-            }
-//            MatrixCalculator matrixCalculator = new MatrixCalculator(elements);
-//            matrixCalculator.rowReduce(false);
-//            matrixCalculator.drawInverse();
-            return "";
-        }
-        return "Invalid Matrix";
-    }
-    private static String getMatrixDeterminant(String[] parameters){
-        List<List<String>> matrix = new ArrayList<>();
-        List<String> row = new ArrayList<>();
-        for (int a = 1; a<parameters.length; a++){
-            if (parameters[a].contains("[")){
-                row.add(parameters[a].replaceAll("\\[", "").replaceAll(" ", ""));
-            }
-            else if (parameters[a].contains("]")){
-                row.add(parameters[a].replaceAll("\\]", "").replaceAll(" ", ""));
-                if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                    matrix.add(new ArrayList<>(row));
-                    row.clear();
-                }
-                else if (row.size() != matrix.get(0).size()){
-                    return "Invalid Input Error - All Rows must be of the same size";
-                }
-            }
-            else if (!row.isEmpty()){
-                row.add(parameters[a].replaceAll(" ", ""));
-            }
-        }
-        if (!row.isEmpty()){
-            if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                matrix.add(row);
-                row.clear();
-            }
-            else if (row.size() != matrix.get(0).size()){
-                return "Invalid Input Error - All Rows must be of the same size";
-            }
-        }
-        if (!matrix.isEmpty()){
-            if (matrix.size() != matrix.get(0).size()){
-                return "Invalid Input Error - Matrix must be Square";
-            }
-//            Main.w.minimizeHeight();
-//            Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
-//            Main.w.centerAlign();
-//            Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
-            String[][] elements = new String[matrix.size()][matrix.get(0).size()];
-            for (int a = 0; a<elements.length; a++){
-                for (int b = 0; b<elements[a].length; b++){
-                    elements[a][b] = matrix.get(a).get(b);
-                }
-            }
-//            MatrixCalculator matrixCalculator = new MatrixCalculator(elements);
-            return "= "+_Matrix_.getDeterminant(new Matrix(elements));
-        }
-        return "Invalid Matrix";
+    private static String getReducedColumnEchelonForm(String strMatrix){
+        DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix).transpose();
+        return _Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
     }
 
-    private static String getReducedColumnEchelonForm(String[] parameters){
-        List<List<String>> matrix = new ArrayList<>();
-        List<String> row = new ArrayList<>();
-        for (int a = 1; a<parameters.length; a++){
-            if (parameters[a].contains("[")){
-                row.add(parameters[a].replaceAll("\\[", "").replaceAll(" ", ""));
-            }
-            else if (parameters[a].contains("]")){
-                row.add(parameters[a].replaceAll("\\]", "").replaceAll(" ", ""));
-                if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                    matrix.add(new ArrayList<>(row));
-                    row.clear();
-                }
-                else if (row.size() != matrix.get(0).size()){
-                    return "Invalid Input Error - All Columns must be of the same size";
-                }
-            }
-            else if (!row.isEmpty()){
-                row.add(parameters[a].replaceAll(" ", ""));
-            }
-        }
-        if (!row.isEmpty()){
-            if (matrix.isEmpty() || row.size() == matrix.get(0).size()){
-                matrix.add(row);
-                row.clear();
-            }
-            else if (row.size() != matrix.get(0).size()){
-                return "Invalid Input Error - All Columns must be of the same size";
-            }
-        }
-        if (!matrix.isEmpty()){
-//            Main.w.minimizeHeight();
-//            Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
-//            Main.w.centerAlign();
-//            Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
-            String[][] elements = new String[matrix.size()][matrix.get(0).size()];
-            for (int a = 0; a<elements.length; a++){
-                for (int b = 0; b<elements[a].length; b++){
-                    elements[a][b] = matrix.get(a).get(b);
-                }
-            }
-            _Matrix_.rowReduce(new Matrix(elements));
-//            MatrixCalculator matrixCalculator = new MatrixCalculator(elements);
-//            matrixCalculator.transpose();
-//            matrixCalculator.rowReduce();
-            return "";
-        }
-        return "Invalid Matrix";
+    private static String getMatrixDeterminant(String strMatrix){
+        DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
+        return _Number_.format(_Matrix_.getDeterminant(matrix));
     }
+
 
     private static DirectionField field;
     private static void drawDirectionField(String function){

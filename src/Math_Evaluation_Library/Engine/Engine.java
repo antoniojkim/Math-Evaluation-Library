@@ -81,6 +81,7 @@ public class Engine {
         function = Search.replace(function, "npr", "P");
         function = Search.replace(function, "ncr", "C");
         function = Search.replace(function, "_r", "ʳ");
+        function = Search.replace(function, "−", "-");
         function = Search.replace(function, "÷", "/");
         function = Search.replace(function, "×", "*");
         function = Search.replace(function, "**", "^");
@@ -108,6 +109,7 @@ public class Engine {
         function = Search.replace(function, "1og1p", "lp");
         function = Search.replace(function, "log(", "logab(");
         function = Search.replace(function, "deg", "dg");
+        function = Search.replace(function, "det", "dt");
         function = Search.replace(function, "ceil", "up");
         function = Search.replace(function, "nderiv", "dx");
         function = Search.replace(function, "deriv", "diff");
@@ -178,6 +180,7 @@ public class Engine {
         function = Search.replace(function, "intmin", "-2147483648");
         function = Search.replace(function, "hparg", "graph");
         function = Search.replace(function, "dg", "deg");
+        function = Search.replace(function, "dt", "det");
         function = Search.replace(function, "scnt", "sec");
         function = Search.replace(function, "axp", "aexp");
         function = Search.replace(function, "up", "ceil");
@@ -325,14 +328,13 @@ public class Engine {
 
     public static double evaluate(String function) {
         try {
-            return _Number_.getNumber(function);
+            return _Number_.getNumber(function.trim());
         } catch (NumberFormatException e){}
         String format = toPostfix(function);
         if (function.toLowerCase().contains("error")) {
             System.out.println(error);
             return NaN;
         }
-//        System.out.println(function + "\n" + format + "\n");
         List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
         String evaluated = evaluate(outputs);
         try{

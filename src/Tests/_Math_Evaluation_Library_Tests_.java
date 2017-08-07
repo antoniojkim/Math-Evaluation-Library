@@ -1,5 +1,7 @@
 package Tests;
 
+import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Objects._Number_;
 import org.jblas.DoubleMatrix;
 
 /**
@@ -23,8 +25,10 @@ public class _Math_Evaluation_Library_Tests_ {
 
                 new Engine_Tests("Engine"),
                 new Simplify_Tests("Simplify"),
+
                 new Derivative_Tests("Derivative"),
                 new Integral_Tests("Integral"),
+
                 new Matrix_Tests("Matrix")
         };
 

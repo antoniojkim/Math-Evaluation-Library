@@ -415,7 +415,7 @@ public class Fraction{
                 int accuracy = 14;
                 double a = 1;
                 double number = MathRound.round(num, accuracy);
-                double limit = 1E16;
+                double limit = 1E10;
                 while((System.currentTimeMillis()-start <= time) && exp.equals("") && a<limit){
                     a *= 10;
                     double num = MathRound.round(number*a, accuracy);

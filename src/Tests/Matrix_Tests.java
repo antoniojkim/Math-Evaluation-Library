@@ -20,8 +20,7 @@ public class Matrix_Tests extends _Tests_{
 
     @Override
     public void run() {
-//        eigenvalueTest1();
-//·
+
         matrixOperationTest("{1, 2}*{3, 4}", "11");
         matrixOperationTest("{1, 2, 3}\\.{4, 5, 6}", "32");
         matrixOperationTest("{1, 2, 3}*{4, 5, 6}", "{-3, 6, -3}");
@@ -36,6 +35,14 @@ public class Matrix_Tests extends _Tests_{
         matrixOperationTest("{{1, 2, 3}, {3, 4, 5}}T", "{{1, 3}, {2, 4}, {3, 5}}");
         matrixOperationTest("{{2,3},{4,5}}I", "{{-5/2, 3/2}, {2, -1}}");
         matrixOperationTest("{{2,3},{4,5}}^-1", "{{-5/2, 3/2}, {2, -1}}");
+
+        matrixOperationTest("det([[-1, -2, 0], [-2, 4, 1], [1, 0, 1]])", "-10");
+        matrixOperationTest("det({{2, -4, 0}, {3, 2, -3}, {1, -5, 0}})", "-18");
+        matrixOperationTest("det([[1, -1, 2, 1], [2, 3, 3, 1], [1, -1, 3, 1], [2, 1, 2, 1]])", "-2");
+
+        matrixOperationTest("RREF({{3, 1, 2}, {2, 1, 3}})", "{{1, 0, -1}, {0, 1, 5}}");
+        matrixOperationTest("RREF([[1, 3, 5, 9], [1, 3, 1, 7], [4, 3, 9, 7], [5, 2, 0, 9]])", "{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}");
+        matrixOperationTest("RCEF({{1, 1, 4, 5}, {3, 3, 3, 2}, {5, 1, 9, 0}, {9, 7, 7, 9}})", "{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}");
 
     }
     private void eigenvalueTest1(){

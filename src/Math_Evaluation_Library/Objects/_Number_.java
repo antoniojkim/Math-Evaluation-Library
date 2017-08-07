@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Double.NaN;
+import Math_Evaluation_Library.Search;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -175,7 +176,11 @@ public class _Number_ {
     public static double getNumber(String str, boolean returnNaN) throws NumberFormatException{
         try{
             return Double.parseDouble(str);
-        }catch(NumberFormatException e){}
+        }catch(NumberFormatException e){
+            try{
+                return Double.parseDouble(Search.replace(str, "−", "-"));
+            }catch(NumberFormatException e2){}
+        }
         double constant = Constants.getConstant(str);
         if (!returnNaN && String.valueOf(constant).equals("NaN")){
             throw new NumberFormatException(str);
@@ -185,6 +190,9 @@ public class _Number_ {
 
 
     public static String format(double num){
+        if (num == -0.0){
+            return "0";
+        }
         return format(String.valueOf(num));
     }
     public static String format(String number){

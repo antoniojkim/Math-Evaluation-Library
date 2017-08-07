@@ -13,6 +13,7 @@ public class Engine_Tests extends _Tests_{
 
     @Override
     public void run(){
+        evaluationTest("-1", -1);
         evaluationTest("2*3-2", 4);
         evaluationTest("-e", -2.71828182845904523536);
 
