@@ -904,16 +904,25 @@ public class TextSolutionEngine extends Engine{
 
     private static String getReducedRowEchelonForm(String strMatrix){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
-        return _Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+        if (matrix != null) {
+            return "= "+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+        }
+        return "Invalid Matrix";
     }
     private static String getReducedColumnEchelonForm(String strMatrix){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix).transpose();
-        return _Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+        if (matrix != null) {
+            return "= "+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+        }
+        return "Invalid Matrix";
     }
 
     private static String getMatrixDeterminant(String strMatrix){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
-        return _Number_.format(_Matrix_.getDeterminant(matrix));
+        if (matrix != null) {
+            return "= "+_Number_.format(_Matrix_.getDeterminant(matrix));
+        }
+        return "Invalid Matrix";
     }
 
 

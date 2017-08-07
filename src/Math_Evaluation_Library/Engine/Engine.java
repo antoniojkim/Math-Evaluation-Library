@@ -70,6 +70,7 @@ public class Engine {
         function = Search.replace(function, " ", "");
         function = Search.replace(function, "P", "npr");
         function = Search.replace(function, "C", "ncr");
+        function = Search.replace(function, "}t", "}τ");
         function = Search.replace(function, "}T", "}τ");
         function = Search.replace(function, "}I", "}ι");
         function = Search.replace(function, "C", "ncr");
