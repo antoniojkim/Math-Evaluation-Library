@@ -104,6 +104,9 @@ public class Fraction{
         return denominator;
     }
     public double getValue(){
+        if (isFraction()){
+            return (double)numerator/denominator;
+        }
         return value;
     }
     public Fraction getCopy(){
@@ -309,6 +312,20 @@ public class Fraction{
         return this;
     }
 
+    public String piMultiple(){
+        return piMultiple(this);
+    }
+    public String piMultiple(Fraction fraction){
+        if (isFraction()){
+            fraction.reduce();
+            if (fraction.getDenominator() == 1){
+                return fraction.getNumerator()+"π";
+            }
+            return fraction.getNumerator()+"π/"+fraction.getDenominator();
+        }
+        return fraction.getValue()+"π";
+    }
+
     public boolean equals(Fraction fraction){
         if (getValue() == fraction.getValue()){
             return true;
@@ -389,22 +406,45 @@ public class Fraction{
                 int accuracy = 16;
                 double a = 1;
                 double number = MathRound.round(num, accuracy);
-                while((System.currentTimeMillis()-start <= time) && exp.equals("")){
-                    a++;
-                    double num = MathRound.round(number*a, accuracy);
-                    if (num%1 == 0){
-                        double gcd = Mod.gcd(num, a);
-                        a /= gcd;
-                        if (a == 1){
-                            exp = _Number_.format(num/gcd);
+                if (number > 1){
+                    a = 2;
+                    while((System.currentTimeMillis()-start <= time) && exp.equals("") && a < number){
+                        double num = MathRound.round(number*a, accuracy);
+                        if (num%1 == 0){
+                            double gcd = Mod.gcd(num, a);
+                            a /= gcd;
+                            if (a == 1){
+                                exp = _Number_.format(num/gcd);
+                            }
+                            else if (a == -1){
+                                exp = _Number_.format(-num/gcd);
+                            }
+                            else{
+                                exp = _Number_.format(num/gcd)+"/"+_Number_.format(a);
+                            }
+                            break;
                         }
-                        else if (a == -1){
-                            exp = _Number_.format(-num/gcd);
+                        a++;
+                    }
+                }
+                else{
+                    while((System.currentTimeMillis()-start <= time) && exp.equals("")){
+                        a++;
+                        double num = MathRound.round(number*a, accuracy);
+                        if (num%1 == 0){
+                            double gcd = Mod.gcd(num, a);
+                            a /= gcd;
+                            if (a == 1){
+                                exp = _Number_.format(num/gcd);
+                            }
+                            else if (a == -1){
+                                exp = _Number_.format(-num/gcd);
+                            }
+                            else{
+                                exp = _Number_.format(num/gcd)+"/"+_Number_.format(a);
+                            }
+                            break;
                         }
-                        else{
-                            exp = _Number_.format(num/gcd)+"/"+_Number_.format(a);
-                        }
-                        break;
                     }
                 }
             }

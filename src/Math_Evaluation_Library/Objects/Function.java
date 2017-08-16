@@ -8,7 +8,6 @@ import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Search;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Double.NaN;
@@ -196,8 +195,8 @@ public class Function {
                 return value+"";
             }
             List<String> list = new ArrayList<>(outputs);
-            Collections.replaceAll(list, Engine.var, String.valueOf(x));
-            Collections.replaceAll(list, Engine.varOp, String.valueOf(y));
+            Search.replace(list, varIndices, String.valueOf(x));
+            Search.replace(list, varOpIndices, String.valueOf(y));
             return Engine.evaluate(list);
         }
         return "NaN";

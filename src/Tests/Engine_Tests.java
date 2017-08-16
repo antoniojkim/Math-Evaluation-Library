@@ -17,6 +17,12 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("2*3-2", 4);
         evaluationTest("-e", -2.71828182845904523536);
 
+        evaluationTest("5!", 120);
+        evaluationTest("170!", 7.257415615308004E306);
+        evaluationTest("171!", "NaN");
+        evaluationTest("171P50", "NaN");
+        evaluationTest("171C50", "NaN");
+
         InfixToPostfixTest("sin{x}", "{x} sin");
         InfixToPostfixTest("sec²x", "x sec 2 ^");
 
@@ -31,6 +37,7 @@ public class Engine_Tests extends _Tests_{
 
         evaluationTest("[x^2, 2]", 4);
         evaluationTest("[x^2, m]", "NaN");
+        evaluationTest("[-4y+3x, -0.7, -2.4]", "7.5");
 
         InfixToPostfixTest("sin(cosx)", "x cos sin");
         InfixToPostfixTest("sin(cos(tanx))", "x tan cos sin");

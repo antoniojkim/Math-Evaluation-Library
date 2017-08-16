@@ -7,16 +7,15 @@ import Math_Evaluation_Library.Geometry.Formulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.LinearAlgebra._Vector_;
+import Math_Evaluation_Library.Miscellaneous.Latex;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects.Function;
-import Math_Evaluation_Library.Objects.Matrix;
 import Math_Evaluation_Library.Objects._Number_;
-import Math_Evaluation_Library.Print;
-import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.Search;
+import Math_Evaluation_Library.Sort;
 import org.jblas.DoubleMatrix;
 
 import java.awt.*;
@@ -41,10 +40,10 @@ public class TextSolutionEngine extends Engine{
             "long", "scint", "sci", "mod", "line", "complex", "cmplx", "int", "antideriv", "antidiff", "simplify",
             "volume", "area", "congruence", "dot", "cross", "proj", "projection", "perp", "perpendicular",
             "RREF", "RREf", "RCEF", "RCEf", "det", "slopeF", "directF", "sf", "df", "sort",
-            "dict", "thes", "plot", "plt", "parse", "postfix"
+            "dict", "thes", "plot", "plt", "parse", "postfix", "latex"
     };
 
-    public static String solve(String string){
+    public static String solve(String string, boolean df){
         for (int a = 0; a<variables.size(); a++){
             string = string.replaceAll(variables.get(a), values.get(a)+"");
         }
@@ -67,12 +66,12 @@ public class TextSolutionEngine extends Engine{
                         // Differentiation
                         else if ((type.equalsIgnoreCase("deriv") || type.equalsIgnoreCase("diff"))
                                 && (parameters.length == 2 || parameters.length == 3)){
-                            return deriv(parameters);
+                            return deriv(parameters, df);
                         }
                         // AntiDifferentiation
                         else if ((type.equalsIgnoreCase("int") || type.equalsIgnoreCase("antideriv") || type.equalsIgnoreCase("antidiff"))
                                 && (parameters.length == 2 || parameters.length == 3)){
-                            return antidifferentiation(parameters);
+                            return antidifferentiation(parameters, df);
                         }
                         else if (type.equalsIgnoreCase("prime") && parameters.length == 2){
                             return isPrimeNumber(Integer.parseInt(parameters[1]));
@@ -138,13 +137,13 @@ public class TextSolutionEngine extends Engine{
                             return getPerpendicular(parameters);
                         }
                         else if (type.equalsIgnoreCase("RREF") && parameters.length > 1){
-                            return getReducedRowEchelonForm(string.substring(string.indexOf(",")+1, rb).trim());
+                            return getReducedRowEchelonForm(string.substring(string.indexOf(",")+1, rb).trim(), df);
                         }
                         else if (type.equalsIgnoreCase("RCEF") && parameters.length > 1){
-                            return getReducedColumnEchelonForm(string.substring(string.indexOf(",")+1, rb).trim());
+                            return getReducedColumnEchelonForm(string.substring(string.indexOf(",")+1, rb).trim(), df);
                         }
                         else if (type.equalsIgnoreCase("det") && parameters.length > 1){
-                            return getMatrixDeterminant(string.substring(string.indexOf(",")+1, rb).trim());
+                            return getMatrixDeterminant(string.substring(string.indexOf(",")+1, rb).trim(), df);
                         }
                         else if ((type.equalsIgnoreCase("slopeF") || type.equalsIgnoreCase("directF")
                                 || type.equalsIgnoreCase("sf") || type.equalsIgnoreCase("df")) && parameters.length == 2){
@@ -172,6 +171,9 @@ public class TextSolutionEngine extends Engine{
                         }
                         else if ((type.equalsIgnoreCase("parse") || type.equalsIgnoreCase("postfix")) && parameters.length == 2){
                             return toPostfix(parameters[1]);
+                        }
+                        else if ((type.equalsIgnoreCase("latex")) && parameters.length == 2){
+                            return Latex.toLatex(parameters[1]);
                         }
                     }
                 }catch (NumberFormatException | StringIndexOutOfBoundsException e){}
@@ -276,11 +278,11 @@ public class TextSolutionEngine extends Engine{
         return "Invalid Input Error - Failed to compute EEA/LDE";
     }
 
-    public static String deriv (String[] parameters){
+    public static String deriv (String[] parameters, boolean df){
         try{
             if (parameters.length == 2){
                 String derivative = Derivative.calculate(parameters[1]);
-                return ("= "+derivative);
+                return ((df ? "= " : "")+derivative);
             }
             else{
                 try{
@@ -289,11 +291,11 @@ public class TextSolutionEngine extends Engine{
                     for (int a = 1; a<derivatives.length; a++){
                         derivatives[a] = Derivative.calculate(derivatives[a-1]);
                     }
-                    return ("= "+derivatives[derivatives.length-1]);
+                    return ((df ? "= " : "")+derivatives[derivatives.length-1]);
                 }catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
                     String derivative = Derivative.calculate(parameters[1].replaceAll(parameters[2], var));
                     if (!derivative.equals("Not Differentiable")){
-                        return "= "+derivative.replaceAll(var, parameters[2]);
+                        return (df ? "= " : "")+derivative.replaceAll(var, parameters[2]);
                     }
                     return ("Invalid Degree");
                 }
@@ -302,20 +304,20 @@ public class TextSolutionEngine extends Engine{
         return "Invalid Input Error - Failed to compute derivative";
     }
 
-    public static String antidifferentiation(String[] parameters){
+    public static String antidifferentiation(String[] parameters, boolean df){
         String antiderivative = Integral.calculate(parameters[1]);
         if (!antiderivative.contains("Not Antidifferentiable")){
             if(parameters.length == 2){
-                return "= "+antiderivative+" + C";
+                return (df ? "= " : "")+antiderivative+" + C";
             }
             else if(parameters.length == 3){
-                return "= "+evaluate(antiderivative, Double.parseDouble(parameters[2]));
+                return (df ? "= " : "")+evaluate(antiderivative, Double.parseDouble(parameters[2]));
             }
         }
         else if(parameters.length == 3){
             antiderivative = Integral.calculate(parameters[1].replaceAll(parameters[2], var));
             if (!antiderivative.contains("Not Antidifferentiable")){
-                return "= "+antiderivative.replaceAll(var, parameters[2]);
+                return (df ? "= " : "")+antiderivative.replaceAll(var, parameters[2]);
             }
         }
         return "Invalid Input Error - Failed to compute integral";
@@ -664,7 +666,7 @@ public class TextSolutionEngine extends Engine{
                 for (int a = 0; a<arguments.length; a++){
                     arguments[a] = Double.parseDouble(parameters[a+2]);
                 }
-                return Formulas.calculateVolume(parameters[1].trim(), arguments);
+                return Formulas.getVolume(parameters[1].trim(), arguments);
             }
         }catch (NumberFormatException e){}
         return "Invalid Input Error - Could not find Volume";
@@ -680,7 +682,7 @@ public class TextSolutionEngine extends Engine{
                 for (int a = 0; a<arguments.length; a++){
                     arguments[a] = Double.parseDouble(parameters[a+2]);
                 }
-                return Formulas.calculateArea(parameters[1].trim(), arguments);
+                return Formulas.getArea(parameters[1].trim(), arguments);
             }
         }catch (NumberFormatException e){}
         return "Invalid Input Error - Could not find Area";
@@ -902,25 +904,25 @@ public class TextSolutionEngine extends Engine{
         return perpendicular+" is the perpendicular of "+uVector+" onto "+vVector;
     }
 
-    private static String getReducedRowEchelonForm(String strMatrix){
+    private static String getReducedRowEchelonForm(String strMatrix, boolean df){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
         if (matrix != null) {
-            return "= "+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+            return (df ? "= " : "")+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
         }
         return "Invalid Matrix";
     }
-    private static String getReducedColumnEchelonForm(String strMatrix){
+    private static String getReducedColumnEchelonForm(String strMatrix, boolean df){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix).transpose();
         if (matrix != null) {
-            return "= "+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
+            return (df ? "= " : "")+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
         }
         return "Invalid Matrix";
     }
 
-    private static String getMatrixDeterminant(String strMatrix){
+    private static String getMatrixDeterminant(String strMatrix, boolean df){
         DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
         if (matrix != null) {
-            return "= "+_Number_.format(_Matrix_.getDeterminant(matrix));
+            return (df ? "= " : "")+_Number_.format(_Matrix_.getDeterminant(matrix));
         }
         return "Invalid Matrix";
     }

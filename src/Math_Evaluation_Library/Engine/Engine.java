@@ -1,17 +1,21 @@
 package Math_Evaluation_Library.Engine;
 
 import Math_Evaluation_Library.Constants.Constants;
-import Math_Evaluation_Library.Miscellaneous.*;
+import Math_Evaluation_Library.Miscellaneous.MathRound;
+import Math_Evaluation_Library.Miscellaneous.Scripts;
+import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects._Number_;
-import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
-import static java.lang.Double.NaN;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 
-import java.util.*;
+import static java.lang.Double.NaN;
 
 /*
 * To change this license header, choose License Headers in Project Properties.
@@ -371,7 +375,7 @@ public class Engine {
             String eqn = function.substring(0, index);
             index = TextSolutionEngine.indexOf(eqn);
             if (index != -1){
-                return TextSolutionEngine.solve("=("+eqn+", "+function.substring(eqn.length()+1));
+                return TextSolutionEngine.solve("=("+eqn+", "+function.substring(eqn.length()+1), false);
             }
         }
         return "NaN";
@@ -382,7 +386,7 @@ public class Engine {
             return "NaN";
         }
         try {
-            return String.valueOf(_Number_.getNumber(function));
+            return "= "+_Number_.format(_Number_.getNumber(function));
         } catch (NumberFormatException e){}
         String format = toPostfix(function);
         if (!format.contains("Error")) {
@@ -422,7 +426,7 @@ public class Engine {
             String eqn = function.substring(0, index);
             index = TextSolutionEngine.indexOf(eqn);
             if (index != -1){
-                return TextSolutionEngine.solve("=("+eqn+", "+function.substring(eqn.length()+1));
+                return TextSolutionEngine.solve("=("+eqn+", "+function.substring(eqn.length()+1), true);
             }
         }
         return "= NaN";

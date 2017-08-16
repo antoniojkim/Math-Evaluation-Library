@@ -16,22 +16,7 @@ import java.util.List;
  @author Antonio
  */
 public class Search {
-    
-    /*
-    public static void main (String[] args){
-        String[] array = Evaluator.common;
-        Sort.quicksort(array);
-        for (int a = 0; a<array.length; a++){
-            System.out.println(a+"  "+array[a]+"  ");
-        }
-        System.out.println("\n");
-        long start = System.nanoTime();
-        int index = binarySearch(array, "sin");
-        long end = System.nanoTime();
-        System.out.println("\n\nTook "+((end-start)/(100000.0))+" Milliseconds to find index: "+index+"       Performed "+count+" operations on array size "+array.length);
-    }
-    /*
-    */
+
 
     public static boolean contains(int[] array, int item){
         return binarySearch(array, item) != -1;
@@ -88,7 +73,7 @@ public class Search {
     public static int indexOf(String str, char search){
         return indexOf(str, search, 0);
     }
-        public static int indexOf(String str, char search, int start){
+    public static int indexOf(String str, char search, int start){
         char[] values = str.toCharArray();
         int bracket = 0, cBracket = 0;
         for (int i = start; i<values.length; i++){

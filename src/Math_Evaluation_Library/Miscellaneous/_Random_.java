@@ -11,6 +11,12 @@ public class _Random_ {
     public static double random(){
         return Math.random();
     }
+    public static boolean randomBool(){
+        return Math.random() > 0.5;
+    }
+    public static boolean randomBool(double threshold){
+        return Math.random() > threshold;
+    }
 
     public static double random(double low, double high){
         return (high-low)*Math.random()+low;
@@ -20,6 +26,15 @@ public class _Random_ {
         return (int)((high-low+1)*Math.random()+low);
     }
 
+    public static int random (int[] array){
+        return array[randomint(0, array.length-1)];
+    }
+    public static int[] random (int[][] array){
+        return array[randomint(0, array.length-1)];
+    }
+    public static int[][] random (int[][][] array){
+        return array[randomint(0, array.length-1)];
+    }
     public static String random (String[] array){
         return array[randomint(0, array.length-1)];
     }

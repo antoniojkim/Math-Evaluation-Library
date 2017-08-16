@@ -5,22 +5,14 @@
 */
 package Math_Evaluation_Library.GraphingTechnology;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+
 import static java.lang.Double.NaN;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 /**
 
@@ -68,15 +60,15 @@ public class Graph extends JPanel{
         w.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         w.setSize((int)(Screen.getWidth()/2), (int)(Screen.getHeight()/2));
         w.setLocationRelativeTo(null);
-        w.addWindowStateListener((WindowEvent we) -> {
-            centerImage();
-        });
-        w.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent ce) {
-                centerImage();
-            }
-        });
+//        w.addWindowStateListener((WindowEvent we) -> {
+//            centerImage();
+//        });
+//        w.addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent ce) {
+//                centerImage();
+//            }
+//        });
         w.add(this);
         w.setVisible(true);
     }

@@ -3,6 +3,7 @@ package Math_Evaluation_Library.Objects;
 import Math_Evaluation_Library.Constants.Constants;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.IO;
+import Math_Evaluation_Library.Search;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Double.NaN;
-import Math_Evaluation_Library.Search;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -59,7 +59,7 @@ public class _Number_ {
     private static List<Double> factorials = new ArrayList<>(Arrays.asList(1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0));
     public static double fact(int num){
         try{
-            if (num < 0){
+            if (num < 0 || num > 170){
                 return NaN;
             }
             if (num < 2){

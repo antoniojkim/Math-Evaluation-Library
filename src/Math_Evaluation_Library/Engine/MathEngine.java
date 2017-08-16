@@ -5,12 +5,9 @@ import Math_Evaluation_Library.Miscellaneous.Scripts;
 import Math_Evaluation_Library.Miscellaneous.Simplify;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects._Number_;
-import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Trigonometry.Trig;
-import org.jblas.DoubleMatrix;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Double.NaN;
@@ -61,8 +58,8 @@ public class MathEngine extends Engine{
                         } else if (outputs.get(a).equals("!")) {
                             try {
                                 double x = _Number_.getNumber(outputs.get(a - 1));
-                                if (x % 1 == 0) {
-                                    outputs.set(a - 1, "" + _Number_.fact((int) x));
+                                if (x % 1 == 0 && x<=170) {
+                                    outputs.set(a - 1, _Number_.format(_Number_.fact((int)x)));
                                     outputs.remove(a);
                                 } else {
                                     return "NaN";
@@ -309,7 +306,7 @@ public class MathEngine extends Engine{
                 if (x % 1 == 0 && y % 1 == 0) {
                     int n = (int) x;
                     int r = (int) y;
-                    if (r > n) {
+                    if (r > n || n > 170) {
                         return "NaN";
                     }
                     return (_Number_.fact(n) / _Number_.fact(n - r))+"";
@@ -318,7 +315,7 @@ public class MathEngine extends Engine{
                 if (x % 1 == 0 && y % 1 == 0) {
                     int n = (int) x;
                     int r = (int) y;
-                    if (r > n) {
+                    if (r > n || n > 170 || r > 170) {
                         return "NaN";
                     }
                     return (_Number_.fact(n) / (_Number_.fact(n - r) * _Number_.fact(r)))+"";
