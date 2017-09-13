@@ -1,7 +1,7 @@
 package Tests;
 
-import Math_Evaluation_Library.Calculus.Derivative;
 import Math_Evaluation_Library.Calculus.Integral;
+import Math_Evaluation_Library.Engine.Engine;
 
 /**
  * Created by Antonio on 2017-07-21.
@@ -26,7 +26,7 @@ public class Integral_Tests extends  _Tests_{
         integralTests("2/x", "2ln|x|");
         integralTests("e^x", "e^x");
         integralTests("ln(2x)", "x(ln(2x)-1)");
-        integralTests("2*logx", "(2x/ln10)(lnx-1)");
+        integralTests("2*logx", "(2(x/ln10))(lnx-1)");
         integralTests("3*(secx)^2", "3tanx");
         integralTests("√x", "(2/3)x^(3/2)");
 
@@ -51,7 +51,7 @@ public class Integral_Tests extends  _Tests_{
     }
     public void numericalIntegralTests(String input, double a, double b, double expected){
         input = input.trim();
-        double nint = Integral.nint(input, a, b);
+        double nint = Engine.evaluate("nint("+input+", "+a+", "+b+")");
         if (nint != expected){
             System.out.println("\nIntegration Test Failed:");
             System.out.println("     Input:         ʃ["+input+", "+a+", "+b+"]");

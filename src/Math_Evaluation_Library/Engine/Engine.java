@@ -1,8 +1,9 @@
 package Math_Evaluation_Library.Engine;
 
+import Math_Evaluation_Library.Constants.Const;
 import Math_Evaluation_Library.Constants.Constants;
+import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
-import Math_Evaluation_Library.Miscellaneous.Scripts;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects._Number_;
@@ -72,78 +73,28 @@ public class Engine {
         }
         function = replaceVariables(function);
         function = Search.replace(function, " ", "");
-        function = Search.replace(function, "P", "npr");
-        function = Search.replace(function, "C", "ncr");
-        function = Search.replace(function, "}t", "}τ");
-        function = Search.replace(function, "}T", "}τ");
-        function = Search.replace(function, "}I", "}ι");
-        function = Search.replace(function, "C", "ncr");
-        function = Search.replace(function, "ED", "dist");
-        function = Search.replace(function, "E", "*10^");
-        function = Search.replace(function, "Σ", "sum");
-        function = Search.replace(function, "Π", "product");
+        function = Search.replace(function, new String[][]{
+                {"P", "npr"},   {"C", "ncr"},
+                {"}t", "}τ"},   {"}T", "}τ"},  {"}I", "}ι"},
+                {"ED", "dist"}, {"E", "*10^"}, {"Σ", "sum"}, {"Π", "product"}
+        });
         function = function.toLowerCase();
-        function = Search.replace(function, "npr", "P");
-        function = Search.replace(function, "ncr", "C");
-        function = Search.replace(function, "_r", "ʳ");
-        function = Search.replace(function, "−", "-");
-        function = Search.replace(function, "÷", "/");
-        function = Search.replace(function, "×", "*");
-        function = Search.replace(function, "**", "^");
-        function = Search.replace(function, "\\.", "·");
-        function = Search.replace(function, "\\dot", "·");
-        function = Search.replace(function, "··", "^");
-        function = Search.replace(function, "^o", "°");
-        function = Search.replace(function, "^deg", "°");
-        function = Search.replace(function, "〖", "(");
-        function = Search.replace(function, "〗", ")");
-        function = Search.replace(function, "_r", "ʳ");
-        function = Search.replace(function, "^r", "ʳ");
-        function = Search.replace(function, "->", "→");
-        //function = Search.replace(function, "=>", "⇒");
-        //function = Search.replace(function, "\=", "≈");
-        //function = Search.replace(function, "!=", "≠");
-        //function = Search.replace(function, "_=", "≡");
-        function = Search.replace(function, "coslaw", "c_law");
-        function = Search.replace(function, "ave", "avg");
-        function = Search.replace(function, "mean", "avg");
-        function = Search.replace(function, "sec", "scnt");
-        function = Search.replace(function, "aexp", "axp");
-        function = Search.replace(function, "exp", "axp");
-        function = Search.replace(function, "1n1p", "lp");
-        function = Search.replace(function, "1og1p", "lp");
-        function = Search.replace(function, "log(", "logab(");
-        function = Search.replace(function, "deg", "dg");
-        function = Search.replace(function, "det", "dt");
-        function = Search.replace(function, "ceil", "up");
-        function = Search.replace(function, "nderiv", "dx");
-        function = Search.replace(function, "deriv", "diff");
-        function = Search.replace(function, "riemann", "riman");
-        function = Search.replace(function, "elasy", "lasd");
-        function = Search.replace(function, "elasx", "lasd");
-        function = Search.replace(function, "elasd", "lasd");
-        function = Search.replace(function, "prime", "nconst");
-        function = Search.replace(function, "heron", "hron");
-        function = Search.replace(function, "newton", "nwton");
-        function = Search.replace(function, "fibsum", "smfib");
-        function = Search.replace(function, "sumfib", "smfib");
-        function = Search.replace(function, "variance", "var");
-        function = Search.replace(function, "stdev", "stndv");
-        function = Search.replace(function, "stddev", "stndv");
-        function = Search.replace(function, "stndev", "stndv");
-        function = Search.replace(function, "gcf", "gcd");
-        function = Search.replace(function, "len", "strln");
-        function = Search.replace(function, "strlen", "strln");
-        function = Search.replace(function, "len", "strln");
-        function = Search.replace(function, "count", "strln");
-        function = Search.replace(function, "randomf", _Random_.randomf());
-        function = Search.replace(function, "randomint", "randint");
-        function = Search.replace(function, "ans", String.valueOf(ans));
-        function = Search.replace(function, "pi", "π");
-        function = Search.replace(function, "e_m", "γ");
-        function = Search.replace(function, "e", "η");
-        function = Search.replace(function, "gr", "ϕ");
-        function = Search.replace(function, "->", "→");
+        function = Search.replace(function, new String[][]{
+                {"npr", "P"}, {"ncr", "C"},  {"_r", "ʳ"}, {"^r", "ʳ"}, {"-+", "-"},  {"+-", "-"},    {"--", "+"},   {"++", "+"},
+                {"−", "-"},   {"÷", "/"},    {"×", "*"},  {"**", "^"}, {"\\.", "·"}, {"\\dot", "·"}, {"··", "^"},
+                {"^o", "°"},  {"^deg", "°"}, {"〖", "("}, {"〗", ")"}, {"->", "→"},  {"_=", "≡"},    {"=_", "≡"},
+//                {"=>", "⇒"},  {"\\=", "≈"},  {"!=", "≠"},
+
+                {"ave", "avg"},      {"mean", "avg"},     {"sec", "scnt"},     {"aexp", "axp"},      {"exp", "axp"},      {"coslaw", "c_law"},
+                {"1n1p", "lp"},      {"1og1p", "lp"},     {"1og1p", "lp"},     {"log(", "logab("},   {"deg", "dg"},       {"det", "dt"},
+                {"elasy", "lasd"},   {"elasx", "lasd"},   {"elasd", "lasd"},   {"prime", "nconst"},  {"heron", "hron"},   {"newton", "nwton"},
+                {"fibsum", "smfib"}, {"sumfib", "smfib"}, {"variance", "var"}, {"stdev", "stndv"},   {"stddev", "stndv"}, {"stndev", "stndv"},
+                {"ceil", "up"},      {"nderiv", "dx"},    {"deriv", "diff"},   {"riemann", "riman"}, {"randomint", "randint"},
+                {"gcf", "gcd"},      {"len", "strln"},    {"strlen", "strln"}, {"count", "strln"},   {"randomf", _Random_.randomf()},
+
+                {"ans", String.valueOf(ans)}, {"pi", "π"}, {"e_m", "γ"}, {"e", "η"}, {"gr", "ϕ"}
+
+        });
         //Implicit Multiplication
         try {
             for (int a = 1; a < function.length(); a++) {
@@ -181,32 +132,17 @@ public class Engine {
         }catch (StringIndexOutOfBoundsException e){
             error = "Invalid Input Error - Found while fixing implicit multiplication";      return error;
         }
-        function = Search.replace(function, "intmax", "2147483647");
-        function = Search.replace(function, "intmin", "-2147483648");
-        function = Search.replace(function, "hparg", "graph");
-        function = Search.replace(function, "dg", "deg");
-        function = Search.replace(function, "dt", "det");
-        function = Search.replace(function, "scnt", "sec");
-        function = Search.replace(function, "axp", "aexp");
-        function = Search.replace(function, "up", "ceil");
-        function = Search.replace(function, "/sec", "cos");
-        function = Search.replace(function, "/csc", "sin");
-        function = Search.replace(function, "/cot", "tan");
-        function = Search.replace(function, "acos", "arccos");
-        function = Search.replace(function, "asin", "arcsin");
-        function = Search.replace(function, "atan", "arctan");
-        function = Search.replace(function, "asec", "arcsec");
-        function = Search.replace(function, "acsc", "arccsc");
-        function = Search.replace(function, "acot", "arccot");
-        function = Search.replace(function, "diff", "deriv");
-        function = Search.replace(function, "riman", "riemann");
-        function = Search.replace(function, "max\\*", "max");
-        function = Search.replace(function, "sqrt", "√");
-        function = Search.replace(function, "lasd", "elasd");
-        function = Search.replace(function, "nconst", "prime");
-        function = Search.replace(function, "hron", "heron");
-        function = Search.replace(function, "nwton", "newton");
-        function = Search.replace(function, "dist", "ED");
+        function = Search.replace(function, new String[][]{
+                {"intmax", "2147483647"}, {"intmin", "-2147483648"}, {"hparg", "graph"}, {"dg", "deg"}, {"dt", "det"},
+
+                {"axp", "aexp"},    {"up", "ceil"},      {"scnt", "sec"},     {"/sec", "cos"},    {"/csc", "sin"},    {"/cot", "tan"},
+                {"acos", "arccos"}, {"cos⁻¹", "arccos"}, {"asin", "arcsin"},  {"sin⁻¹", "arcsin"},
+                {"atan", "arctan"}, {"tan⁻¹", "arctan"}, {"asec", "arcsec"},  {"sec⁻¹", "arcsec"},
+                {"acsc", "arccsc"}, {"csc⁻¹", "arccsc"}, {"acot", "arccot"},  {"cot⁻¹", "arccot"},
+
+                {"diff", "deriv"}, {"riman", "riemann"}, {"max\\*", "max"}, {"sqrt", "√"}, {"lasd", "elasd"}, {"nconst", "prime"},
+                {"hron", "heron"}, {"nwton", "newton"},  {"dist", "ED"}
+        });
         for (int a = 1; a<function.length(); a++){
             if (implicitContains(function.charAt(a-1))){
                 if (a+3 <= function.length() && function.substring(a, a + 3).equals("ans") && implicitContains(function.charAt(a-1))){
@@ -358,15 +294,21 @@ public class Engine {
         try {
             return String.valueOf(_Number_.getNumber(function));
         } catch (NumberFormatException e){}
+        for (String[] formula : Formulas.formulas){
+            if (formula[0].equals(function)){
+                return formula[1];
+            }
+        }
         String format = toPostfix(function);
-        if (!format.toLowerCase().contains("Error")) {
+        if (!format.toLowerCase().contains("error")) {
             List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
             String evaluated = evaluate(outputs);
-            if (evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
-                return evaluated;
-            }
             if (_Number_.isNumber(evaluated)){
                 return _Number_.format(evaluated);
+            }
+            if ((!evaluated.toLowerCase().contains("error") && !evaluated.toLowerCase().contains("nan")) ||
+                    evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
+                return evaluated;
             }
         }
         //Check text cases
@@ -385,16 +327,22 @@ public class Engine {
         if (function.length() == 0){
             return "NaN";
         }
+        String constant = Const.getConstant(function);
+        if (!constant.equals("NaC")){
+            return "= "+constant;
+        }
         try {
             return "= "+_Number_.format(_Number_.getNumber(function));
         } catch (NumberFormatException e){}
+        for (String[] formula : Formulas.formulas){
+            if (formula[0].equals(function)){
+                return formula[1];
+            }
+        }
         String format = toPostfix(function);
         if (!format.contains("Error")) {
             List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
             String evaluated = evaluate(outputs);
-            if (evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
-                return "=  "+evaluated;
-            }
             if (_Number_.isNumber(evaluated)){
                 int index = evaluated.indexOf("E");
                 if (index != -1){
@@ -418,6 +366,10 @@ public class Engine {
                         return "=  "+f+" = "+_Number_.format(evaluated);
                     }
                 }
+            }
+            if ((!evaluated.toLowerCase().contains("error") && !evaluated.toLowerCase().contains("nan")) ||
+                    evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
+                return "=  "+evaluated;
             }
         }
         //Check text cases
@@ -448,8 +400,8 @@ public class Engine {
             "arctan", "tanh", "tan", "arccsc", "csch", "csc", "arcsec", "sech", "sec", "arccot", "coth", "cot", "ln", "lp", "log", "aexp",
             "abs", "rad", "deg", "floor", "ceil", "prime", "fib", "smfib", "bin", "tobin", "strln"};
     protected static int max_order_string = 6;
-    static char[] operators = {'√', '^', '°', 'ʳ', '/', '%', '*', '·', '!', 'P', 'C', '-', '+'};
-    static int[] precedence = { 4,   4,   4,   4,   3,   3,   3,   3,   3,   3,   3,   2,   2};
+    static char[] operators = {'√', '^', '°', 'ʳ', '!', 'P', 'C', '/', '%', '*', '·', '-', '+'};
+    static int[] precedence = { 4,   4,   4,   4,   4,   4,   4,   3,   3,   3,   3,   2,   2};
     public static boolean[] singleOperator = {true, false, false, false, false, false, false, false, false, false, false, false, false};
     static boolean[] associability = {false, false, false, false, true, true, true, true, true, true, true, true, true};
 
@@ -486,6 +438,8 @@ public class Engine {
                     }
                 } else if (c == var() || c == varOp() || Constants.isConstant(c)) {
                     if (token.length() > 0){
+                        System.out.println(stack);
+                        System.out.println(output);
                         if (token.equals("-")){
                             output.push(token+(c == 'η' ? 'e' : c));
                         }
@@ -729,9 +683,15 @@ public class Engine {
     }
 
     public static boolean orderContains(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(order, item);
     }
     public static int orderIndex(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.binarySearch(order, item);
     }
     public static boolean startsWithOrder(String item){
@@ -744,39 +704,72 @@ public class Engine {
     }
 
     public static int operatorIndex(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return (item.length() == 1 ? Search.binarySearch(operators, item.charAt(0)) : -1);
     }
     public static int operatorIndex(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.binarySearch(operators, item);
     }
     public static boolean operatorContains(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return (item.length() == 1 ? Search.contains(operators, item.charAt(0)) : false);
     }
     public static boolean operatorContains(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(operators, item);
     }
 
     public static int implicitIndex(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.binarySearch(implicit, item);
     }
     public static boolean implicitContains(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(implicit, item);
     }
 
     public static int checkImplicitIndex(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.binarySearch(checkImplicit, item);
     }
     public static boolean checkImplicitContains(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(checkImplicit, item.charAt(0));
     }
     public static boolean checkImplicitContains(char item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(checkImplicit, item);
     }
 
     public static boolean isMultiParamFunction(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.contains(multiParamFunctions, item);
     }
     public static int multiParamFunctionNamesIndex(String item){
+        if (!sorted){
+            sortFunctions();
+        }
         return Search.binarySearch(multiParamFunctions, item);
     }
 

@@ -260,6 +260,43 @@ public class Sort {
         quicksort(array, supplementary1, supplementary2, pos+1, last, ascending);
     }
 
+    public static void pairQuicksort(String[][] array){
+        pairQuicksort(array, 0, 0, array.length-1, true);
+    }
+    public static void pairQuicksort(String[][] array, int lead){
+        pairQuicksort(array, lead, 0, array.length-1, true);
+    }
+    public static void pairQuicksort(String[][] array, int lead, boolean ascending){
+        pairQuicksort(array, lead, 0, array.length-1, ascending);
+    }
+    private static void pairQuicksort(String[][] array, int lead, int first, int last, boolean ascending){
+        if (first >= last){
+            return;
+        }
+        String pivot = array[first][lead];
+        int pos = last;
+        if (ascending){
+            for (int a = last; a>first; a--){
+                if (array[a][lead].compareTo(pivot) > 0){
+                    swap(array, pos, a);
+                    pos--;
+                }
+            }
+        }
+        else{
+            for (int a = last; a>first; a--){
+                if (array[a][lead].compareTo(pivot) < 0){
+                    swap(array, pos, a);
+                    pos--;
+                }
+            }
+        }
+        swap(array, first, pos);
+        pairQuicksort(array, lead, first, pos-1, ascending);
+        pairQuicksort(array, lead, pos+1, last, ascending);
+    }
+    
+
     public static void quicksort(char[] array, int[] supplementary1, boolean[] supplementary2, boolean[] supplementary3){
         quicksort(array, supplementary1, supplementary2, supplementary3, true);
     }
@@ -326,33 +363,38 @@ public class Sort {
         quicksort(array, supplementary1, supplementary2, pos+1, last, ascending);
     }
 
-    private static void swap(int[] array, int pos1, int pos2){
+    public static void swap(int[] array, int pos1, int pos2){
         int temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }
-    private static void swap(char[] array, int pos1, int pos2){
+    public static void swap(char[] array, int pos1, int pos2){
         char temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }
-    private static void swap(Fraction[] array, int pos1, int pos2){
+    public static void swap(Fraction[] array, int pos1, int pos2){
         Fraction temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }
-    private static void swap(boolean[] array, int pos1, int pos2){
+    public static void swap(boolean[] array, int pos1, int pos2){
         boolean temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }
-    private static void swap(double[] array, int pos1, int pos2){
+    public static void swap(double[] array, int pos1, int pos2){
         double temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }
-    private static void swap(String[] array, int pos1, int pos2){
+    public static void swap(String[] array, int pos1, int pos2){
         String temp = array[pos1];
+        array[pos1] = array[pos2];
+        array[pos2] = temp;
+    }
+    private static void swap(String[][] array, int pos1, int pos2){
+        String[] temp = array[pos1];
         array[pos1] = array[pos2];
         array[pos2] = temp;
     }

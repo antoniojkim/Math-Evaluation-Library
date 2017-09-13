@@ -34,6 +34,15 @@ public class Print {
             System.out.print("]");
         }
     }
+    public static void println(Object[] array){
+        if (array.length > 0) {
+            System.out.print("["+array[0]);
+            for (int i = 1; i < array.length; i++){
+                System.out.print(", "+array[i]);
+            }
+            System.out.println("]");
+        }
+    }
     public static void println(String[] array){
         if (array.length > 0) {
             System.out.print("["+array[0]);

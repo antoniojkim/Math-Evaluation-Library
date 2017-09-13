@@ -1,7 +1,6 @@
 package Math_Evaluation_Library.UnitConversion;
 
 import Math_Evaluation_Library.Objects._Number_;
-import Math_Evaluation_Library.Print;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +17,27 @@ public class _UnitConversion_ {
             unitIndex = param.indexOf("→");
         }
         if (unitIndex != -1){
-            String measure = "";
-            char[] array = param.toCharArray();
-            for (char c : array){
-                if (_Number_.isNumber(c) || c == '.'){
-                    measure += String.valueOf(c);
-                }
-                else{
-                    break;
-                }
+            int commaIndex = param.indexOf(",");
+                String measure = "";
+            if (commaIndex != -1){
+
             }
-            if (measure.length() > 0){
-                String unit1 = param.substring(measure.length(), unitIndex);
-                String unit2 = param.substring(unitIndex+1);
-                if (unit1.length() > 0 && unit2.length() > 0){
-                    return new String[]{measure, unit1, unit2};
+            else{
+                char[] array = param.toCharArray();
+                for (char c : array){
+                    if (_Number_.isNumber(c) || c == '.'){
+                        measure += String.valueOf(c);
+                    }
+                    else{
+                        break;
+                    }
+                }
+                if (measure.length() > 0){
+                    String unit1 = param.substring(measure.length(), unitIndex);
+                    String unit2 = param.substring(unitIndex+1);
+                    if (unit1.length() > 0 && unit2.length() > 0){
+                        return new String[]{measure, unit1, unit2};
+                    }
                 }
             }
         }

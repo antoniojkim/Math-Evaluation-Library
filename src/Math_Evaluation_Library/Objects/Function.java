@@ -18,7 +18,7 @@ import static java.lang.Double.NaN;
 public class Function {
 
     private String function = "";
-    private String format = "";
+    private String postfix = "";
     private int type = 0;
     private List<String> outputs = new ArrayList<>();
     private List<Integer> varIndices = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Function {
 
     public Function(Function f){
         function = f.function();
-        format = f.format;
+        postfix = f.postfix;
         type = f.getType();
         outputs.clear();
         outputs.addAll(f.getOutputs());
@@ -69,8 +69,8 @@ public class Function {
                     if (simplify){
                         function = Simplify.simplify(function);
                     }
-                    format = Engine.toPostfix(function);
-                    String[] split = format.split(" ");
+                    postfix = Engine.toPostfix(function);
+                    String[] split = postfix.split(" ");
                     for (int i = 0; i<split.length; i++){
                         if (split[i].equals(Engine.var)){
                             varIndices.add(i);
@@ -345,6 +345,9 @@ public class Function {
     public String function(){
         return function;
     }
+    public String postfix(){
+        return postfix;
+    }
     public boolean equals(String compare, double low, double high){
         return equals(this, new Function(compare), low, high);
     }
@@ -371,7 +374,7 @@ public class Function {
         System.out.println(function+"");
     }
     public void printFormat(){
-        System.out.println(format+"");
+        System.out.println(postfix +"");
     }
     public void printTerms(){
         getTerms();

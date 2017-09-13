@@ -1,5 +1,6 @@
 package Math_Evaluation_Library.Miscellaneous;
 
+import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
@@ -313,7 +314,7 @@ public class Simplify {
         boolean isNum2 = _Number_.isNumber(num2);
         if (isNum1){
             if (isNum2){
-                return String.valueOf(num1*num2);
+                return _Number_.format(num1*num2);
             }
             if (num1 == 1){
                 return term2;
@@ -321,7 +322,7 @@ public class Simplify {
             if (num1 == -1){
                 return "-"+term2;
             }
-            return term1+term2;
+            return term1+addBrackets(term2, '*');
         }
         if (isNum2){
             if (num2 == 1){
@@ -330,7 +331,7 @@ public class Simplify {
             if (num2 == -1){
                 return "-"+term1;
             }
-            return term2+term1;
+            return term2+addBrackets(term1, '*');
         }
         term1 = addBrackets(term1, '*');
         term2 = addBrackets(term2, '*');
@@ -378,14 +379,11 @@ public class Simplify {
         return addBrackets(term, '\0');
     }
     public static String addBrackets(String term, char operator){
-        boolean isNumber = _Number_.isNumber(term);
-        boolean isVar = term.equals(Engine.var);
-        boolean isVarOp = term.equals(Engine.varOp);
         switch(operator){
-            case '*':    return ((isNumber || isVar || isVarOp || !Search.functionContains(term, "+-/%PC"))    ? term : "("+term+")");
+            case '*':    return ((_Number_.isNumber(term) || term.equals(Engine.var) || term.equals(Engine.varOp) || !Search.functionContains(term, "+-/%PC"))  ? term : "("+term+")");
             case '+':    return term;
             case '-':    return term;
-            default:     return ((isNumber || isVar || isVarOp || !Search.functionContains(term, "+-*/%PC")) ? term : "("+term+")");
+            default:     return ((_Number_.isNumber(term) || term.equals(Engine.var) || term.equals(Engine.varOp) || !Search.functionContains(term, "+-*/%PC")) ? term : "("+term+")");
         }
     }
 

@@ -1,7 +1,7 @@
 package Math_Evaluation_Library.Engine;
 
+import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
-import Math_Evaluation_Library.Miscellaneous.Scripts;
 import Math_Evaluation_Library.Miscellaneous.Simplify;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects._Number_;
@@ -155,10 +155,13 @@ public class MathEngine extends Engine{
                     }
                     else{
                         try {
-                            if (outputs.get(a + 1).equals("unit") || outputs.get(a + 2).equals("unit")) {
-                            } else if (outputs.get(a + 1).equals("eval") || outputs.get(a + 2).equals("eval")) {
-                            } else if (outputs.get(a + 1).equals("evalint") || outputs.get(a + 2).equals("evalint") || outputs.get(a + 3).equals("evalint")) {
-                            } else {
+                            if (outputs.get(a + 1).equals("unit") || outputs.get(a + 2).equals("unit")) {}
+                            else if (outputs.get(a + 1).equals("eval") || outputs.get(a + 2).equals("eval")) {}
+                            else if (outputs.get(a + 1).equals("evalint") || outputs.get(a + 2).equals("evalint") || outputs.get(a + 3).equals("evalint")) {}
+                            else if (outputs.get(a + 3).equals("nint")) {}
+                            else if (outputs.get(a + 3).equals("sum")) {}
+                            else if (outputs.get(a + 3).equals("product")) {}
+                            else {
                                 return "Invalid Input Error - Unrecognized character(s):  "+outputs.get(a);
                             }
                         }catch (IndexOutOfBoundsException e){}
@@ -171,14 +174,10 @@ public class MathEngine extends Engine{
             }
         }
         if (outputs.size() == 1) {
-            try {
-                if (outputs.get(0).toLowerCase().contains("nan")) {
-                    return "NaN";
-                }
-                return outputs.get(0);
-            } catch (NumberFormatException e3) {
+            if (outputs.get(0).toLowerCase().contains("nan")) {
                 return "NaN";
             }
+            return outputs.get(0);
         }
         return "NaN";
     }

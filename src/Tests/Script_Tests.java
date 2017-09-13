@@ -1,6 +1,6 @@
 package Tests;
 
-import Math_Evaluation_Library.Miscellaneous.Scripts;
+import Math_Evaluation_Library.Constants.Scripts;
 
 /**
  * Created by Antonio on 2017-07-15.

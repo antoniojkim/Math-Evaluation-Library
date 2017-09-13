@@ -37,8 +37,8 @@ public class TextSolutionEngine extends Engine{
 
     public static String[] solvableEquations = {
             "graph", "EEA", "LDE", "deriv", "diff", "prime", "primef", "primf", "randomf", "tangent", "quad", "cubic",
-            "long", "scint", "sci", "mod", "line", "complex", "cmplx", "int", "antideriv", "antidiff", "simplify",
-            "volume", "area", "congruence", "dot", "cross", "proj", "projection", "perp", "perpendicular",
+            "long", "scint", "sci", "mod",  "line", "complex", "cmplx", "int", "antideriv", "antidiff", "simplify",
+            "volume", "area", "congruence", "≡",    "dot", "cross", "proj", "projection", "perp", "perpendicular",
             "RREF", "RREf", "RCEF", "RCEf", "det", "slopeF", "directF", "sf", "df", "sort",
             "dict", "thes", "plot", "plt", "parse", "postfix", "latex"
     };
@@ -102,7 +102,7 @@ public class TextSolutionEngine extends Engine{
                         else if (type.equalsIgnoreCase("mod") && parameters.length == 3){
                             return mod(parameters);
                         }
-                        else if (type.equalsIgnoreCase("congruence") && parameters.length == 4){
+                        else if ((type.equalsIgnoreCase("congruence") || type.equalsIgnoreCase("≡")) && parameters.length == 4){
                             return congruence(parameters);
                         }
                         else if (type.equalsIgnoreCase("line") && (parameters.length == 4 || parameters.length == 5)){

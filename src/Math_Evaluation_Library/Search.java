@@ -69,6 +69,26 @@ public class Search {
         }
         return -1;
     }
+    public static int binarySearch(String[][] array, String item){
+        return binarySearch(array, 0, item);
+    }
+    public static int binarySearch(String[][] array, int lead, String item){
+        int low = 0;
+        int high = array.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            int cmp = array[mid][lead].compareTo(item);
+            if (cmp < 0) {
+                low = mid + 1;
+            } else if (cmp > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
 
     public static int indexOf(String str, char search){
         return indexOf(str, search, 0);
@@ -150,10 +170,10 @@ public class Search {
         List<Integer> indices = getIndices(function, split);
         if (indices.size() == 0){
             char[] c = function.toCharArray();
-            int bracket = 0, absBracket = (c[0] == '|' ? 1 : 0);
+            int bracket = (c[0] == '(' ? 1 : 0), absBracket = (c[0] == '|' ? 1 : 0);
             for (int i = 1; i<c.length; i++){
-                if((Engine.checkImplicitContains(c[i])) && (Engine.implicitContains(c[i-1]) ||
-                        (c[i-1] == '|' && absBracket%2 == 0))){
+                if(bracket == 0 && Engine.checkImplicitContains(c[i]) &&
+                        (Engine.implicitContains(c[i-1]) || (c[i-1] == '|' && absBracket%2 == 0))){
                     indices.add(i);
                 }
                 else if (c[i-1] == '|' && c[i] == '|'){
@@ -177,6 +197,12 @@ public class Search {
     public static String replace(String text, String... searchReplace) {
         for (int i = 1; i<searchReplace.length; i+=2){
             text = replace(text, searchReplace[i-1], searchReplace[i]);
+        }
+        return text;
+    }
+    public static String replace(String text, String[]... searchReplace) {
+        for (String[] search : searchReplace){
+            text = replace(text, search[0], search[1]);
         }
         return text;
     }

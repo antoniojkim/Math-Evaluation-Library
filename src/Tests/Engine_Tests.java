@@ -59,6 +59,26 @@ public class Engine_Tests extends _Tests_{
         InfixToPostfixTest("-5x²y+3y+8", "-5 x 2 ^ * y * 3 y * + 8 +");
         evaluationTest("[-5x²y+3y+8, 1, 2]", 4);
         //
+        syntaxTest("x-+3", "x-3");
+
+        evaluationTest("Σ(4(x-2)+5, 1, 1)", "1");
+        evaluationTest("Σ(x, 1, 10)", "55");
+        evaluationTest("Σ(x, 1, n)", "n(n+1)/2");
+        evaluationTest("Σ(i, 1, n)", "n(n+1)/2");
+        evaluationTest("Σ(x+2, 1, n)", "n(n+5)/2");
+        evaluationTest("Σ(x-2, 1, n)", "n(n-3)/2");
+        evaluationTest("Σ(x+-3, 1, n)", "n(n-5)/2");
+
+        evaluationTest("3*4!", 72);
+        evaluationTest("3*4P2", 36);
+        evaluationTest("3*4C2", 18);
+        evaluationTest("72/4!", 3);
+        evaluationTest("36/4P2", 3);
+        evaluationTest("18/4C2", 3);
+        evaluationTest("3*4P2+3*4C2", 54);
+        evaluationTest("3*4P2-3*4C2", 18);
+        evaluationTest("3*4P2*3*4C2", 648);
+        evaluationTest("3*4P2/(3*4C2)", 2);
     }
 
     public void syntaxTest(String input, String expected){

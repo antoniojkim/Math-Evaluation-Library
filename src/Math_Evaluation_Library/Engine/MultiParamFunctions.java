@@ -8,8 +8,11 @@ import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.Statistics.Stats;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
+
+import java.util.List;
 
 /**
  * Created by Antonio on 2017-07-22.
@@ -305,13 +308,66 @@ public class MultiParamFunctions extends Engine{
     private static String sum (String[] parameters){
         if (parameters.length == 3){
             Function f = new Function(parameters[0]);
-            int start = Integer.parseInt(parameters[1]);
-            int end = Integer.parseInt(parameters[2]);
-            double sum = 0;
-            for (int b = start; b <= end; b++) {
-                sum += f.of(b);
+            List<Double> numbers = _Number_.extractNumbers(f.function());
+            boolean isStartNumber = _Number_.isNumber(parameters[1]);
+            boolean isEndNumber = _Number_.isNumber(parameters[2]);
+            if (isStartNumber){
+                double m = Double.parseDouble(parameters[1]);
+                if (isEndNumber){
+                    double n = Double.parseDouble(parameters[2]);
+                    if (f.function().equals(Engine.var) || parameters[0].equals("i")){
+                        return _Number_.format((n*(n+1)-m*(m-1))/2.0);
+                    }
+                    if (f.postfix().equals(Engine.var+" 2 ^")){
+                        return _Number_.format((n+1-m)*(2*m*m+2*m*n-m+2*n*n+n)/6.0);
+                    }
+                    for (double num : numbers){
+                        String v = _Number_.format(num);
+                        if (f.postfix().equals("x "+v+" -")){
+                            return _Number_.format(-0.5*(m-n-1)*(m+n-2*num));
+                        }
+                        if (f.postfix().equals("x "+v+" +")){
+                            return _Number_.format(-0.5*(m-n-1)*(m+n+2*num));
+                        }
+                    }
+                    double sum = 0;
+                    for (double b = m; b <= n; b++) {
+                        sum += f.of(b);
+                    }
+                    return _Number_.format(sum);
+                }
+                else {
+                    double[] values = null;
+                    if (f.function().equals(Engine.var) || parameters[0].equals("i")){
+                        values = new double[]{1-m, m};
+                    }
+                    else{
+                        for (double num : numbers){
+                            String v = _Number_.format(num);
+                            if (f.postfix().equals("x "+v+" -")){
+                                values = new double[]{1-m, m-2*num};    break;
+                            }
+                            if (f.postfix().equals("x "+v+" +")){
+                                values = new double[]{1-m, m+2*num};    break;
+                            }
+                        }
+                    }
+                    if (values != null){
+                        if (values[0] != 0 && values[0] > values[1]){     Sort.swap(values, 0, 1);     }
+                        if (values[0] == values[1]){
+                            return values[0] == 0 ? parameters[2]+"²/2" : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")²/2";
+                        }
+                        return  (values[0] == 0 ? parameters[2] : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")")+
+                                (values[1] == 0 ? parameters[2] : "("+parameters[2]+(values[1] > 0 ? "+" : "")+_Number_.format(values[1])+")")+"/2";
+                    }
+                    //sum_(i=m)^n i^2 = -1/6 (m - n - 1) (2 m^2 + 2 m n - m + 2 n^2 + n)
+                }
             }
-            return _Number_.format(sum);
+            else {
+                if (f.function().equals(Engine.var) || parameters[0].equals("i")){
+                    return ""+parameters[2]+"("+parameters[2]+"+1)/2-"+parameters[1]+"("+parameters[1]+"-1)/2";
+                }
+            }
         }
         return INVALID;
     }
