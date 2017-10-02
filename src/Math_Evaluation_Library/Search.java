@@ -90,6 +90,24 @@ public class Search {
         return -1;
     }
 
+    public static int binarySearchIndex(List<String> list, String item){
+        int low = 0;
+        int high = list.size() - 1;
+
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            int cmp = list.get(mid).compareTo(item);
+            if (cmp < 0) {
+                low = mid + 1;
+            } else if (cmp > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return low;
+    }
+
     public static int indexOf(String str, char search){
         return indexOf(str, search, 0);
     }
@@ -255,6 +273,42 @@ public class Search {
         for(int index : indices){
             list.set(index, replacement);
         }
+    }
+
+    public static String[] split(String text, String delim){
+        return split(text, delim, true);
+    }
+    public static String[] split(String text, String delim, boolean withinBrackets){
+        if (withinBrackets || delim.length() > 1) {
+            while (text.endsWith(delim)) {
+                text = text.substring(0, text.length() - delim.length());
+            }
+            List<String> split = new ArrayList<>();
+            int previous = 0;
+            int index = text.indexOf(delim);
+            while (index != -1) {
+                split.add(text.substring(previous, index));
+                previous = index + delim.length();
+                index = text.indexOf(delim, previous);
+            }
+            split.add(text.substring(previous, text.length()));
+            String[] results = new String[split.size()];
+            for (int i = 0; i < results.length; i++) {
+                results[i] = split.get(i);
+            }
+            return results;
+        }
+        List<Integer> commas = getIndices(text, delim);
+        if (commas.isEmpty()){
+            return new String[]{text};
+        }
+        String[] results = new String[commas.size()+1];
+        results[0] = text.substring(0, commas.get(0));
+        for (int i = 1; i<commas.size(); i++){
+            results[i] = text.substring(commas.get(i-1)+1, commas.get(i));
+        }
+        results[results.length-1] = text.substring(commas.get(commas.size()-1)+1);
+        return results;
     }
 
 //    private static int binarySearch(int[] array, int low, int high, int item, boolean ascending){

@@ -18,7 +18,7 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("-e", -2.71828182845904523536);
 
         evaluationTest("5!", 120);
-        evaluationTest("170!", 7.257415615308004E306);
+        evaluationTest("170!", 7.257415615307994E306);
         evaluationTest("171!", "NaN");
         evaluationTest("171P50", "NaN");
         evaluationTest("171C50", "NaN");
@@ -47,12 +47,6 @@ public class Engine_Tests extends _Tests_{
         InfixToPostfixTest("heron(6, 6, 6)", "6 6 6 3 heron");
         evaluationTest("heron(6, 6, 6)", 15.588457268119896);
 
-        evaluationTest("[1mi->km]", 1.609344);
-        evaluationTest("[2.356mth->s]", 6195862.90751904);
-        evaluationTest("[2.356km->s]", "NaN");
-        evaluationTest("[1m/s->km/h]", 3.6);
-        evaluationTest("unit(1, m/s, km/h)", 3.6);
-
         evaluationTest("proj([1, 2], [3, 4])", "11/25·[3, 4] = [33/25, 132/25] is the projection of [1, 2] onto [3, 4]");
 
         syntaxTest("-5x²y+3y+8", "-5*x²*y+3*y+8");
@@ -60,25 +54,6 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("[-5x²y+3y+8, 1, 2]", 4);
         //
         syntaxTest("x-+3", "x-3");
-
-        evaluationTest("Σ(4(x-2)+5, 1, 1)", "1");
-        evaluationTest("Σ(x, 1, 10)", "55");
-        evaluationTest("Σ(x, 1, n)", "n(n+1)/2");
-        evaluationTest("Σ(i, 1, n)", "n(n+1)/2");
-        evaluationTest("Σ(x+2, 1, n)", "n(n+5)/2");
-        evaluationTest("Σ(x-2, 1, n)", "n(n-3)/2");
-        evaluationTest("Σ(x+-3, 1, n)", "n(n-5)/2");
-
-        evaluationTest("3*4!", 72);
-        evaluationTest("3*4P2", 36);
-        evaluationTest("3*4C2", 18);
-        evaluationTest("72/4!", 3);
-        evaluationTest("36/4P2", 3);
-        evaluationTest("18/4C2", 3);
-        evaluationTest("3*4P2+3*4C2", 54);
-        evaluationTest("3*4P2-3*4C2", 18);
-        evaluationTest("3*4P2*3*4C2", 648);
-        evaluationTest("3*4P2/(3*4C2)", 2);
     }
 
     public void syntaxTest(String input, String expected){
@@ -107,38 +82,6 @@ public class Engine_Tests extends _Tests_{
         }
         incrementNumTests();
     }
-    public void evaluationTest(String input, String expected){
-        input = input.trim();
-        String evaluated = Engine.evaluateString(input).trim();
-        expected = expected.trim();
-        if (!evaluated.equals(expected)){
-            String syntax = Engine.fixSyntax(input).trim();
-            String postfix = Engine.toPostfix(input);
-            System.out.println("\nEvaluation Test Failed:");
-            System.out.println("     Input:     "+input);
-            System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+postfix);
-            System.out.println("     Actual:    "+evaluated);
-            System.out.println("     Expected:  "+expected);
-            System.exit(1);
-        }
-        incrementNumTests();
-    }
-    public void evaluationTest(String input, double expected){
-        input = input.trim();
-        double evaluated = Engine.evaluate(input);
-        if (evaluated != expected){
-            String syntax = Engine.fixSyntax(input).trim();
-            String postfix = Engine.toPostfix(input);
-            System.out.println("\nEvaluation Test Failed:");
-            System.out.println("     Input:     "+input);
-            System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+postfix);
-            System.out.println("     Actual:    "+evaluated);
-            System.out.println("     Expected:  "+expected);
-            System.exit(1);
-        }
-        incrementNumTests();
-    }
+
 
 }

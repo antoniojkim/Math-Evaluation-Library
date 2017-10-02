@@ -35,9 +35,9 @@ public class Engine {
     static double ans = 1;
     static List<String> variables = new ArrayList<>();
     static List<Double> values = new ArrayList<>();
-    protected static String[] multiParamFunctions = {"max", "min", "randint", "random", "elasd", "nint", "dxn", "dx", "riemann", "sum", "product", "gcd", "lcm", "heron", "newton", "ED", "c_law", "avg", "var", "stndv", "logab", "unit"};
-    protected static int[] numParameters =          { -1,    -1,    2,         2,        4,       3,      3,     2,    -1,        3,     3,         -1,     -1,   -1,      2,        -1,   3,       -1,    -1,    -1,      -1,      3};
-    protected static int max_fn_string = 7;
+    public static String[] multiParamFunctions = {"max", "min", "randint", "random", "elasd", "nint", "dxn", "dx", "riemann", "sum", "product", "gcd", "lcm", "heron", "newton", "ED", "c_law", "avg", "var", "stndv", "logab", "unit", "prop"};
+    public static int[] numParameters =          { -1,    -1,    2,         2,        4,       3,      3,     2,    -1,        -1,     3,         -1,     -1,   -1,      2,        -1,   3,       -1,    -1,    -1,      -1,      3,      -1};
+    public static int max_fn_string = 7;
 
     //private static List<String> unitConversion = new ArrayList<>(Arrays.asList("m/s->km/h"));
     public static void sortFunctions() {
@@ -80,9 +80,9 @@ public class Engine {
         });
         function = function.toLowerCase();
         function = Search.replace(function, new String[][]{
-                {"npr", "P"}, {"ncr", "C"},  {"_r", "ʳ"}, {"^r", "ʳ"}, {"-+", "-"},  {"+-", "-"},    {"--", "+"},   {"++", "+"},
-                {"−", "-"},   {"÷", "/"},    {"×", "*"},  {"**", "^"}, {"\\.", "·"}, {"\\dot", "·"}, {"··", "^"},
-                {"^o", "°"},  {"^deg", "°"}, {"〖", "("}, {"〗", ")"}, {"->", "→"},  {"_=", "≡"},    {"=_", "≡"},
+                {"npr", "P"}, {"ncr", "C"},  {"_r", "ʳ"}, {"^r", "ʳ"}, {"-+", "-"},  {"+-", "-"},    {"--", "+"},  {"++", "+"},
+                {"−", "-"},   {"÷", "/"},    {"×", "*"},  {"**", "^"}, {"⋅", "·"},   {"\\.", "·"}, {"\\dot", "·"}, {"··", "^"},
+                {"^o", "°"},  {"^deg", "°"}, {"〖", "("}, {"〗", ")"}, {"->", "→"},  {"_=", "≡"},    {"=_", "≡"}, {"<<", "≪"}, {">>", "≫"},
 //                {"=>", "⇒"},  {"\\=", "≈"},  {"!=", "≠"},
 
                 {"ave", "avg"},      {"mean", "avg"},     {"sec", "scnt"},     {"aexp", "axp"},      {"exp", "axp"},      {"coslaw", "c_law"},
@@ -202,7 +202,11 @@ public class Engine {
     protected static String replaceVariables(String function){
         // Replace all variables
         for (int a = 0; a < variables.size(); a++) {
-            function = Search.replace(function, variables.get(a), "("+values.get(a)+")");
+            function = Search.replace(function, new String[][]{
+                    {"${"+variables.get(a)+"}", "("+_Number_.format(values.get(a))+")"},
+                    {"{"+variables.get(a)+"}", "("+_Number_.format(values.get(a))+")"},
+                    {"$"+variables.get(a), "("+_Number_.format(values.get(a))+")"}
+            });
         }
         return function;
     }
@@ -400,10 +404,10 @@ public class Engine {
             "arctan", "tanh", "tan", "arccsc", "csch", "csc", "arcsec", "sech", "sec", "arccot", "coth", "cot", "ln", "lp", "log", "aexp",
             "abs", "rad", "deg", "floor", "ceil", "prime", "fib", "smfib", "bin", "tobin", "strln"};
     protected static int max_order_string = 6;
-    static char[] operators = {'√', '^', '°', 'ʳ', '!', 'P', 'C', '/', '%', '*', '·', '-', '+'};
-    static int[] precedence = { 4,   4,   4,   4,   4,   4,   4,   3,   3,   3,   3,   2,   2};
-    public static boolean[] singleOperator = {true, false, false, false, false, false, false, false, false, false, false, false, false};
-    static boolean[] associability = {false, false, false, false, true, true, true, true, true, true, true, true, true};
+    static char[] operators = {'√', '^', '°', 'ʳ', '!', 'P', 'C', '/', '%', '*', '·', '≪', '≫', '-', '+'};
+    static int[] precedence = { 4,   4,   4,   4,   4,   4,   4,   3,   3,   3,   3,   3,    3,   2,   2};
+    public static boolean[] singleOperator = {true, false, true, true, true, false, false, false, false, false, false, false, false, false, false};
+    static boolean[] associability = {false, false, false, false, true, true, true, true, true, true, true, true, true, true, true};
 
     public static String toPostfix(String infixFunction) {
         if (!sorted){
@@ -578,7 +582,7 @@ public class Engine {
                             int lb = infixFunction.indexOf("(", a);
                             try{
                                 int rb = lb+Search.getIndices(infixFunction.substring(lb), ")").get(0);
-                                String[] parameters = infixFunction.substring(lb+1, a+rb).split(",");
+                                String[] parameters = Search.split(infixFunction.substring(lb+1, a+rb), ",", false);
                                 for (int i = 0; i < parameters.length; i++) {
                                     output.push(parameters[i].trim());
                                 }

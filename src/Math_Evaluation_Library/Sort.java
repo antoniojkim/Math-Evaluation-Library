@@ -295,7 +295,7 @@ public class Sort {
         pairQuicksort(array, lead, first, pos-1, ascending);
         pairQuicksort(array, lead, pos+1, last, ascending);
     }
-    
+
 
     public static void quicksort(char[] array, int[] supplementary1, boolean[] supplementary2, boolean[] supplementary3){
         quicksort(array, supplementary1, supplementary2, supplementary3, true);
@@ -328,6 +328,39 @@ public class Sort {
         swap(array, supplementary1, supplementary2, supplementary3, first, pos);
         quicksort(array, supplementary1, supplementary2, supplementary3, first, pos-1, ascending);
         quicksort(array, supplementary1, supplementary2, supplementary3, pos+1, last, ascending);
+    }
+
+    public static void quicksort(char[] array, boolean[] supplementary){
+        quicksort(array, supplementary, true);
+    }
+    public static void quicksort(char[] array, boolean[] supplementary, boolean ascending){
+        quicksort(array, supplementary, 0, array.length-1, ascending);
+    }
+    private static void quicksort(char[] array, boolean[] supplementary, int first, int last, boolean ascending){
+        if (first >= last){
+            return;
+        }
+        char pivot = array[first];
+        int pos = last;
+        if (ascending){
+            for (int a = last; a>first; a--){
+                if (array[a] > pivot){
+                    swap(array, supplementary, pos, a);
+                    pos--;
+                }
+            }
+        }
+        else{
+            for (int a = last; a>first; a--){
+                if (array[a] < pivot){
+                    swap(array, supplementary, pos, a);
+                    pos--;
+                }
+            }
+        }
+        swap(array, supplementary, first, pos);
+        quicksort(array, supplementary, first, pos-1, ascending);
+        quicksort(array, supplementary, pos+1, last, ascending);
     }
 
     public static void quicksort(char[] array, char[] supplementary1, char[] supplementary2){
@@ -416,6 +449,10 @@ public class Sort {
         swap(supplementary1, pos1, pos2);
         swap(supplementary2, pos1, pos2);
         swap(supplementary3, pos1, pos2);
+    }
+    private static void swap(char[] array, boolean[] supplementary, int pos1, int pos2){
+        swap(array, pos1, pos2);
+        swap(supplementary, pos1, pos2);
     }
     private static void swap(char[] array, char[] supplementary1, char[] supplementary2, int pos1, int pos2){
         swap(array, pos1, pos2);

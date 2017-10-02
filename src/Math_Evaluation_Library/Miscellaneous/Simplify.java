@@ -131,12 +131,10 @@ public class Simplify {
                 }
                 else{
                     List<String> subExpression = postfix.subList(parameter1, postfix.size()-1);
-
                     simplifyPostfix(subExpression);
-
                     if (subExpression.size() == 1){
-                        postfix.clear();
                         String term = subExpression.get(0);
+                        postfix.clear();
                         switch(operator){
                             case '!':   postfix.add(postOperatorReassembleCases("!", term));       return;
                             case '°':   postfix.add(postOperatorReassembleCases("°", term));       return;

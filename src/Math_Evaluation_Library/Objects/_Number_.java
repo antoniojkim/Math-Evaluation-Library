@@ -68,7 +68,12 @@ public class _Number_ {
             if (num < factorials.size()){
                 return factorials.get(num);
             }
-            return factorials.get(factorials.size()-1)*getFact(factorials.size(), num, factorials.get(factorials.size()-1));
+            double factorial = factorials.get(factorials.size()-1);
+            for (double i = factorials.size(); i<=num; i++){
+                factorial *= i;
+                factorials.add(factorial);
+            }
+            return factorial;
         }catch(NumberFormatException e){
             return NaN;
         }
@@ -122,12 +127,12 @@ public class _Number_ {
     }
     public static double fromBinary(String binary){
         double num = 0;
-        for (int a = 0; a<binary.length(); a--){
-            if (binary.charAt(a) == '1'){
-                num += Math.pow(2, a);
+        char[] array = binary.toCharArray();
+        for (int a = 0; a<array.length; a++){
+            if (array[a] == '1'){
+                num += (1 << array.length-a-1);
             }
-            else if (binary.charAt(a) == '0'){}
-            else{
+            else if (array[a] != '0'){
                 return -1;
             }
         }

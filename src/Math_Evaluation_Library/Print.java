@@ -2,6 +2,8 @@ package Math_Evaluation_Library;
 
 import Math_Evaluation_Library.Objects._Number_;
 
+import java.util.List;
+
 /**
  * Created by Antonio on 2017-07-22.
  */
@@ -17,6 +19,15 @@ public class Print {
         }
     }
     public static void println(char[] array){
+        if (array.length > 0) {
+            System.out.print("["+array[0]);
+            for (int i = 1; i < array.length; i++){
+                System.out.print(", "+array[i]);
+            }
+            System.out.println("]");
+        }
+    }
+    public static void println(boolean[] array){
         if (array.length > 0) {
             System.out.print("["+array[0]);
             for (int i = 1; i < array.length; i++){
@@ -95,6 +106,17 @@ public class Print {
             }
             else{
                 print(array[0]);
+            }
+            System.out.println("]");
+        }
+    }
+
+
+    public static void println(List<String> list){
+        if (list.size() > 0) {
+            System.out.print("["+list.get(0));
+            for (int i = 1; i < list.size(); i++){
+                System.out.print(", "+list.get(i));
             }
             System.out.println("]");
         }

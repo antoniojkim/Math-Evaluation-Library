@@ -49,6 +49,8 @@ public class Simplify_Tests extends _Tests_ {
 
         simplificationTest("1/2*3", "3/2");
 
+        simplificationTest("x!", "x!");
+
     }
 
     public void simplificationTest(String input, String expected){

@@ -159,8 +159,9 @@ public class MathEngine extends Engine{
                             else if (outputs.get(a + 1).equals("eval") || outputs.get(a + 2).equals("eval")) {}
                             else if (outputs.get(a + 1).equals("evalint") || outputs.get(a + 2).equals("evalint") || outputs.get(a + 3).equals("evalint")) {}
                             else if (outputs.get(a + 3).equals("nint")) {}
-                            else if (outputs.get(a + 3).equals("sum")) {}
+                            else if (outputs.get(a + 3).equals("sum") || outputs.get(a + 4).equals("sum")) {}
                             else if (outputs.get(a + 3).equals("product")) {}
+                            else if (outputs.indexOf("prop") != -1) {}
                             else {
                                 return "Invalid Input Error - Unrecognized character(s):  "+outputs.get(a);
                             }
@@ -227,7 +228,7 @@ public class MathEngine extends Engine{
                 case "fib":     if (x % 1 == 0 && x >= 0 && x <= 1472)  return _Number_.getFibonnaci((int) x);     break;
                 case "smfib":   if (x % 1 == 0 && x >= 0 && x <= 1472)  return _Number_.getFibonnaci((int) (x+2))-1;  break;
                 case "tobin":   if (x % 1 == 0){ return _Number_.getNumber(_Number_.toBinary((int)x));}     break;
-                case "bin":     if (x % 1 == 0){ double num = _Number_.fromBinary(String.valueOf(x)); if (num != -1){return num;}}   break;
+                case "bin":     if (x % 1 == 0){ double num = _Number_.fromBinary(_Number_.format(x)); if (num != -1){return num;}}   break;
                 default:        return x;
             }
         } catch (NumberFormatException | ArithmeticException e) {
@@ -301,6 +302,14 @@ public class MathEngine extends Engine{
                     return "-∞";
                 }
                 return ((x % y)+"").replaceAll("Infinity", "∞");
+            } else if (operator == '≫') {
+                if (x%1 == 0 && y%1 == 0) {
+                    return String.valueOf((int)x >> (int)y);
+                }
+            } else if (operator == '≪') {
+                if (x%1 == 0 && y%1 == 0) {
+                    return String.valueOf((int)x << (int)y);
+                }
             } else if (operator == 'P') {
                 if (x % 1 == 0 && y % 1 == 0) {
                     int n = (int) x;
