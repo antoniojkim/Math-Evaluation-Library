@@ -6,6 +6,7 @@
 package Math_Evaluation_Library;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Objects.MathObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +87,34 @@ public class Search {
             } else {
                 return mid;
             }
+        }
+        return -1;
+    }
+
+    public static boolean contains(MathObject[] array, String item){
+        return binarySearch(array, item) >= 0;
+    }
+    public static int binarySearch(MathObject[] array, String item){
+        int low = 0;
+        int high = array.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            int cmp = array[mid].compareTo(item);
+            if (cmp < 0) {
+                low = mid + 1;
+            } else if (cmp > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    public static int linearSearch(int[] array, int num){
+        for (int i = 0; i<array.length; i++){
+            if (array[i] == num)    return i;
         }
         return -1;
     }

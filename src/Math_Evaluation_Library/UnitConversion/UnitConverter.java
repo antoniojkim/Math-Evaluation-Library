@@ -1,10 +1,7 @@
 package Math_Evaluation_Library.UnitConversion;
 
-import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.Search;
-
-import java.util.ArrayList;
-import java.util.List;
+import Math_Evaluation_Library.Sort;
 
 import static java.lang.Double.NaN;
 
@@ -89,30 +86,29 @@ public class UnitConverter {
     protected double[] unitRelation;
 
     public boolean isUnit(String unit){
-        if (units2 != null && units1 != null && units2 != null && unitRelation != null) {
-            if (!sorted) {
-                Sort.quicksort(units, longUnits);
-                sorted = true;
-            }
-            return Search.contains(units, unit) || Search.contains(units, toShort(unit));
+        if (!sorted) {
+            Sort.quicksort(units, longUnits);
+            sorted = true;
         }
-        return false;
+        return Search.contains(units, unit) || Search.contains(units, toShort(unit));
     }
     public boolean areUnits(String unit1, String unit2){
         return isUnit(unit1) && isUnit(unit2);
     }
 
     public double convert(double measure, String unit1, String unit2){
-        if (unit1.equals(unit2)) {
-            return measure;
-        }
-        unit1 = toShort(unit1);
-        unit2 = toShort(unit2);
-        for (int i = 0; i < units1.length; i++) {
-            if (unit1.equals(units1[i]) && unit2.equals(units2[i])) {
-                return measure / unitRelation[i];
-            } else if (unit2.equals(units1[i]) && unit1.equals(units2[i])) {
-                return measure * unitRelation[i];
+        if (units2 != null && units1 != null && units2 != null && unitRelation != null) {
+            if (unit1.equals(unit2)) {
+                return measure;
+            }
+            unit1 = toShort(unit1);
+            unit2 = toShort(unit2);
+            for (int i = 0; i < units1.length; i++) {
+                if (unit1.equals(units1[i]) && unit2.equals(units2[i])) {
+                    return measure / unitRelation[i];
+                } else if (unit2.equals(units1[i]) && unit1.equals(units2[i])) {
+                    return measure * unitRelation[i];
+                }
             }
         }
         return NaN;

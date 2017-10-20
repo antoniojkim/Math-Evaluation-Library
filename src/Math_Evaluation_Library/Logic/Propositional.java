@@ -114,7 +114,7 @@ public class Propositional {
                     }
                 }
                 else{
-                    return "Operator Error:  "+postfixStr;
+                    return "Operators Error:  "+postfixStr;
                 }
             }
         }
@@ -225,25 +225,25 @@ public class Propositional {
 
 
 
-    public static int operatorIndex(String item){
+    private static int operatorIndex(String item){
         if (!sorted){
             sortFunctions();
         }
         return (item.length() == 1 ? Search.binarySearch(operators, item.charAt(0)) : -1);
     }
-    public static int operatorIndex(char item){
+    private static int operatorIndex(char item){
         if (!sorted){
             sortFunctions();
         }
         return Search.binarySearch(operators, item);
     }
-    public static boolean operatorContains(String item){
+    private static boolean operatorContains(String item){
         if (!sorted){
             sortFunctions();
         }
         return (item.length() == 1 ? Search.contains(operators, item.charAt(0)) : false);
     }
-    public static boolean operatorContains(char item){
+    private static boolean operatorContains(char item){
         if (!sorted){
             sortFunctions();
         }

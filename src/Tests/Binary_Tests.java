@@ -12,8 +12,10 @@ public class Binary_Tests extends Engine_Tests {
     @Override
     public void run() {
 
-        evaluationTest("tobin(10)", "1010");
-        evaluationTest("bin(1010)", "10");
+        String[] tests = {"10", "11", "100", "101", "110", "111"};
+        for (String test : tests){
+            evaluationTest("bin(tobin("+test+"))", test);
+        }
 
     }
 }

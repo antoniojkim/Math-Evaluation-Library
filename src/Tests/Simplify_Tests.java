@@ -51,6 +51,9 @@ public class Simplify_Tests extends _Tests_ {
 
         simplificationTest("x!", "x!");
 
+        simplificationTest("gcd(2, 3, 4)", "Invalid Syntax Parsing Error:  gcd 3 2 3 4");
+
+
     }
 
     public void simplificationTest(String input, String expected){

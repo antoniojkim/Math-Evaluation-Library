@@ -75,6 +75,13 @@ public class _Tests_ {
         }
         incrementNumTests();
     }
+    public void assertionTest(boolean test, String message){
+        if (!test){
+            System.out.println(test_name+" Test Failed:   "+message);
+            System.exit(1);
+        }
+        incrementNumTests();
+    }
     public void assertionTest(boolean test, String input, String expected){
         if (!test){
             System.out.println(test_name+" Test Failed:");

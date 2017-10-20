@@ -15,8 +15,10 @@ public class Unit_Conversion_Tests extends Engine_Tests {
 
         evaluationTest("[1mi->km]", 1.609344);
         evaluationTest("[2.356mth->s]", 6195862.90751904);
+//        evaluationTest("[32yr->s]", 6195862.90751904);
         evaluationTest("[2.356km->s]", "NaN");
         evaluationTest("[1m/s->km/h]", 3.6);
+        evaluationTest("[30°C->°F]", 86);
         evaluationTest("unit(1, m/s, km/h)", 3.6);
 
     }

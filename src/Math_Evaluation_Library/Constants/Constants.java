@@ -1,7 +1,8 @@
 package Math_Evaluation_Library.Constants;
 
-import static java.lang.Double.NaN;
 import Math_Evaluation_Library.Search;
+
+import static java.lang.Double.NaN;
 
 /**
  * Created by Antonio on 2017-07-12.
@@ -13,6 +14,7 @@ public class Constants {
     public static final double e = 2.71828182845904523536;
     public static final double gr = 1.6180339887499;
     public static final double sqrt2 = 1.41421356237309505;
+    public static final double ln2 = 0.6931471805599453;
     public static final double euler_macheroni = 0.57721566490153286;
 
     public static double getConstant(String str){

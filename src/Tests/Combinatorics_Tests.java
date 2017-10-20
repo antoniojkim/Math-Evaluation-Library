@@ -12,6 +12,12 @@ public class Combinatorics_Tests extends Engine_Tests {
     @Override
     public void run() {
 
+        evaluationTest("5!", 120);
+        evaluationTest("170!", 7.257415615307994E306);
+        evaluationTest("171!", "NaN");
+        evaluationTest("171P50", 1.533200272194981E108);
+        evaluationTest("171C50", 5.041084940545287E43);
+
         evaluationTest("3*4!", 72);
         evaluationTest("3*4P2", 36);
         evaluationTest("3*4C2", 18);
@@ -22,6 +28,13 @@ public class Combinatorics_Tests extends Engine_Tests {
         evaluationTest("3*4P2-3*4C2", 18);
         evaluationTest("3*4P2*3*4C2", 648);
         evaluationTest("3*4P2/(3*4C2)", 2);
+
+        evaluationTest("738C10", 1.2422381175008683E22);
+        evaluationTest("738C138", "NaN");
+
+
+        evaluationTest("hyp(52, 4, 5, 3)+hyp(52, 4, 5, 4)", 0.001754547973035368);
+        evaluationTest("hyp(52, 4, 5, 0)+hyp(52, 4, 5, 1)", 0.958315633945886);
 
     }
 }

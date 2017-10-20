@@ -33,6 +33,7 @@ public class Integral_Tests extends  _Tests_{
         integralTests("sin(cosx)", "ʃ(sin(cosx))");
 
         numericalIntegralTests("sinx", 1, 3, 1.5302948024685852);
+        numericalIntegralTests("x", 1, 3, 4);
 //        numericalIntegralTests("sin(cosx)", 1, 5, -1.5910876205726525);
     }
 
@@ -51,7 +52,7 @@ public class Integral_Tests extends  _Tests_{
     }
     public void numericalIntegralTests(String input, double a, double b, double expected){
         input = input.trim();
-        double nint = Engine.evaluate("nint("+input+", "+a+", "+b+")");
+        double nint = Engine.evaluate("∫("+input+", "+a+", "+b+")");
         if (nint != expected){
             System.out.println("\nIntegration Test Failed:");
             System.out.println("     Input:         ʃ["+input+", "+a+", "+b+"]");

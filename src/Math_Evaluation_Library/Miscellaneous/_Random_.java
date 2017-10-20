@@ -25,6 +25,14 @@ public class _Random_ {
     public static int randomint(int low, int high){
         return (int)((high-low+1)*Math.random()+low);
     }
+    public static double randomRational(int low, int high){
+        int numerator = randomint(low, high);
+        int demominator = randomint(low, high);
+        while (demominator == 0){
+            demominator = randomint(low, high);
+        }
+        return ((double)numerator)/demominator;
+    }
 
     public static int random (int[] array){
         return array[randomint(0, array.length-1)];

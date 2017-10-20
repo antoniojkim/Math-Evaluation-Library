@@ -12,16 +12,18 @@ public class Summation_Tests extends Engine_Tests {
     @Override
     public void run(){
 
-        evaluationTest("Σ(4({i}-2)+5, 1, 1)", "1");
-        evaluationTest("Σ({i}, 1, 10)", "55");
-        evaluationTest("Σ(x, 1, n)", "n(n+1)/2");
-        evaluationTest("Σ(i, 1, n)", "n(n+1)/2");
-        evaluationTest("Σ(x+2, 1, n)", "n(n+5)/2");
-        evaluationTest("Σ(x-2, 1, n)", "n(n-3)/2");
-        evaluationTest("Σ(x+-3, 1, n)", "n(n-5)/2");
-        evaluationTest("Σ({i}!, 0, 2)", 4);
-        evaluationTest("Σ({j}!, j, 0, 2)", 4);
-        evaluationTest("Σ(Σ({j}, j, 0, 5), 0, 5)", 90);
+        evaluationTest("∑(4({i}-2)+5, 1, 1)", "1");
+        evaluationTest("∑({i}, 1, 10)", "55");
+        evaluationTest("∑(x, 1, n)", "n(n+1)/2");
+        evaluationTest("∑(i, 1, n)", "n(n+1)/2");
+        evaluationTest("∑(x+2, 1, n)", "n(n+5)/2");
+        evaluationTest("∑(x-2, 1, n)", "n(n-3)/2");
+        evaluationTest("∑(x+-3, 1, n)", "n(n-5)/2");
+        evaluationTest("∑({i}!, 0, 2)", 4);
+        evaluationTest("∑({j}!, j, 0, 2)", 4);
+        evaluationTest("∑(∑({j}, j, 0, 1), 0, 1)", 2);
+
+        evaluationTest("∏({i}, 1, 3)", 6);
 
     }
 }

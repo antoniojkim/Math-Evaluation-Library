@@ -8,10 +8,7 @@ import Math_Evaluation_Library.Search;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static java.lang.Double.NaN;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -56,41 +53,6 @@ public class _Number_ {
         return primes;
     }
 
-    private static List<Double> factorials = new ArrayList<>(Arrays.asList(1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0));
-    public static double fact(int num){
-        try{
-            if (num < 0 || num > 170){
-                return NaN;
-            }
-            if (num < 2){
-                return 1;
-            }
-            if (num < factorials.size()){
-                return factorials.get(num);
-            }
-            double factorial = factorials.get(factorials.size()-1);
-            for (double i = factorials.size(); i<=num; i++){
-                factorial *= i;
-                factorials.add(factorial);
-            }
-            return factorial;
-        }catch(NumberFormatException e){
-            return NaN;
-        }
-    }
-    public static double getFact(double num, int stop, double base){
-        try{
-            if (num < stop){
-                double next = num*base;
-                factorials.add(next);
-                return num*(getFact(num+1, stop, next));
-            }
-            return num;
-        }catch(NumberFormatException e){
-            return NaN;
-        }
-    }
-
     public static double getFibonnaci(int n){
         double fib = ((Math.pow(Constants.gr, n) - Math.pow(-1*Constants.gr, -1*n))/Math.sqrt(5));
         if (Math.abs(Math.floor(fib)-fib) <= Math.abs(Math.ceil(fib)-fib)){
@@ -101,23 +63,23 @@ public class _Number_ {
         }
         return fib;
     }
-    public static double getFibonnaciSum(int n){
-        return getFibonnaciSum(n+2)-1;
-    }
 
-    public static int pow2(int x){
+    public static int floor2(int x){
         if (x < 0)
             return 0;
-        --x;
         x |= x >> 1;
         x |= x >> 2;
         x |= x >> 4;
         x |= x >> 8;
         x |= x >> 16;
-        return x+1;
+        x++;
+        return x >> 1;
+    }
+    public static double floor2(double x){
+        return 1 << (int)Math.floor(Math.log(x)/Constants.ln2);
     }
     public static String toBinary(int x){
-        int m = pow2(x);
+        int m = floor2(x);
         String binary = "";
         for (int a = m; a>=0; a--){
             binary += String.valueOf((int)x/(int)Math.pow(2, a));
@@ -187,7 +149,7 @@ public class _Number_ {
             }catch(NumberFormatException e2){}
         }
         double constant = Constants.getConstant(str);
-        if (!returnNaN && String.valueOf(constant).equals("NaN")){
+        if (!returnNaN && _Number_.format(constant).equals("NaN")){
             throw new NumberFormatException(str);
         }
         return constant;

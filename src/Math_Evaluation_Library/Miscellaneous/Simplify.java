@@ -2,12 +2,15 @@ package Math_Evaluation_Library.Miscellaneous;
 
 import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Engine.UnaryFunctions;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static Math_Evaluation_Library.Engine.Operators.*;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -36,7 +39,7 @@ public class Simplify {
         }
         if (!rulesAdded){   addAllRules();  }
         String finalOperation = postfix.get(postfix.size()-1);
-        if (Engine.startsWithOrder(finalOperation)){
+        if (UnaryFunctions.startsWithUnaryFunction(finalOperation)){
             List<String> subExpression = new ArrayList<>(postfix.subList(0, postfix.size()-1));
             simplifyPostfix(subExpression);
             if (subExpression.size() == 1){
@@ -47,7 +50,7 @@ public class Simplify {
                 }
                 else{
                     term = addBrackets(term);
-                    if (term.charAt(0) != '(' && Engine.startsWithOrder(term)){
+                    if (term.charAt(0) != '(' && UnaryFunctions.startsWithUnaryFunction(term)){
                         postfix.add(finalOperation+"("+term+")");
                     }
                     else {
@@ -65,31 +68,31 @@ public class Simplify {
 
             int postfixLastIndex = postfix.size()-1;
             char operator = postfix.get(postfixLastIndex).charAt(0);
-            int index = Engine.operatorIndex(operator);
+            int index = operatorIndex(operator);
             //  {a} {b} * {c} {d} / +           ab+c/d
             if (index != -1){
                 int parameter1 = postfixLastIndex-1;
                 for (int i = parameter1; parameter1 <= i && i >= 0; i--){
-                    if (Engine.startsWithOrder(postfix.get(i))){
+                    if (UnaryFunctions.startsWithUnaryFunction(postfix.get(i))){
                         parameter1--;
                     }
                     else {
-                        int index1 = Engine.operatorIndex(postfix.get(i));
+                        int index1 = operatorIndex(postfix.get(i));
                         if (index1 != -1){
-                            parameter1 -= (Engine.singleOperator[index1] ? 1 : 2);
+                            parameter1 -= (operators[index1].isSingleOperator() ? 1 : 2);
                         }
                     }
                 }
-                if (!Engine.singleOperator[index]){
+                if (!operators[index].isSingleOperator()){
                     int parameter2 = parameter1-1;
                     for (int i = parameter2; parameter2 <= i && i >= 0; i--){
-                        if (Engine.startsWithOrder(postfix.get(i))){
+                        if (UnaryFunctions.startsWithUnaryFunction(postfix.get(i))){
                             parameter2--;
                         }
                         else {
-                            int index1 = Engine.operatorIndex(postfix.get(i));
+                            int index1 = operatorIndex(postfix.get(i));
                             if (index1 != -1){
-                                parameter2 -= (Engine.singleOperator[index1] ? 1 : 2);
+                                parameter2 -= (operators[index1].isSingleOperator() ? 1 : 2);
                             }
                         }
                     }
@@ -179,7 +182,7 @@ public class Simplify {
                         return true;
                     }
                 }
-                if (Engine.orderContains(postfix.get(eIndex-2)) && !postfix.get(eIndex-2).equals("abs")){
+                if (UnaryFunctions.unaryFunctionsContains(postfix.get(eIndex-2)) && !postfix.get(eIndex-2).equals("abs")){
                     String superScript = Scripts.toSuperScript(postfix.get(eIndex-1));
                     if(superScript.length() == postfix.get(eIndex-1).length()){
                         postfix.set(eIndex-2, postfix.get(eIndex-2)+superScript);
@@ -511,8 +514,8 @@ public class Simplify {
                     for (int j = 0; j<ruleKeys.size(); j++){
                         String value = postfix.get(postfix.size()+ruleValues.get(j));
                         if ((_Number_.isNumber(ruleKeys.get(j).charAt(1)) && !_Number_.isNumber(value)) ||
-                                 Engine.operatorContains(value) ||
-                                (Engine.orderContains(value) && ruleKeys.get(j).charAt(1) != 'f')){
+                                 operatorContains(value) ||
+                                (UnaryFunctions.unaryFunctionsContains(value) && ruleKeys.get(j).charAt(1) != 'f')){
                             continue RULES;
                         }
                         else{

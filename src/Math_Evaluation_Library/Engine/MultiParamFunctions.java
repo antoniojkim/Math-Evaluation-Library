@@ -8,418 +8,597 @@ import Math_Evaluation_Library.Logic.Propositional;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Function;
+import Math_Evaluation_Library.Objects.MultiParamFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
+import Math_Evaluation_Library.Statistics.RandomVariables;
 import Math_Evaluation_Library.Statistics.Stats;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static Math_Evaluation_Library.Engine.Engine.var;
+import static Math_Evaluation_Library.Engine.Engine.x;
+
 /**
  * Created by Antonio on 2017-07-22.
  */
-public class MultiParamFunctions extends Engine{
+public class MultiParamFunctions{
+
+//    public static void main (String[] args){
+//        Sort.quicksort(multiParamFunctions);
+//        for (MultiParamFunction m : multiParamFunctions){
+//            System.out.println(m.getName());
+//        }
+//    }
 
     public static final String INVALID = "!";
 
-    public static String evaluate(String function, String[] parameters) throws NumberFormatException{
-        return evaluate(function, parameters, true);
-    }
-    public static String evaluate(String function, String[] parameters, boolean flexible) throws NumberFormatException{
-        if (flexible){
-            switch (function){
-                case "logab":   return log(parameters);
-                case "max":     return max(parameters);
-                case "min":     return min(parameters);
-                case "gcd":     return gcd(parameters);
-                case "lcm":     return lcm(parameters);
-                case "avg":     return average(parameters);
-                case "ED":      return euclideanDistance(parameters);
-                case "var":     return variance(parameters);
-                case "stndv":   return standardDeviation(parameters);
-                case "heron":   return heron(parameters);
-                case "prop":    return proposition(parameters);
-                case "sum":     return sum(parameters);
-                default:        break;
-            }
-        }
-        else{
-            switch (function){
-                case "random":     return random(parameters);
-                case "randint":    return randint(parameters);
-                case "unit":       return unitConversion(parameters);
-                case "nint":       return nint(parameters);
-                case "dx":         return dx(parameters);
-                case "dxn":        return dxn(parameters);
-                case "product":    return product(parameters);
-                case "newton":     return newton(parameters);
-                case "c_law":      return cosineLaw(parameters);
-                case "elasd":      return elasd(parameters);
-                default:           break;
-            }
-        }
-        return INVALID;
-    }
-
-    // Flexible number of arguments
-    private static String log(String[] parameters){
-        if (parameters.length == 1){
-            return _Number_.format(  Math.log10(evaluate(parameters[0])) );
-        }
-        else if (parameters.length == 2){
-            return _Number_.format(  Math.log10(evaluate(parameters[0]))/Math.log10(evaluate(parameters[1])));
-        }
-        return INVALID;
-    }
-    private static String max(String[] parameters){
-        if (parameters.length > 0){
-            double largest = evaluate(parameters[0]);
-            for (int b = 1; b<parameters.length; b++){
-                largest = Math.max(largest, evaluate(parameters[b]));
-            }
-            return _Number_.format(largest);
-        }
-        return INVALID;
-    }
-    private static String min(String[] parameters){
-        if (parameters.length > 0){
-            double smallest = evaluate(parameters[0]);
-            for (int b = 1; b<parameters.length; b++){
-                smallest = Math.min(smallest, evaluate(parameters[b]));
-            }
-            return _Number_.format(smallest);
-        }
-        return INVALID;
-    }
-    private static String gcd(String[] parameters){
-        if (parameters.length == 1){
-            return parameters[0];
-        }
-        else if (parameters.length > 1){
-            double temp1 = evaluate(parameters[0]);
-            if (temp1%1 == 0){
-                double gcd = temp1;
-                for (int b = 1; b<parameters.length; b++){
-                    double temp = evaluate(parameters[b]);
-                    if (temp%1 == 0){
-                        gcd = Mod.gcd(gcd, temp);
-                    }
-                    else{
-                        return INVALID;
-                    }
-                }
-                return _Number_.format(gcd);
-            }
-        }
-        return INVALID;
-    }
-    private static String lcm(String[] parameters){
-        if (parameters.length == 1){
-            return parameters[0];
-        }
-        else if (parameters.length > 1){
-            double temp1 = evaluate(parameters[0]);
-            if (temp1%1 == 0){
-                int lcm = (int)temp1;
-                for (int b = 1; b<parameters.length; b++){
-                    double temp = evaluate(parameters[b]);
-                    if (temp%1 == 0){
-                        lcm = (int) Mod.lcm(lcm, (int)temp);
-                    }
-                    else{
-                        return INVALID;
-                    }
-                }
-                return _Number_.format(lcm);
-            }
-        }
-        return INVALID;
-    }
-    private static String heron(String[] parameters){
-        if (parameters.length == 3){
-            double A = evaluate(parameters[0]);
-            double B = evaluate(parameters[1]);
-            double C = evaluate(parameters[2]);
-            double s = (A+B+C) / 2;
-            return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
-        }
-        else if (parameters.length == 6){
-            double x1 = evaluate(parameters[0]);
-            double y1 = evaluate(parameters[1]);
-            double x2 = evaluate(parameters[2]);
-            double y2 = evaluate(parameters[3]);
-            double x3 = evaluate(parameters[4]);
-            double y3 = evaluate(parameters[5]);
-            double A = Geometric.pointDistance(x1, y1, x2, y2);
-            double B = Geometric.pointDistance(x1, y1, x3, y3);
-            double C = Geometric.pointDistance(x2, y2, x3, y3);
-            double s = (A+B+C) / 2;
-            return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
-        }
-        return INVALID;
-    }
-    private static String euclideanDistance(String[] parameters){
-        if (parameters.length == 1){
-            return parameters[0];
-        }
-        else if (parameters.length > 1){
-            double ED = 0;
-            for (String parameter : parameters){
-                double temp = evaluate(parameter);
-                ED += temp*temp;
-            }
-            return _Number_.format(Math.sqrt(ED));
-        }
-        return INVALID;
-    }
-    private static String average(String[] parameters){
-        if (parameters.length > 0){
-            double sum = 0;
-            for (String parameter : parameters){
-                sum += evaluate(parameter);
-            }
-            sum /= parameters.length;
-            return _Number_.format(sum);
-        }
-        return INVALID;
-    }
-    private static String variance(String[] parameters){
-        if (parameters.length > 1){
-            double[] data = new double[parameters.length];
-            for (int b = 0; b<data.length; b++){
-                data[b] = evaluate(parameters[b]);
-            }
-            return _Number_.format(Stats.variance(data));
-        }
-        return INVALID;
-    }
-    private static String standardDeviation(String[] parameters){
-        if (parameters.length > 1){
-            double[] data = new double[parameters.length];
-            for (int b = 0; b<data.length; b++){
-                data[b] = evaluate(parameters[b]);
-            }
-            return _Number_.format(Stats.stnDev(data));
-        }
-        return INVALID;
-    }
-    private static String sum (String[] parameters){
-        if (parameters.length == 3 || parameters.length == 4){
-            Function f = new Function(parameters[0]);
-            List<Double> numbers = f.isFunction() ? _Number_.extractNumbers(f.function()) : new ArrayList<>();
-            boolean isStartNumber = parameters.length == 4 ? _Number_.isNumber(parameters[2]) : _Number_.isNumber(parameters[1]);
-            boolean isEndNumber = parameters.length == 4 ? _Number_.isNumber(parameters[3]) : _Number_.isNumber(parameters[2]);
-            String variable = parameters.length == 4 ? parameters[1] : "i";
-            if (isStartNumber){
-                double m = parameters.length == 3 ? Double.parseDouble(parameters[1]) : Double.parseDouble(parameters[2]);
-                if (isEndNumber){
-                    double n = parameters.length == 3 ? Double.parseDouble(parameters[2]) : Double.parseDouble(parameters[3]);
-                    if (parameters[0].equals(Engine.var) || parameters[0].equals("i")){
-                        return _Number_.format((n*(n+1)-m*(m-1))/2.0);
-                    }
-                    if (Engine.toPostfix(parameters[0]).equals(Engine.var+" 2 ^")){
-                        return _Number_.format((n+1-m)*(2*m*m+2*m*n-m+2*n*n+n)/6.0);
-                    }
-                    if(f.isFunction()) {
-                        for (double num : numbers) {
-                            String v = _Number_.format(num);
-                            if (f.postfix().equals("x " + v + " -")) {
-                                return _Number_.format(-0.5 * (m - n - 1) * (m + n - 2 * num));
+    public static final MultiParamFunction[] multiParamFunctions = {
+            new MultiParamFunction("Bin",      3, "Bin(n, p, "+x+") calculates the Binomial Distribution (with n trials and probability p) at X="+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        try{
+                            double n = _Number_.getNumber(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            double x = _Number_.getNumber(parameters[2]);
+                            if (n>=0 && p>=0 && p<=1 && x>=0 && x<=n){
+                                return String.valueOf(RandomVariables.binomialDistribution((int)n, p, (int)x));
                             }
-                            if (f.postfix().equals("x " + v + " +")) {
-                                return _Number_.format(-0.5 * (m - n - 1) * (m + n + 2 * num));
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("NB",       3, "NB(k, p, "+x+") calculates the Negative Binomial Distribution (with k successes and probability p) at X="+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        try{
+                            double k = _Number_.getNumber(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            double x = _Number_.getNumber(parameters[2]);
+                            if (k>=0 && p>=0 && p<=1 && x>=0 && x<=k){
+                                return String.valueOf(RandomVariables.negativeBinomialDistribution((int)k, p, (int)x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("avg",     -1, "avg(a₁,…,aₙ) calculates the average of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 0){
+                        double sum = 0;
+                        for (String parameter : parameters){
+                            sum += Engine.evaluate(parameter);
+                        }
+                        sum /= parameters.length;
+                        return _Number_.format(sum);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("c_law",    3, "c_law(b, c, θ) calculates the cosine law:  √(b²+c²-2×b×c×cos(θ))")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        double b = Engine.evaluate(parameters[0]);
+                        double c = Engine.evaluate(parameters[1]);
+                        double theta = Engine.evaluate(parameters[2]);
+                        return _Number_.format(Math.sqrt(b*b+c*c-2*b*c*Math.cos(theta)));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("dxn",      3, "dxn(ƒ, "+x+", n) calculates the value of the nth derivative of ƒ at "+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        String fx = parameters[0];
+                        double x = Engine.evaluate(parameters[1]);
+                        int n = Integer.parseInt(parameters[2].trim());
+                        String[] derivatives = new String[n];
+                        derivatives[0] = Derivative.calculate(fx);
+                        for (int b = 1; b<derivatives.length; b++){
+                            derivatives[b] = Derivative.calculate(derivatives[b-1]);
+                        }
+                        String finalDerivative = derivatives[derivatives.length-1];
+                        if (finalDerivative.charAt(finalDerivative.length()-1) != '\''){
+                            return _Number_.format(Engine.evaluate(derivatives[derivatives.length-1], x));
+                        }
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("elasd",    4, "elasd(q₁, q₂, p₁, p₂) calculates the elasticity of demand:  ((q₂-q₁)/(q₂+q₁))/((p₂-p₁)/(p₂+p₁))")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 4){
+                        double q1 = Engine.evaluate(parameters[0]);
+                        double q2 = Engine.evaluate(parameters[1]);
+                        double p1 = Engine.evaluate(parameters[2]);
+                        double p2 = Engine.evaluate(parameters[3]);
+                        return _Number_.format((((q2 - q1) / (q2 + q1)) / ((p2 - p1) / (p2 + p1))));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("gcd",     -1, "gcd(a₁,…,aₙ) calculates the greatest common denominator of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        return parameters[0];
+                    }
+                    else if (parameters.length > 1){
+                        double temp1 = Engine.evaluate(parameters[0]);
+                        if (temp1%1 == 0){
+                            double gcd = temp1;
+                            for (int b = 1; b<parameters.length; b++){
+                                double temp = Engine.evaluate(parameters[b]);
+                                if (temp%1 == 0){
+                                    gcd = Mod.gcd(gcd, temp);
+                                }
+                                else{
+                                    return INVALID;
+                                }
+                            }
+                            return _Number_.format(gcd);
+                        }
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("geo",      2, "geo(p, "+x+") calculates the Geometric Distribution (with probability p) at X="+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double p = Engine.evaluate(parameters[0]);
+                            double x = _Number_.getNumber(parameters[1]);
+                            if (p>=0 && p<=1 && x>=1){
+                                return String.valueOf(RandomVariables.geometricDistribution(p, (int)x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("heron",   -1, "heron(A, B, C) calculates the area of a triangle of side lengths A, B, C. heron("+x+"₁, y₁, "+x+"₂, y₂, "+x+"₃, y₃) calculates the area of a triangle with points (x₁, y₁), (x₂, y₂), (x₃, y₃)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        double A = Engine.evaluate(parameters[0]);
+                        double B = Engine.evaluate(parameters[1]);
+                        double C = Engine.evaluate(parameters[2]);
+                        double s = (A+B+C) / 2;
+                        return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
+                    }
+                    else if (parameters.length == 6){
+                        double x1 = Engine.evaluate(parameters[0]);
+                        double y1 = Engine.evaluate(parameters[1]);
+                        double x2 = Engine.evaluate(parameters[2]);
+                        double y2 = Engine.evaluate(parameters[3]);
+                        double x3 = Engine.evaluate(parameters[4]);
+                        double y3 = Engine.evaluate(parameters[5]);
+                        double A = Geometric.pointDistance(x1, y1, x2, y2);
+                        double B = Geometric.pointDistance(x1, y1, x3, y3);
+                        double C = Geometric.pointDistance(x2, y2, x3, y3);
+                        double s = (A+B+C) / 2;
+                        return _Number_.format(Math.sqrt(s*(s-A)*(s-B)*(s-C)));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("hyp",      4, "hyp(N, r, n, "+x+") calculates the Hypergeometric Distribution (with N objects, r ways to succeed, n trials) at X="+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 4){
+                        try{
+                            double N = _Number_.getNumber(parameters[0]);
+                            double r = _Number_.getNumber(parameters[1]);
+                            double n = _Number_.getNumber(parameters[2]);
+                            double x = _Number_.getNumber(parameters[3]);
+                            if (N%1 == 0 && r%1 == 0 && n%1 == 0 && x%1 == 0){
+                                return String.valueOf(RandomVariables.hyperGeometricDistribution((int)N, (int)r, (int)n, (int)x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("lcm",     -1, "lcm(a₁,…,aₙ) calculates the lowest common multiple of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        return parameters[0];
+                    }
+                    else if (parameters.length > 1){
+                        double temp1 = Engine.evaluate(parameters[0]);
+                        if (temp1%1 == 0){
+                            int lcm = (int)temp1;
+                            for (int b = 1; b<parameters.length; b++){
+                                double temp = Engine.evaluate(parameters[b]);
+                                if (temp%1 == 0){
+                                    lcm = (int) Mod.lcm(lcm, (int)temp);
+                                }
+                                else{
+                                    return INVALID;
+                                }
+                            }
+                            return _Number_.format(lcm);
+                        }
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("logab",   -1, "logab(a) calculated log₁₀(a). logab(a, b) calculates logₐ(b)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        return _Number_.format(  Math.log10(Engine.evaluate(parameters[0])) );
+                    }
+                    else if (parameters.length == 2){
+                        return _Number_.format(  Math.log10(Engine.evaluate(parameters[0]))/Math.log10(Engine.evaluate(parameters[1])));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("max",     -1, "max(a₁,…,aₙ) calculates the highest of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 0){
+                        double largest = Engine.evaluate(parameters[0]);
+                        for (int b = 1; b<parameters.length; b++){
+                            largest = Math.max(largest, Engine.evaluate(parameters[b]));
+                        }
+                        return _Number_.format(largest);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("min",     -1, "min(a₁,…,aₙ) calculates the lowest of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 0){
+                        double smallest = Engine.evaluate(parameters[0]);
+                        for (int b = 1; b<parameters.length; b++){
+                            smallest = Math.min(smallest, Engine.evaluate(parameters[b]));
+                        }
+                        return _Number_.format(smallest);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("newton",   2, "newton(ƒ, a) calculates the newton approximation of the root of ƒ starting from "+x+"=a")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        String fx = parameters[0];
+                        double x = Engine.evaluate(parameters[1]);
+                        return _Number_.format(Roots.NewtonsMethod(fx, x));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("poi",      2, "poi(λ, "+x+") calculates the Poisson Distribution (with parameter λ=np) at X="+x)
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double lambda = Engine.evaluate(parameters[0]);
+                            double x = _Number_.getNumber(parameters[1]);
+                            return String.valueOf(RandomVariables.poissonDistribution(lambda, (int)x));
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("prop",    -1, "prop(s, t₁,…,tₙ) calculates the truth valuation of s with truth values t₁,…,tₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 0){
+                        boolean[] values = new boolean[parameters.length-1];
+                        for (int i = 0; i<values.length; i++){
+                            values[i] = parameters[i+1].equalsIgnoreCase("T") || parameters[i+1].equalsIgnoreCase("True");
+                        }
+                        return Propositional.valuate(parameters[0], values);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("randint",  2, "randint(l, h) calculates a random integer ∈ [l, h]")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        int low = Integer.parseInt(parameters[0]);
+                        int high = Integer.parseInt(parameters[1]);
+                        return _Number_.format(_Random_.randomint(low, high));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("random",   2, "random(l, h) calculates a random real number ∈ [l, h]")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        double low = Engine.evaluate(parameters[0]);
+                        double high = Engine.evaluate(parameters[1]);
+                        return _Number_.format(_Random_.random(low, high));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("randq",    2, "randint(l, h) calculates a random rational of the form p/q where p,q ∈ [l, h]")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        int low = Integer.parseInt(parameters[0]);
+                        int high = Integer.parseInt(parameters[1]);
+                        return _Number_.format(_Random_.randomRational(low, high));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("riemann", -1, "riemann(ƒ, a, b, n, {l, r, m}) calculates the {l, r, m} riemann sum of fƒ from a to b with n intervals")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 4 || parameters.length == 5){
+                        Function f = new Function(parameters[0]);
+                        int start = Integer.parseInt(parameters[1]);
+                        int end = Integer.parseInt(parameters[2]);
+                        int n = Integer.parseInt(parameters[3]);
+                        String riemann = (parameters.length == 5 ? parameters[4] : "m");
+                        double h = (end-start)/(double)n;
+
+                        double sum = 0;
+                        if (riemann.equals("l")){
+                            for (int b = 0; b < n; b++) {
+                                sum += f.of(start+h*b);
+                            }
+                        }
+                        else if (riemann.equals("r")){
+                            for (int b = 1; b <= n; b++) {
+                                sum += f.of(start+h*b);
+                            }
+                        }
+                        else {
+                            for (int b = 0; b <= n-1; b++) {
+                                sum += f.of(start+h*(2*b+1)/2.0);
+                            }
+                        }
+                        return _Number_.format(sum*h);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("stndv",   -1, "stndv(a₁,…,aₙ) calculates the standard deviation of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 1){
+                        double[] data = new double[parameters.length];
+                        for (int b = 0; b<data.length; b++){
+                            data[b] = Engine.evaluate(parameters[b]);
+                        }
+                        return _Number_.format(Stats.stnDev(data));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("strln",    1, "strln(str) calculates the length of string str")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        return String.valueOf(parameters[0].length());
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("unif",     3, "unif(a, b, x) calculates the uniform distribution from a to b at x")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        try{
+                            int a = Integer.parseInt(parameters[0]);
+                            int b = Integer.parseInt(parameters[1]);
+                            int x = Integer.parseInt(parameters[2]);
+                            return _Number_.format(RandomVariables.uniformDistribution(a, b, x));
+                        }catch (NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("unit",     3, "unit(m, a, b) converts m from unit a to unit b")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        double measure = _Number_.getNumber(parameters[0]);
+                        String unit1 = parameters[1];
+                        String unit2 = parameters[2];
+                        double converted = _UnitConversion_.convert(measure, unit1, unit2);
+                        if (_Number_.isNumber(converted)){
+                            return String.valueOf(converted);
+                        }
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("var",     -1, "var(a₁,…,aₙ) calculates the variance of a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length > 1){
+                        double[] data = new double[parameters.length];
+                        for (int b = 0; b<data.length; b++){
+                            data[b] = Engine.evaluate(parameters[b]);
+                        }
+                        return _Number_.format(Stats.variance(data));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("∆",       -1, "∆(a₁,…,aₙ) calculates the euclidean distance between a₁,…,aₙ")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        return parameters[0];
+                    }
+                    else if (parameters.length > 1){
+                        double ED = 0;
+                        for (String parameter : parameters){
+                            double temp = Engine.evaluate(parameter);
+                            ED += temp*temp;
+                        }
+                        return _Number_.format(Math.sqrt(ED));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("∏",       -1, "∏(ƒ, i, n) calculates the product ƒ(i)×⋯×ƒ(n)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3 || parameters.length == 4){
+                        int start = parameters.length == 4 ? Integer.parseInt(parameters[2]) : Integer.parseInt(parameters[1]);
+                        int end = parameters.length == 4 ? Integer.parseInt(parameters[3]) : Integer.parseInt(parameters[2]);
+                        String variable = parameters.length == 4 ? parameters[1] : "i";
+                        double product = 1;
+                        for (int b = start; b <= end; b++) {
+                            product *= Engine.evaluate(Search.replace(parameters[0], new String[][]{
+                                    {"{"+variable+"}", "("+b+")"}, {"$"+variable, "("+b+")"}, {"("+variable+")", "("+b+")"}
+                            }));
+                        }
+                        return _Number_.format(product);
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("∑",       -1, "∑(ƒ, i, n) calculates the sum ƒ(i)+⋯+ƒ(n)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3 || parameters.length == 4){
+                        Function f = new Function(parameters[0]);
+                        List<Double> numbers = f.isFunction() ? _Number_.extractNumbers(f.function()) : new ArrayList<>();
+                        boolean isStartNumber = parameters.length == 4 ? _Number_.isNumber(parameters[2]) : _Number_.isNumber(parameters[1]);
+                        boolean isEndNumber = parameters.length == 4 ? _Number_.isNumber(parameters[3]) : _Number_.isNumber(parameters[2]);
+                        String variable = parameters.length == 4 ? parameters[1] : "i";
+                        if (isStartNumber){
+                            double m = parameters.length == 3 ? Double.parseDouble(parameters[1]) : Double.parseDouble(parameters[2]);
+                            if (isEndNumber){
+                                double n = parameters.length == 3 ? Double.parseDouble(parameters[2]) : Double.parseDouble(parameters[3]);
+                                if (parameters[0].equals(var) || parameters[0].equals("i")){
+                                    return _Number_.format((n*(n+1)-m*(m-1))/2.0);
+                                }
+                                if (Engine.toPostfix(parameters[0]).equals(var+" 2 ^")){
+                                    return _Number_.format((n+1-m)*(2*m*m+2*m*n-m+2*n*n+n)/6.0);
+                                }
+                                if(f.isFunction()) {
+                                    for (double num : numbers) {
+                                        String v = _Number_.format(num);
+                                        if (f.postfix().equals(var+" " + v + " -")) {
+                                            return _Number_.format(-0.5 * (m - n - 1) * (m + n - 2 * num));
+                                        }
+                                        if (f.postfix().equals(var+" " + v + " +")) {
+                                            return _Number_.format(-0.5 * (m - n - 1) * (m + n + 2 * num));
+                                        }
+                                    }
+                                }
+                                double sum = 0;
+                                for (double b = m; b <= n; b++) {
+                                    sum += Engine.evaluate(Search.replace(parameters[0], new String[][]{
+                                            {"{"+variable+"}", "("+b+")"}, {"$"+variable, "("+b+")"}, {"("+variable+")", "("+b+")"}
+                                    }));
+                                }
+                                return _Number_.format(sum);
+                            }
+                            else {
+                                double[] values = null;
+                                if (f.function().equals(var) || parameters[0].equals("i")){
+                                    values = new double[]{1-m, m};
+                                }
+                                else{
+                                    for (double num : numbers){
+                                        String v = _Number_.format(num);
+                                        if (f.postfix().equals(var+" "+v+" -")){
+                                            values = new double[]{1-m, m-2*num};    break;
+                                        }
+                                        if (f.postfix().equals(var+" "+v+" +")){
+                                            values = new double[]{1-m, m+2*num};    break;
+                                        }
+                                    }
+                                }
+                                if (values != null){
+                                    if (values[0] != 0 && values[0] > values[1]){     Sort.swap(values, 0, 1);     }
+                                    if (values[0] == values[1]){
+                                        return values[0] == 0 ? parameters[2]+"²/2" : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")²/2";
+                                    }
+                                    return  (values[0] == 0 ? parameters[2] : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")")+
+                                            (values[1] == 0 ? parameters[2] : "("+parameters[2]+(values[1] > 0 ? "+" : "")+_Number_.format(values[1])+")")+"/2";
+                                }
+                                //sum_(i=m)^n i^2 = -1/6 (m - n - 1) (2 m^2 + 2 m n - m + 2 n^2 + n)
+                            }
+                        }
+                        else {
+                            if (f.function().equals(var) || parameters[0].equals("i")){
+                                return ""+parameters[2]+"("+parameters[2]+"+1)/2-"+parameters[1]+"("+parameters[1]+"-1)/2";
                             }
                         }
                     }
-                    double sum = 0;
-                    for (double b = m; b <= n; b++) {
-                        sum += Engine.evaluate(Search.replace(parameters[0], new String[][]{
-                                {"{"+variable+"}", "("+b+")"}, {"$"+variable, "("+b+")"}
-                        }));
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("∫",        3, "∫(ƒ, a, b) calculates the definite integral of ƒ from a to b")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        String fx = parameters[0];
+                        double lower = Engine.evaluate(parameters[1]);
+                        double higher = Engine.evaluate(parameters[2]);
+                        return _Number_.format(Integral.nint(fx, lower, higher));
                     }
-                    return _Number_.format(sum);
-                }
-                else {
-                    double[] values = null;
-                    if (f.function().equals(Engine.var) || parameters[0].equals("i")){
-                        values = new double[]{1-m, m};
-                    }
-                    else{
-                        for (double num : numbers){
-                            String v = _Number_.format(num);
-                            if (f.postfix().equals("x "+v+" -")){
-                                values = new double[]{1-m, m-2*num};    break;
-                            }
-                            if (f.postfix().equals("x "+v+" +")){
-                                values = new double[]{1-m, m+2*num};    break;
-                            }
-                        }
-                    }
-                    if (values != null){
-                        if (values[0] != 0 && values[0] > values[1]){     Sort.swap(values, 0, 1);     }
-                        if (values[0] == values[1]){
-                            return values[0] == 0 ? parameters[2]+"²/2" : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")²/2";
-                        }
-                        return  (values[0] == 0 ? parameters[2] : "("+parameters[2]+(values[0] > 0 ? "+" : "")+_Number_.format(values[0])+")")+
-                                (values[1] == 0 ? parameters[2] : "("+parameters[2]+(values[1] > 0 ? "+" : "")+_Number_.format(values[1])+")")+"/2";
-                    }
-                    //sum_(i=m)^n i^2 = -1/6 (m - n - 1) (2 m^2 + 2 m n - m + 2 n^2 + n)
+                    return INVALID;
                 }
             }
-            else {
-                if (f.function().equals(Engine.var) || parameters[0].equals("i")){
-                    return ""+parameters[2]+"("+parameters[2]+"+1)/2-"+parameters[1]+"("+parameters[1]+"-1)/2";
-                }
-            }
-        }
-        return INVALID;
-    }
-    private static String riemann(String[] parameters){
-        if (parameters.length == 4 || parameters.length == 5){
-            Function f = new Function(parameters[0]);
-            int start = Integer.parseInt(parameters[1]);
-            int end = Integer.parseInt(parameters[2]);
-            int n = Integer.parseInt(parameters[3]);
-            String riemann = (parameters.length == 5 ? parameters[4] : "m");
-            double h = (end-start)/(double)n;
-
-            double sum = 0;
-            if (riemann.equals("l")){
-                for (int b = 0; b < n; b++) {
-                    sum += f.of(start+h*b);
-                }
-            }
-            else if (riemann.equals("r")){
-                for (int b = 1; b <= n; b++) {
-                    sum += f.of(start+h*b);
-                }
-            }
-            else {
-                for (int b = 0; b <= n-1; b++) {
-                    sum += f.of(start+h*(2*b+1)/2.0);
-                }
-            }
-            return _Number_.format(sum*h);
-        }
-        return INVALID;
-    }
-    private static String proposition(String[] parameters){
-        if (parameters.length > 0){
-            boolean[] values = new boolean[parameters.length-1];
-            for (int i = 0; i<values.length; i++){
-                values[i] = parameters[i+1].equalsIgnoreCase("T") || parameters[i+1].equalsIgnoreCase("True");
-            }
-            return Propositional.valuate(parameters[0], values);
-        }
-        return INVALID;
-    }
-
-    // Non-flexible number of arguments
-    private static String random(String[] parameters){
-        if (parameters.length == 2){
-            double low = evaluate(parameters[0]);
-            double high = evaluate(parameters[1]);
-            return _Number_.format(_Random_.random(low, high));
-        }
-        return INVALID;
-    }
-    private static String randint(String[] parameters) throws NumberFormatException{
-        if (parameters.length == 2){
-            int low = Integer.parseInt(parameters[0]);
-            int high = Integer.parseInt(parameters[1]);
-            return _Number_.format(_Random_.randomint(low, high));
-        }
-        return INVALID;
-    }
-    private static String unitConversion(String[] parameters) {
-        if (parameters.length == 3){
-            double measure = _Number_.getNumber(parameters[0]);
-            String unit1 = parameters[1];
-            String unit2 = parameters[2];
-            double converted = _UnitConversion_.convert(measure, unit1, unit2);
-            if (_Number_.isNumber(converted)){
-                return String.valueOf(converted);
-            }
-        }
-        return INVALID;
-    }
-    private static String elasd(String[] parameters){
-        if (parameters.length == 4){
-            double q1 = evaluate(parameters[0]);
-            double q2 = evaluate(parameters[1]);
-            double p1 = evaluate(parameters[2]);
-            double p2 = evaluate(parameters[3]);
-            return _Number_.format((((q2 - q1) / (q2 + q1)) / ((p2 - p1) / (p2 + p1))));
-        }
-        return INVALID;
-    }
-    private static String nint(String[] parameters){
-        if (parameters.length == 3){
-            String fx = parameters[0];
-            double lower = evaluate(parameters[1]);
-            double higher = evaluate(parameters[2]);
-            return _Number_.format(Integral.nint(fx, lower, higher));
-        }
-        return INVALID;
-    }
-    private static String dx(String[] parameters){
-        if (parameters.length == 2){
-            String fx = parameters[0];
-            double x = evaluate(parameters[1]);
-            return _Number_.format(Derivative.value(fx, x));
-        }
-        return INVALID;
-    }
-    private static String dxn(String[] parameters) throws NumberFormatException{
-        if (parameters.length == 3){
-            String fx = parameters[0];
-            double x = evaluate(parameters[1]);
-            int n = Integer.parseInt(parameters[2].trim());
-            String[] derivatives = new String[n];
-            derivatives[0] = Derivative.calculate(fx);
-            for (int b = 1; b<derivatives.length; b++){
-                derivatives[b] = Derivative.calculate(derivatives[b-1]);
-            }
-            String finalDerivative = derivatives[derivatives.length-1];
-            if (finalDerivative.charAt(finalDerivative.length()-1) != '\''){
-                return _Number_.format(evaluate(derivatives[derivatives.length-1], x));
-            }
-        }
-        return INVALID;
-    }
-    private static String product(String[] parameters){
-        if (parameters.length == 3){
-            Function f = new Function(parameters[0]);
-            int start = Integer.parseInt(parameters[1]);
-            int end = Integer.parseInt(parameters[2]);
-            double product = 1;
-            for (int b = start; b <= end; b++) {
-                product *= f.of(b);
-            }
-            return _Number_.format(product);
-        }
-        return INVALID;
-    }
-    private static String newton(String[] parameters){
-        if (parameters.length == 2){
-            String fx = parameters[0];
-            double x = evaluate(parameters[1]);
-            return _Number_.format(Roots.NewtonsMethod(fx, x));
-        }
-        return INVALID;
-    }
-    private static String cosineLaw(String[] parameters){
-        if (parameters.length == 3){
-            double b = evaluate(parameters[0]);
-            double c = evaluate(parameters[1]);
-            double theta = evaluate(parameters[2]);
-            return _Number_.format(Math.sqrt(b*b+c*c-2*b*c*Math.cos(theta)));
-        }
-        return INVALID;
-    }
+    };
 
 
-
+    public static boolean isMultiParamFunction(String item){
+        return Search.contains(multiParamFunctions, item);
+    }
+    public static int multiParamFunctionNamesIndex(String item){
+        if (item.length() > MultiParamFunction.maxStrLength)    return -1;
+        return Search.binarySearch(multiParamFunctions, item);
+    }
 }

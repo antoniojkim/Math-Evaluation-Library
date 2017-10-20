@@ -9,6 +9,7 @@ public class _Math_Evaluation_Library_Tests_ {
 
     public static void main (String[] args){
 
+
         runTests();
 
     }
@@ -35,14 +36,42 @@ public class _Math_Evaluation_Library_Tests_ {
         };
 
         long overallStart = System.currentTimeMillis();
-        for (_Tests_ test : tests){
-            long start = System.currentTimeMillis();
-            test.run();
-            long end = System.currentTimeMillis();
-            if (test.getName().length() > 0 && test.getNum_tests() > 0){
-                System.out.println(test.getName()+" module tests complete.");
-                System.out.println("       Took "+time(start, end)+" to run "+test.getNum_tests()+(test.getNum_tests() > 1 ? " tests" : " test"));
+        int groupTests = 3;
+        for (int i = 0; i<tests.length; i+=groupTests){
+            _Tests_[] group = new _Tests_[groupTests];
+            for (int j = 0; j<groupTests && i+j<tests.length; j++){
+                group[j] = tests[i+j];
             }
+            long[] startTimes = new long[groupTests];
+            long[] endTimes = new long[groupTests];
+
+            for (int j = 0; j<groupTests && i+j<tests.length; j++){
+                startTimes[j] = System.currentTimeMillis();
+                group[j].run();
+                endTimes[j] = System.currentTimeMillis();
+            }
+            for (int j = 0; j<groupTests && i+j<tests.length; j++){
+                if (group[j].getName().length() > 0 && group[j].getNum_tests() > 0){
+                    if (j != 0){
+                        for (int k = 0; k<(30-group[j-1].getName().length()); k++){
+                            System.out.print(" ");
+                        }
+                    }
+                    System.out.print(group[j].getName()+" Test Suite complete.");
+                }
+            }
+            System.out.println();
+            System.out.print("       ");
+            for (int j = 0; j<groupTests && i+j<tests.length; j++){
+                if (group[j].getName().length()
+                        > 0 && group[j].getNum_tests() > 0){
+                    if (j != 0){
+                        System.out.print("                   ");
+                    }
+                    System.out.print("Took "+time(startTimes[j], endTimes[j])+" to run "+group[j].getNum_tests()+(group[j].getNum_tests() > 1 ? " tests" : " test"));
+                }
+            }
+            System.out.println();
         }
         long overallEnd = System.currentTimeMillis();
 

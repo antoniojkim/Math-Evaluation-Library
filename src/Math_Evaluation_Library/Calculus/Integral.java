@@ -210,6 +210,7 @@ public class Integral {
     }
 
     public static final String[] database0 = {
+            "{x}",                 "(1/2)x^2",
             "{x} √",               "(2/3)x^(3/2)",
             "{x} cos",             "sin{x}",
             "{x} sin",             "-1*cos{x}",
