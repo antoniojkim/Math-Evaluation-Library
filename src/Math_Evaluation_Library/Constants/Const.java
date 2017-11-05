@@ -1,7 +1,5 @@
 package Math_Evaluation_Library.Constants;
 
-import static java.lang.Double.NaN;
-
 /**
  * Created by Antonio on 2017-07-12.
  */
@@ -32,7 +30,7 @@ public class Const {
         switch (c){
             case 'π':   return pi;
             case 'e':   return e;
-            case 'η':   return e;
+            case 'ℯ':   return e;
             case 'ϕ':   return gr;
             case 'γ':   return euler_macheroni;
             case '∞':   return "∞";

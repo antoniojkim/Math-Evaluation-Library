@@ -1,10 +1,13 @@
 package Math_Evaluation_Library.Engine;
 
+import Math_Evaluation_Library.Miscellaneous.Special;
 import Math_Evaluation_Library.Objects.UnaryFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
+import Math_Evaluation_Library.Statistics.RandomVariables;
 import Math_Evaluation_Library.Trigonometry.Trig;
 
+import static Math_Evaluation_Library.Engine.Engine.x;
 import static java.lang.Double.NaN;
 
 /**
@@ -34,13 +37,6 @@ public class UnaryFunctions {
                 @Override
                 public double evaluate(double x) {
                     return Math.abs(x);
-                }
-            },
-            new UnaryFunction("aexp", "aexp(x) = eˣ")
-            {
-                @Override
-                public double evaluate(double x) {
-                    return Math.exp(x);
                 }
             },
             new UnaryFunction("arccos", "arccos(x) is the Inverse Cosine function")
@@ -196,6 +192,20 @@ public class UnaryFunctions {
                     return Math.toDegrees(x);
                 }
             },
+            new UnaryFunction("erf", "erf(x) = (2/√π)∫(e^(-x²), 0, x), the Gauss Error Function")
+            {
+                @Override
+                public double evaluate(double x) {
+                    return Special.errorFunction(x);
+                }
+            },
+            new UnaryFunction("exp", "exp(x) = eˣ")
+            {
+                @Override
+                public double evaluate(double x) {
+                    return Math.exp(x);
+                }
+            },
             new UnaryFunction("fib", "fib(n), nᵗʰ term in the fibonacci sequence")
             {
                 @Override
@@ -242,6 +252,20 @@ public class UnaryFunctions {
                 @Override
                 public double evaluate(double x) {
                     return Math.log1p(x);
+                }
+            },
+            new UnaryFunction("norm", "norm("+x+") calculates the Standard Normal Distribution Cumulative Distribution Function at "+x)
+            {
+                @Override
+                public double evaluate(double x) {
+                    return RandomVariables.standardNormalDistributionCDF(x);
+                }
+            },
+            new UnaryFunction("norminv", "norminv("+x+") calculates the Standard Normal Distribution Cumulative Distribution Function Inverse at "+x)
+            {
+                @Override
+                public double evaluate(double x) {
+                    return RandomVariables.standardNormalDistributionCDFInverse(x);
                 }
             },
             new UnaryFunction("prime", "prime(x), determines whether x is prime")

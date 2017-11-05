@@ -1,7 +1,6 @@
 package Tests;
 
 import Math_Evaluation_Library.Calculus.Derivative;
-import Math_Evaluation_Library.Miscellaneous.Simplify;
 
 /**
  * Created by Antonio on 2017-07-13.
@@ -38,8 +37,8 @@ public class Derivative_Tests extends _Tests_ {
         derivativeTests("ln(x)", "1/x");
         derivativeTests("|x|", "x/|x|");
 
-        derivativeTests("e^x", "e^x");
-        derivativeTests("e^(2x)", "2e^(2x)");
+        derivativeTests("e^x", "ℯ^x");
+        derivativeTests("e^(2x)", "2ℯ^(2x)");
         derivativeTests("2^x", "2^x*ln2");
 
         // Unable to Differentiate

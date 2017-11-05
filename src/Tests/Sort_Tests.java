@@ -1,9 +1,7 @@
 package Tests;
 
-import Math_Evaluation_Library.Engine.MultiParamFunctions;
-import Math_Evaluation_Library.Engine.Operators;
-import Math_Evaluation_Library.Engine.TextFunctions;
-import Math_Evaluation_Library.Engine.UnaryFunctions;
+import Math_Evaluation_Library.Constants.Constants;
+import Math_Evaluation_Library.Engine.*;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.Objects.MathObject;
 import Math_Evaluation_Library.Sort;
@@ -25,6 +23,10 @@ public class Sort_Tests extends _Tests_ {
         mathObjectSortTest("Text Functions", TextFunctions.textFunctions);
         mathObjectSortTest("Volume Formulas", ShapeFormulas.shapes3D);
         mathObjectSortTest("Area Formulas", ShapeFormulas.shapes2D);
+
+        charArraySortTest("Constant characters", Constants.constantChar);
+        charArraySortTest("Implicit", Engine.implicit);
+        charArraySortTest("Check Implicit", Engine.checkImplicit);
     }
 
 
@@ -46,6 +48,26 @@ public class Sort_Tests extends _Tests_ {
             System.out.println("Correct order:");
             for (String str : sortedArray){
                 System.out.println("     "+str);
+            }
+            System.exit(1);
+        }
+        incrementNumTests();
+    }
+
+    public void charArraySortTest(String arrayName, char[] array){
+        boolean sorted = true;
+        for (int i = 1; i<array.length; i++){
+            if (array[i-1] > array[i]){
+                sorted = false;
+                break;
+            }
+        }
+        if (!sorted){
+            Sort.quicksort(array);
+            System.out.println(arrayName+" not correctly sorted\n");
+            System.out.println("Correct order:");
+            for (char c : array){
+                System.out.print("'"+c+"', ");
             }
             System.exit(1);
         }

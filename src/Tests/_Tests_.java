@@ -121,7 +121,7 @@ public class _Tests_ {
     public void evaluationTest(String input, double expected){
         input = input.trim();
         double evaluated = Engine.evaluate(input);
-        if (evaluated != expected){
+        if (Math.abs(evaluated-expected) > 1E-14){
             String syntax = Engine.fixSyntax(input).trim();
             String postfix = Engine.toPostfix(input);
             System.out.println("\n"+test_name+" Test Failed:");

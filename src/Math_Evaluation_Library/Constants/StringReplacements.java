@@ -27,7 +27,7 @@ public class StringReplacements {
             {"P", "npr"},   {"C", "@"},
             {"}t", "}τ"},   {"}T", "}τ"}, {"}⁻¹", "}ι"},
             {"E", "*10^"},  {"ED", "∆"},
-            {"Bin", "bd"},  {"NB", "nbd"}
+            {"Bin", "bd"},  {"NB", "nbd"}, {"geo", "gnb"}, {"ND", "ncd"}
     };
 
     public static final String[][] formReplacements = {
@@ -42,26 +42,28 @@ public class StringReplacements {
             {"elasy", "lasd"},   {"elasx", "lasd"},   {"elasd", "lasd"},   {"prime", "nconst"},  {"heron", "hron"},   {"newton", "nwton"},
             {"fibsum", "smfib"}, {"sumfib", "smfib"}, {"variance", "var"}, {"stdev", "stndv"},   {"stddev", "stndv"}, {"stndev", "stndv"},
             {"ceil", "up"},      {"nderiv", "dx"},    {"deriv", "diff"},   {"riemann", "riman"}, {"randomint", "randint"}, {"randomQ", "randq"}, {"randomq", "randq"},
-            {"gcf", "gcd"},      {"len", "strln"},    {"strlen", "strln"}, {"count", "strln"},
+            {"gcf", "gcd"},      {"erf", "gaussrf"},
 
-            {"pi", "π"}, {"e_m", "γ"}, {"e", "η"}, {"gr", "ϕ"}
+            {"pi", "π"}, {"e_m", "γ"}, {"e", "ℯ"}, {"gr", "ϕ"}
     };
 
     public static final String[][] formReplacements2 = {
             {"intmax", "2147483647"}, {"intmin", "-2147483648"}, {"hparg", "graph"}, {"dg", "deg"}, {"dt", "det"},
 
-            {"axp", "aexp"},    {"up", "ceil"},      {"scnt", "sec"},     {"/sec", "cos"},    {"/csc", "sin"},    {"/cot", "tan"},
+            {"axp", "exp"},     {"up", "ceil"},      {"gaussrf", "erf"},
+            {"scnt", "sec"},    {"/sec", "cos"},     {"/csc", "sin"},     {"/cot", "tan"},
             {"acos", "arccos"}, {"cos⁻¹", "arccos"}, {"asin", "arcsin"},  {"sin⁻¹", "arcsin"},
             {"atan", "arctan"}, {"tan⁻¹", "arctan"}, {"asec", "arcsec"},  {"sec⁻¹", "arcsec"},
             {"acsc", "arccsc"}, {"csc⁻¹", "arccsc"}, {"acot", "arccot"},  {"cot⁻¹", "arccot"},
 
             {"diff", "deriv"}, {"riman", "riemann"}, {"max\\*", "max"}, {"lasd", "elasd"}, {"nconst", "prime"},
-            {"hron", "heron"}, {"nwton", "newton"},  {"bd", "Bin"},     {"nbd", "NB"}
+            {"hron", "heron"}, {"nwton", "newton"},  {"nbd", "NB"},     {"bd", "Bin"},     {"gnb", "geo"},     {"ncd", "ND"}
     };
     public static final String[][] textFunctionReplacements = {
             {"RCEf", "RCEF"}, {"RREf", "RREF"}, {"antideriv", "int"}, {"antidiff", "int"}, {"cmplx", "complex"},
             {"directF", "slopeF"}, {"perpendicular", "perp"}, {"plt", "plot"}, {"primf", "primef"}, {"projection", "proj"},
-            {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "postfix"}
+            {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "postfix"},
+            {"len", "strln"}, {"strlen", "strln"}, {"count", "strln"}
     };
 
 }

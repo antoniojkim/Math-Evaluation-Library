@@ -37,37 +37,125 @@ public class MultiParamFunctions{
     public static final String INVALID = "!";
 
     public static final MultiParamFunction[] multiParamFunctions = {
-            new MultiParamFunction("Bin",      3, "Bin(n, p, "+x+") calculates the Binomial Distribution (with n trials and probability p) at X="+x)
+            new MultiParamFunction("Bin",      3, "Bin(n, p, "+x+"); n trials, probability p, "+x+" successes; P(X="+x+") for X ~ Binomial Distribution")
             {
                 @Override
                 public String evaluate(String[] parameters) {
                     if (parameters.length == 3){
                         try{
-                            double n = _Number_.getNumber(parameters[0]);
+                            double n = Engine.evaluate(parameters[0]);
                             double p = Engine.evaluate(parameters[1]);
-                            double x = _Number_.getNumber(parameters[2]);
+                            double x = Engine.evaluate(parameters[2]);
                             if (n>=0 && p>=0 && p<=1 && x>=0 && x<=n){
-                                return String.valueOf(RandomVariables.binomialDistribution((int)n, p, (int)x));
+                                return _Number_.format(RandomVariables.binomialDistribution((int)n, p, (int)x));
                             }
                         } catch(NumberFormatException e){}
                     }
                     return INVALID;
                 }
             },
-            new MultiParamFunction("NB",       3, "NB(k, p, "+x+") calculates the Negative Binomial Distribution (with k successes and probability p) at X="+x)
+            new MultiParamFunction("Binexp",   2, "Binexp(n, p) = n×p; n trials, probability p; calculates Expected Value for Binomial Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double n = Engine.evaluate(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            if (n>=0 && p>=0 && p<=1){
+                                return _Number_.format(RandomVariables.binomialDistribution_ExpectedValue((int)n, p));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("Binvar",   2, "Binvar(n, p) = n×p(1-p); n trials, probability p; calculates Variance for Binomial Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double n = Engine.evaluate(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            if (n>=0 && p>=0 && p<=1){
+                                return _Number_.format(RandomVariables.binomialDistribution_Variance((int)n, p));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("NB",       3, "NB(k, p, "+x+"); k successes, probability p, "+x+" failures; P(X="+x+") for X ~ Negative Binomial Distribution")
             {
                 @Override
                 public String evaluate(String[] parameters) {
                     if (parameters.length == 3){
                         try{
-                            double k = _Number_.getNumber(parameters[0]);
+                            double k = Engine.evaluate(parameters[0]);
                             double p = Engine.evaluate(parameters[1]);
-                            double x = _Number_.getNumber(parameters[2]);
-                            if (k>=0 && p>=0 && p<=1 && x>=0 && x<=k){
-                                return String.valueOf(RandomVariables.negativeBinomialDistribution((int)k, p, (int)x));
+                            double x = Engine.evaluate(parameters[2]);
+                            if (k>=0 && p>=0 && p<=1 && x>=0){
+                                return _Number_.format(RandomVariables.negativeBinomialDistribution((int)k, p, (int)x));
                             }
                         } catch(NumberFormatException e){}
                     }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("NBexp",    2, "NBexp(k, p) = k×(1-p)/p; k successes, probability p; calculates Expected Value for Negative Binomial Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double k = Engine.evaluate(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            if (k>=0 && p>=0 && p<=1){
+                                return _Number_.format(RandomVariables.negativeBinomialDistribution_ExpectedValue((int)k, p));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("NBvar",    2, "NBvar(k, p) = k×(1-p)/p²; k successes, probability p; calculates Variance for Negative Binomial Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double k = Engine.evaluate(parameters[0]);
+                            double p = Engine.evaluate(parameters[1]);
+                            if (k>=0 && p>=0 && p<=1){
+                                return _Number_.format(RandomVariables.negativeBinomialDistribution_Variance((int)k, p));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("ND",      -1, "ND(μ, σ², "+x+"); mean μ, standard deviation σ²; P(X="+x+") for X ~ Normal Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    try{
+                        double mean = 0, stdv = 1, x = 0;
+                        if (parameters.length == 1){
+                            x = Engine.evaluate(parameters[0]);
+                        }
+                        else if (parameters.length == 3){
+                            mean = Engine.evaluate(parameters[0]);
+                            stdv = Engine.evaluate(parameters[1]);
+                            x = Engine.evaluate(parameters[2]);
+                        }
+                        else{
+                            return INVALID;
+                        }
+                        if (stdv>=0){
+                            return _Number_.format(RandomVariables.normalDistribution(mean, stdv, x));
+                        }
+                    } catch(NumberFormatException e){}
                     return INVALID;
                 }
             },
@@ -160,16 +248,46 @@ public class MultiParamFunctions{
                     return INVALID;
                 }
             },
-            new MultiParamFunction("geo",      2, "geo(p, "+x+") calculates the Geometric Distribution (with probability p) at X="+x)
+            new MultiParamFunction("geo",      2, "geo(p, "+x+"); probability p, "+x+" failures; P(X="+x+") for X ~ Geometric Distribution")
             {
                 @Override
                 public String evaluate(String[] parameters) {
                     if (parameters.length == 2){
                         try{
                             double p = Engine.evaluate(parameters[0]);
-                            double x = _Number_.getNumber(parameters[1]);
-                            if (p>=0 && p<=1 && x>=1){
+                            double x = Engine.evaluate(parameters[1]);
+                            if (p>=0 && p<=1 && x%1 == 0 && x>=0){
                                 return String.valueOf(RandomVariables.geometricDistribution(p, (int)x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("geoexp",   1, "geoexp(p) = (1-p)/p; probability p; calculates Expected Value for Geometric Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double p = Engine.evaluate(parameters[0]);
+                            if (p>=0 && p<=1){
+                                return String.valueOf(RandomVariables.geometricDistribution_ExpectedValue(p));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("geovar",   1, "geovar(p) = (1-p)/p²; probability p; calculates Variance for Geometric Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double p = Engine.evaluate(parameters[0]);
+                            if (p>=0 && p<=1){
+                                return String.valueOf(RandomVariables.geometricDistribution_Variance(p));
                             }
                         } catch(NumberFormatException e){}
                     }
@@ -203,18 +321,52 @@ public class MultiParamFunctions{
                     return INVALID;
                 }
             },
-            new MultiParamFunction("hyp",      4, "hyp(N, r, n, "+x+") calculates the Hypergeometric Distribution (with N objects, r ways to succeed, n trials) at X="+x)
+            new MultiParamFunction("hyp",      4, "hyp(N, r, n, "+x+"); N objects, r ways to succeed, n trials, "+x+" successes; P(X="+x+") for X ~ Hypergeometric Distribution")
             {
                 @Override
                 public String evaluate(String[] parameters) {
                     if (parameters.length == 4){
                         try{
-                            double N = _Number_.getNumber(parameters[0]);
-                            double r = _Number_.getNumber(parameters[1]);
-                            double n = _Number_.getNumber(parameters[2]);
-                            double x = _Number_.getNumber(parameters[3]);
+                            double N = Engine.evaluate(parameters[0]);
+                            double r = Engine.evaluate(parameters[1]);
+                            double n = Engine.evaluate(parameters[2]);
+                            double x = Engine.evaluate(parameters[3]);
                             if (N%1 == 0 && r%1 == 0 && n%1 == 0 && x%1 == 0){
-                                return String.valueOf(RandomVariables.hyperGeometricDistribution((int)N, (int)r, (int)n, (int)x));
+                                return _Number_.format(RandomVariables.hyperGeometricDistribution((int)N, (int)r, (int)n, (int)x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("hypexp",   3, "hypexp(N, r, n) = n×r/N; N objects, r ways to succeed, n trials; calculates Expected Value of the Hypergeometric Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        try{
+                            double N = Engine.evaluate(parameters[0]);
+                            double r = Engine.evaluate(parameters[1]);
+                            double n = Engine.evaluate(parameters[2]);
+                            if (N%1 == 0 && r%1 == 0 && n%1 == 0){
+                                return _Number_.format(RandomVariables.hyperGeometricDistribution_ExpectedValue(N, (int)r, (int)n));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("hypvar",   3, "hypvar(N, r, n) = (n×r×(N-r)×(N-n))/(N²×(N-1)); N objects, r ways to succeed, n trials; calculates Variance of the Hypergeometric Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        try{
+                            double N = Engine.evaluate(parameters[0]);
+                            double r = Engine.evaluate(parameters[1]);
+                            double n = Engine.evaluate(parameters[2]);
+                            if (N%1 == 0 && r%1 == 0 && n%1 == 0){
+                                return _Number_.format(RandomVariables.hyperGeometricDistribution_Variance(N, (int)r, (int)n));
                             }
                         } catch(NumberFormatException e){}
                     }
@@ -300,15 +452,41 @@ public class MultiParamFunctions{
                     return INVALID;
                 }
             },
-            new MultiParamFunction("poi",      2, "poi(λ, "+x+") calculates the Poisson Distribution (with parameter λ=np) at X="+x)
+            new MultiParamFunction("poi",      2, "poi(λ, "+x+"); λ=np for n trials, probability p;  P(X="+x+") for X ~ Poisson Distribution")
             {
                 @Override
                 public String evaluate(String[] parameters) {
                     if (parameters.length == 2){
                         try{
                             double lambda = Engine.evaluate(parameters[0]);
-                            double x = _Number_.getNumber(parameters[1]);
-                            return String.valueOf(RandomVariables.poissonDistribution(lambda, (int)x));
+                            double x = Engine.evaluate(parameters[1]);
+                            return _Number_.format(RandomVariables.poissonDistribution(lambda, (int)x));
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("poiexp",   1, "poiexp(λ) = λ; λ=np for n trials, probability p;  calculates Expected Value of the Poisson Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double lambda = Engine.evaluate(parameters[0]);
+                            return _Number_.format(RandomVariables.poissonDistribution_ExpectedValue(lambda));
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("poivar",   1, "poivar(λ) = λ; λ=np for n trials, probability p;  calculates Variance of the Poisson Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double lambda = Engine.evaluate(parameters[0]);
+                            return _Number_.format(RandomVariables.poissonDistribution_Variance(lambda));
                         } catch(NumberFormatException e){}
                     }
                     return INVALID;
@@ -407,16 +585,6 @@ public class MultiParamFunctions{
                             data[b] = Engine.evaluate(parameters[b]);
                         }
                         return _Number_.format(Stats.stnDev(data));
-                    }
-                    return INVALID;
-                }
-            },
-            new MultiParamFunction("strln",    1, "strln(str) calculates the length of string str")
-            {
-                @Override
-                public String evaluate(String[] parameters) {
-                    if (parameters.length == 1){
-                        return String.valueOf(parameters[0].length());
                     }
                     return INVALID;
                 }
@@ -537,7 +705,7 @@ public class MultiParamFunctions{
                                 double sum = 0;
                                 for (double b = m; b <= n; b++) {
                                     sum += Engine.evaluate(Search.replace(parameters[0], new String[][]{
-                                            {"{"+variable+"}", "("+b+")"}, {"$"+variable, "("+b+")"}, {"("+variable+")", "("+b+")"}
+                                            {"("+variable+")", "("+b+")"}, {"{"+variable+"}", "("+b+")"}, {"$"+variable, "("+b+")"}
                                     }));
                                 }
                                 return _Number_.format(sum);

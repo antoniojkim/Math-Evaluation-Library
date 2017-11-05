@@ -6,7 +6,6 @@ import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Constants.StringReplacements;
 import Math_Evaluation_Library.Objects.*;
 import Math_Evaluation_Library.Search;
-import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
 import java.util.ArrayList;
@@ -35,25 +34,18 @@ public class Engine {
     public static final String x = "\uD835\uDC65";
     public static String var = "x", varOp = "y";
     public static String error = "Error";
-    static boolean debug = false, sorted = false;
+    static boolean debug = false;
     static double ans = 1;
     static List<String> variables = new ArrayList<>();
     static List<Double> values = new ArrayList<>();
 
-    public static void sortFunctions() {
-        Sort.quicksort(implicit);
-        Sort.quicksort(checkImplicit);
-        sorted = true;
-    }
-
-    static char[] implicit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ')', '}', 'π', 'η', 'ϕ', 'γ', var(), varOp()};
-    static char[] checkImplicit = {'(', '{', var(), varOp(), 'π', 'η', 'ϕ', 'γ', '√'};
+    public static char[] implicit = {')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', var(), varOp(), '}', 'γ', 'π', 'ϕ', 'ℯ'};
+    public static char[] checkImplicit = {'(', var(), varOp(), '{', 'γ', 'π', 'ϕ', 'ℯ', '√'};
 
     public static String fixSyntax(String function) {
         if (function.length() == 0){
             return "";
         }
-        if (!sorted)    sortFunctions();
         error = "Math Error";
         // Find abs brackets
         List<Integer> absBracketIndices = Search.getIndices(function, "|");
@@ -297,12 +289,33 @@ public class Engine {
             if (formula[0].equals(function))    return formula[1];
         }
 
-        int multiIndex = multiParamFunctionNamesIndex(Search.replace(function, "Σ", "sum"));
-        if (multiIndex != -1)    return multiParamFunctions[multiIndex].getDescription();
-        int unaryIndex = unaryFunctionsIndex(function);
-        if (unaryIndex != -1)    return unaryFunctions[multiIndex].getDescription();
-        int textIndex = TextFunctions.textFunctionsIndex(function);
-        if (textIndex != -1)    return TextFunctions.textFunctions[multiIndex].getDescription();
+        String def = function;
+        int lb = function.indexOf("(");
+        if (lb != -1){
+            def = function.substring(0, lb);
+        }
+        int multiIndex = multiParamFunctionNamesIndex(Search.replace(def, StringReplacements.dynamicInputReplacement));
+        if (multiIndex != -1 && (lb == -1 || lb == function.length()-1)){
+            return multiParamFunctions[multiIndex].getDescription();
+        }
+        int unaryIndex = unaryFunctionsIndex(def);
+        if (unaryIndex != -1 && (lb == -1 || lb == function.length()-1)){
+            return unaryFunctions[unaryIndex].getDescription();
+        }
+        int textIndex = TextFunctions.textFunctionsIndex(def);
+        if (textIndex != -1){
+            if (lb == -1 || lb == function.length()-1){
+                return TextFunctions.textFunctions[textIndex].getDescription();
+            }
+            //Check text cases
+            String parameters = function.substring(lb+1);
+            if (parameters.lastIndexOf(')') != -1)    parameters = parameters.substring(0, parameters.length()-1);
+            TextFunction tf = TextFunctions.textFunctions[textIndex];
+            if (tf.numParameters() == null) {
+                return tf.evaluate(parameters, displayFormat);
+            }
+            return tf.evaluate(Search.split(parameters, ","), displayFormat);
+        }
 
         String format = toPostfix(function);
         if (!format.toLowerCase().contains("error")) {
@@ -334,23 +347,6 @@ public class Engine {
                 return evaluated;
             }
         }
-        //Check text cases
-        int lb = function.indexOf('(');
-        if (lb != -1){
-            String eqn = Search.replace(function.substring(0, lb), StringReplacements.textFunctionReplacements);
-            int index = TextFunctions.textFunctionsIndex(eqn);
-            if (index != -1){
-                int rb = function.lastIndexOf(')');
-                if (rb != -1){
-                    String parameters = function.substring(lb+1, rb);
-                    TextFunction tf = TextFunctions.textFunctions[index];
-                    if (tf.numParameters() == null) {
-                        return tf.evaluate(parameters, displayFormat);
-                    }
-                    return tf.evaluate(Search.split(parameters, ","), displayFormat);
-                }
-            }
-        }
         return "NaN";
     }
 
@@ -359,9 +355,6 @@ public class Engine {
     }
 
     public static String toPostfix(String infixFunction) {
-        if (!sorted){
-            sortFunctions();
-        }
         infixFunction = fixSyntax(infixFunction);
         if (infixFunction.toLowerCase().contains("error")) {
             return error;
@@ -391,10 +384,8 @@ public class Engine {
                     }
                 } else if (c == var() || c == varOp() || Constants.isConstant(c)) {
                     if (token.length() > 0){
-                        System.out.println(stack);
-                        System.out.println(output);
                         if (token.equals("-")){
-                            output.push(token+(c == 'η' ? 'e' : c));
+                            output.push(token+String.valueOf(c));
                         }
                         else{
                             error = "Constant Character Token Error:    Token: "+token+"  char: "+c;
@@ -403,7 +394,7 @@ public class Engine {
                         token = "";
                     }
                     else{
-                        output.push((c == 'η' ? "e" : String.valueOf(c)));
+                        output.push(String.valueOf(c));
                     }
                 } else{
                     String superScript = "";
@@ -462,7 +453,7 @@ public class Engine {
                                 output.push(infixFunction.substring(a, end+1));
                                 a = end;
                             }
-                            continue PARSE;
+                            continue;
                         }
                         error = "Bracket Count Error - Unclosed Curly Bracket";
                         return error;
@@ -478,7 +469,7 @@ public class Engine {
                                         output.push(param);
                                     }
                                     a = close;
-                                    continue PARSE;
+                                    continue;
                                 }
                                 else{
                                     error = "Invalid Input Error - Invalid Unit Conversion:  "+infixFunction.substring(a+1, close);
@@ -499,7 +490,7 @@ public class Engine {
                                     output.push(infixFunction.substring(a, end+1));
                                     a = end;
                                 }
-                                continue PARSE;
+                                continue;
                             }
                             error = "Bracket Count Error - Unclosed Hard Bracket";
                             return error;
@@ -524,29 +515,28 @@ public class Engine {
 //                        a = close;
 //                        continue PARSE;
                     }
-                    int fnIndex = -1;
-                    for (int b = MultiParamFunction.minStrLength; b<=MultiParamFunction.maxStrLength && a+b <= infixFunction.length(); b++){
-                        fnIndex = multiParamFunctionNamesIndex(infixFunction.substring(a, a+b));
-                        if (fnIndex != -1){
-                            int lb = infixFunction.indexOf("(", a);
-                            try{
-                                int rb = lb+Search.getIndices(infixFunction.substring(lb), ")").get(0);
+                    int lb = infixFunction.indexOf("(", a);
+                    if (infixFunction.indexOf(")", a) < lb)  lb = -1;
+                    if (lb != -1) {
+                        int fnIndex = multiParamFunctionNamesIndex(infixFunction.substring(a, lb));
+                        if (fnIndex != -1) {
+                            try {
+                                int rb = lb + Search.getIndices(infixFunction.substring(lb), ")").get(0);
                                 MultiParamFunction multiParamFunction = multiParamFunctions[fnIndex];
-                                String[] parameters = Search.split(infixFunction.substring(lb+1, rb), ",", false);
+                                String[] parameters = Search.split(infixFunction.substring(lb + 1, rb), ",", false);
                                 output.push(multiParamFunction.getName());
-                                if (multiParamFunction.isFlexible()){
-                                    output.push(parameters.length+"");
-                                }
-                                else if (multiParamFunction.getNumParameters() != parameters.length) {
-                                    error = "Syntax Error - Invalid Number of Parameters.  E:"+multiParamFunction.getNumParameters()+"   A:"+parameters.length;
+                                if (multiParamFunction.isFlexible()) {
+                                    output.push(parameters.length + "");
+                                } else if (multiParamFunction.getNumParameters() != parameters.length) {
+                                    error = "Syntax Error - Invalid Number of Parameters.  E:" + multiParamFunction.getNumParameters() + "   A:" + parameters.length;
                                     return error;
                                 }
-                                for (int i = 0; i < parameters.length; i++) {
-                                    output.push(parameters[i].trim());
+                                for (String parameter : parameters) {
+                                    output.push(parameter.trim());
                                 }
                                 a = rb;
-                                continue PARSE;
-                            }catch(IndexOutOfBoundsException parameterLengthError){
+                                continue;
+                            } catch (IndexOutOfBoundsException parameterLengthError) {
                                 error = "Syntax Error";
                                 return error;
                             }
@@ -581,7 +571,7 @@ public class Engine {
                         }
                     }
                     else{
-                        for (int b = UnaryFunction.maxStrLength; b>=2; b--){
+                        for (int b = UnaryFunction.maxStrLength; b>=UnaryFunction.minStrLength; b--){
                             if (a+b <= infixFunction.length()){
                                 String mathf = infixFunction.substring(a, a+b);
                                 int orderIndex = unaryFunctionsIndex(mathf);
@@ -620,7 +610,7 @@ public class Engine {
                         }
                     }
                 } catch (NumberFormatException | StringIndexOutOfBoundsException e2) {
-                    error = "Invalid Input Error 2";
+                    error = "NumberFormatException | StringIndexOutOfBoundsException";
                     return error;
                 }
             }
@@ -639,34 +629,19 @@ public class Engine {
     }
 
     public static int implicitIndex(char item){
-        if (!sorted){
-            sortFunctions();
-        }
         return Search.binarySearch(implicit, item);
     }
     public static boolean implicitContains(char item){
-        if (!sorted){
-            sortFunctions();
-        }
         return Search.contains(implicit, item);
     }
 
     public static int checkImplicitIndex(char item){
-        if (!sorted){
-            sortFunctions();
-        }
         return Search.binarySearch(checkImplicit, item);
     }
     public static boolean checkImplicitContains(String item){
-        if (!sorted){
-            sortFunctions();
-        }
         return Search.contains(checkImplicit, item.charAt(0));
     }
     public static boolean checkImplicitContains(char item){
-        if (!sorted){
-            sortFunctions();
-        }
         return Search.contains(checkImplicit, item);
     }
 

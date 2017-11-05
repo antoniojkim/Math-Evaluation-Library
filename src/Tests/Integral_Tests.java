@@ -24,7 +24,7 @@ public class Integral_Tests extends  _Tests_{
         integralTests("tanx+3x²", "-ln|cosx|+x³");
         integralTests("1/x", "ln|x|");
         integralTests("2/x", "2ln|x|");
-        integralTests("e^x", "e^x");
+        integralTests("e^x", "ℯ^x");
         integralTests("ln(2x)", "x(ln(2x)-1)");
         integralTests("2*logx", "(2(x/ln10))(lnx-1)");
         integralTests("3*(secx)^2", "3tanx");

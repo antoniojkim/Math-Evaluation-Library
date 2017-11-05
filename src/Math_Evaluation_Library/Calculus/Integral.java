@@ -243,7 +243,7 @@ public class Integral {
     public static final String[] database1 = {
             "{0}",          "{0}{x}",
             "{x} {0} ^",    "(1/[{0}+1])*{x}^[{0}+1]",
-            "e {x} ^",      "e^{x}",
+            "ℯ {x} ^",      "ℯ^{x}",
             "{0} {x} * ln", "{x}(ln({0}{x})-1)",
             "{0} {x} /",      "{0}ln(abs({x}))",
             "{0} {x} ^",    "{0}^{x}*ln{0}",

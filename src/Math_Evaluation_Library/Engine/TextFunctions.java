@@ -4,6 +4,7 @@ import Math_Evaluation_Library.Calculus.Derivative;
 import Math_Evaluation_Library.Calculus.Integral;
 import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Constants.Scripts;
+import Math_Evaluation_Library.Constants.StringReplacements;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
@@ -485,7 +486,7 @@ public class TextFunctions {
                     return "Non-integer so no prime factors";
                 }
             },
-            new TextFunction("proj", "prof(u, v) = projᵥ(u) = (u·v)v/‖v‖²  is the projection of u onto v", -1)
+            new TextFunction("proj", "proj(u, v) = projᵥ(u) = (u·v)v/‖v‖²  is the projection of u onto v", -1)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
@@ -644,7 +645,6 @@ public class TextFunctions {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (parameters.length > 2){
-                        //sort(<, 8, 6, 2, 10, 4)
                         boolean ascending = true;
                         if (parameters[1].startsWith(">"))    ascending = false;
                         int operator_included = 1;
@@ -685,6 +685,13 @@ public class TextFunctions {
                         return str;
                     }
                     return INVALID;
+                }
+            },
+            new TextFunction("strln", "strln(str) calculates the length of string str")
+            {
+                @Override
+                public String evaluate(String parameter, boolean df) {
+                    return (df ? "= " : "")+String.valueOf(parameter.length());
                 }
             },
             new TextFunction("tangent", "tangent(\uD835\uDC53, \uD835\uDC65) calculates the tangent line for \uD835\uDC53 at \uD835\uDC65", 3)
@@ -906,7 +913,7 @@ public class TextFunctions {
 
 
     public static int textFunctionsIndex(String item){
-        return Search.binarySearch(textFunctions, item);
+        return Search.binarySearch(textFunctions, Search.replace(item, StringReplacements.textFunctionReplacements));
     }
 
     private static DirectionField field;

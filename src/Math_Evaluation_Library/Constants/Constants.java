@@ -36,7 +36,7 @@ public class Constants {
         switch (c){
             case 'π':   return pi;
             case 'e':   return e;
-            case 'η':   return e;
+            case 'ℯ':   return e;
             case 'ϕ':   return gr;
             case 'γ':   return euler_macheroni;
             case '∞':   return Double.POSITIVE_INFINITY;
@@ -44,7 +44,7 @@ public class Constants {
         }
     }
 
-    private static char[] constantChar = {'e', 'γ', 'η', 'π', 'ϕ', '∞'};
+    public static char[] constantChar = {'γ', 'π', 'ϕ', 'ℯ', '∞'};
     public static boolean isConstant(String str){
         if (str.length() == 1){
             return isConstant(str.charAt(0));
@@ -75,7 +75,7 @@ public class Constants {
         switch (c){
             case 'π':   return negative_pi;
             case 'e':   return negative_e;
-            case 'η':   return negative_e;
+            case 'ℯ':   return negative_e;
             case 'ϕ':   return negative_gr;
             case 'γ':   return negative_euler_macheroni;
             case '∞':   return Double.NEGATIVE_INFINITY;

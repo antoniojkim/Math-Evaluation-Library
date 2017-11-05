@@ -32,9 +32,5 @@ public class Combinatorics_Tests extends Engine_Tests {
         evaluationTest("738C10", 1.2422381175008683E22);
         evaluationTest("738C138", "NaN");
 
-
-        evaluationTest("hyp(52, 4, 5, 3)+hyp(52, 4, 5, 4)", 0.001754547973035368);
-        evaluationTest("hyp(52, 4, 5, 0)+hyp(52, 4, 5, 1)", 0.958315633945886);
-
     }
 }

@@ -138,7 +138,7 @@ public class ShapeFormulas {
             this.numArguments = numArguments;
         }
 
-        public String calculateArea(double[] arguments){
+        public String calculateArea(double... arguments){
             return "";
         }
         protected String areaCalculation(double[] arguments){  return ""; }
@@ -162,7 +162,7 @@ public class ShapeFormulas {
             new Shape2D("circle", 1, "A = π"+r+"²     where "+r+" is the radius of the circle")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -174,7 +174,7 @@ public class ShapeFormulas {
             new Shape2D("cone", 2, "SA = π"+r+"("+r+"+√("+h+"²+"+r+"²))    where "+r+" is the radius and "+h+" is the height of the cone")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
                         return "SA = "+calculateArea(arguments)+"   is the Surface Area of a cone with a radius of "+Fraction.getFraction(arguments[0])+" and a height of "+Fraction.getFraction(arguments[1]);
                     }
@@ -188,7 +188,7 @@ public class ShapeFormulas {
             new Shape2D("cube", 1, "SA = 6*"+l+"²    where "+l+" is the length of one of the sides of the cube")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
                         return "SA = "+calculateArea(arguments)+"   is the Surface Area of a cube with side length "+Fraction.getFraction(arguments[0]);
                     }
@@ -202,7 +202,7 @@ public class ShapeFormulas {
             new Shape2D("cylinder", 2, "SA = 2π"+r+h+"+2π"+r+"²    where "+r+" is the radius and "+h+" is the height of the cylinder")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
                         return "SA = "+calculateArea(arguments)+"   is the Surface Area of a cylinder with a radius of "+Fraction.getFraction(arguments[0])+" and a height of "+Fraction.getFraction(arguments[1]);
                     }
@@ -216,7 +216,7 @@ public class ShapeFormulas {
             new Shape2D("parallelogram", 2, "A = "+b+"*"+h+"     where "+b+" is the base and "+h+" is the height of the parallelogram")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -228,7 +228,7 @@ public class ShapeFormulas {
             new Shape2D("rectangle", 2, "A = "+l+"*"+w+"     where "+l+" is the length and "+w+" is the width of the rectangle")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -240,7 +240,7 @@ public class ShapeFormulas {
             new Shape2D("rectangular prism", 3, "SA = 2*"+l+"*"+w+" + 2*"+w+"*h + 2*l*h    where "+l+" is the length, "+w+" is the width, and "+h+" is the height of the rectangular prism")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
                         return "SA = "+calculateArea(arguments)+"   is the Surface Area of a cone with a length of "+Fraction.getFraction(arguments[0])+", a width of "+Fraction.getFraction(arguments[1])+", and a height of "+Fraction.getFraction(arguments[2]);
                     }
@@ -254,7 +254,7 @@ public class ShapeFormulas {
             new Shape2D("semicircle", 1, "A = 0.5*π"+r+"²     where "+r+" is the radius of the semicircle")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -266,7 +266,7 @@ public class ShapeFormulas {
             new Shape2D("sphere", 1, "SA = 4*π"+r+"²    where "+r+" is the radius of the sphere")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
                         return "SA = "+calculateArea(arguments)+"   is the Surface Area of a sphere with radius "+Fraction.getFraction(arguments[0]);
                     }
@@ -280,7 +280,7 @@ public class ShapeFormulas {
             new Shape2D("square", 1, "A = "+l+"²     where "+l+" is the lengths of one of the sides of the square")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -292,7 +292,7 @@ public class ShapeFormulas {
             new Shape2D("triangle", 2, "A = 0.5*"+b+"*"+h+"     where "+b+" is the base and "+h+" is the height of the triangle")
             {
                 @Override
-                public String calculateArea(double[] arguments){
+                public String calculateArea(double... arguments){
                     if (arguments.length == numArguments){
 
                     }
@@ -314,7 +314,7 @@ public class ShapeFormulas {
     }
 
     public static String getArea(String type, double[] arguments){
-        int index = Search.binarySearch(shapes3D, Search.replace(type.toLowerCase(), areaFormulaReplacements));
+        int index = Search.binarySearch(shapes2D, Search.replace(type.toLowerCase(), areaFormulaReplacements));
         if (index != -1)    return shapes2D[index].calculateArea(arguments);
         return "Invalid Input Error - Invalid shape";
     }

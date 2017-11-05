@@ -9,7 +9,6 @@ public class _Math_Evaluation_Library_Tests_ {
 
     public static void main (String[] args){
 
-
         runTests();
 
     }
@@ -26,6 +25,7 @@ public class _Math_Evaluation_Library_Tests_ {
                 new Unit_Conversion_Tests("Unit Conversion"),
                 new Summation_Tests("Summation"),
                 new Combinatorics_Tests("Combinatorics"),
+                new Random_Variables_Tests("Random Variables"),
                 new Propositional_Logic_Tests("Propositional Logic"),
                 new Binary_Tests("Binary"),
 

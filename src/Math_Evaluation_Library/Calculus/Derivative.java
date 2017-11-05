@@ -172,7 +172,7 @@ public class Derivative {
     public static final String[] database1 = {
             "{0}",          "0",
             "{x} {0} ^",    "{0}*{x}^[{0}-1]",
-            "e {x} ^",      "e^{x}",
+            "ℯ {x} ^",      "ℯ^{x}",
             "{0} {x} ^",    "{0}^{x}*ln{0}",
     };
 

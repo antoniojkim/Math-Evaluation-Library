@@ -18,6 +18,7 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("-1", -1);
         evaluationTest("2*3-2", 4);
         evaluationTest("-e", -2.71828182845904523536);
+        evaluationTest("exp2", 7.38905609893065);
         evaluationTest("64∨2", 66);
         evaluationTest("floor_2(63)", 32);
         evaluationTest("floor_2(64)", 64);
