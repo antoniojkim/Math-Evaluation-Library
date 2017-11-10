@@ -577,30 +577,42 @@ public class TextFunctions {
                             else{
                                 b.multiply(-1);
                                 a.multiply(2);
-                                double gcd = 1;
-                                if (b.getValue() == 0){
-                                    gcd = Mod.gcd(discriminant*discriminant, a.getValue());
-                                }
-                                else{
-                                    gcd = Mod.gcd(b.getValue(), Mod.gcd(discriminant*discriminant, a.getValue()));
-                                }
-                                if (gcd != 0){
-                                    b.divide(gcd);
-                                    a.divide(gcd);
-                                    discriminant /= (gcd*gcd);
+                                if (a.isInteger() && b.isInteger() && c.isInteger()) {
+                                    double gcd = Mod.gcd(discriminant * discriminant, a.getValue());
+                                    if (b.getValue() != 0) {
+                                        gcd = Mod.gcd(b.getValue(), gcd);
+                                    }
+                                    if (gcd != 0) {
+                                        b.divide(gcd);
+                                        a.divide(gcd);
+                                        discriminant /= (gcd * gcd);
+                                    }
                                 }
                                 String roots = "x = ";
                                 String frac = Fraction.getFraction(discriminant, true);
                                 if (b.getValue() != 0){
-                                    if (a.getValue() != 1){
-                                        roots += "("+b.getString()+" + √"+frac+")/"+a.getString()+",  "+
-                                                "("+b.getString()+" - √"+frac+")/"+a.getString();
+                                    Fraction x1 = new Fraction((b.getValue()+sqrt)/a.getValue());
+                                    Fraction x2 = new Fraction((b.getValue()-sqrt)/a.getValue());
+                                    if (!x1.isFraction() && !x2.isFraction()){
+                                        roots += b.getString()+" ± √"+frac;
+                                        if (a.getValue() != 1){    roots = "("+roots+")/"+a.getString();   }
                                     }
                                     else{
-                                        roots += b.getString()+" ± √"+frac;
+                                        if (x1.isFraction()){    roots += x1.getString()+", ";   }
+                                        else{
+                                            String root = b.getString()+"+√"+frac;
+                                            if (a.getValue() != 1){    root = "("+root+")/"+a.getString();   }
+                                            roots += root+", ";
+                                        }
+                                        if (x2.isFraction()){    roots += x2.getString();   }
+                                        else{
+                                            String root = b.getString()+"-√"+frac;
+                                            if (a.getValue() != 1){    root = "("+root+")/"+a.getString();   }
+                                            roots += root+", ";
+                                        }
                                     }
-                                    roots += "  are the roots of "+function+". "+
-                                            "Approximate Forms:  x = "+(b.getValue()+sqrt)/a.getValue()+",  "+(b.getValue()-sqrt)/a.getValue();
+                                    roots += " are the roots of "+function+" = 0. "+
+                                            "Approximate Forms:  x = "+x1.getValue()+", "+x2.getValue();
                                 }
                                 else{
                                     if (a.getValue() != 1){

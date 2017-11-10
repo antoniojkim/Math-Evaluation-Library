@@ -37,8 +37,12 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("|-1|*|-2|", 2);
 
         evaluationTest("x^2"+separator+"2", 4);
+        evaluationTest("[x^2, 2]", 4);
         evaluationTest("x^2"+separator+"m", "NaN");
         evaluationTest("-4y+3x"+separator+"-0.7,-2.4", "7.5");
+        evaluationTest("[-4y+3x,-0.7,-2.4]", "7.5");
+        evaluationTest("calcab(-4y+3x,-0.7,-2.4)", "7.5");
+        evaluationTest("(n)^2"+separator+"n=3", "9");
 
         InfixToPostfixTest("sin(cosx)", "x cos sin");
         InfixToPostfixTest("sin(cos(tanx))", "x tan cos sin");
@@ -58,6 +62,13 @@ public class Engine_Tests extends _Tests_{
 
         evaluationTest("n≔3", 3);
         evaluationTest("(n)*{n}", 9);
+
+        evaluationTest("f:=x^2", "x^2");
+        InfixToPostfixTest("f(2)", "f 2");
+        evaluationTest("f(2)", 4);
+
+        evaluationTest("b≔Bin(10, 0.5, x)", "Bin(10,0.5,x)");
+        evaluationTest("b(3)", 0.1171875);
     }
 
     public void syntaxTest(String input, String expected){

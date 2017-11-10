@@ -240,6 +240,16 @@ public class UnaryFunctions {
                     return Math.log(x);
                 }
             },
+//            new UnaryFunction("lnΓ", "lnΓ(α) computes the Natural Logarithm of the gamma function at α")
+//            {
+//                @Override
+//                public double evaluate(double z) {
+//                    if (z > 0){
+//                        return Special.lnGammaFunction(z);
+//                    }
+//                    return NaN;
+//                }
+//            },
             new UnaryFunction("log", "log(x) = log₁₀(x), is the Base 10 Logarithm")
             {
                 @Override
@@ -343,6 +353,15 @@ public class UnaryFunctions {
                 public double evaluate(double x) {
                     if (x % 1 == 0){
                         return _Number_.getNumber(_Number_.toBinary((int)x));
+                    }
+                    return NaN;
+                }
+            },
+            new UnaryFunction("Γ", "Γ(α) computes the gamma function at α"){
+                @Override
+                public double evaluate(double z) {
+                    if (z > 0){
+                        return Special.gammaFunction(z);
                     }
                     return NaN;
                 }

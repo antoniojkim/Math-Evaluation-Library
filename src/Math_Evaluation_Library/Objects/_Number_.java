@@ -118,8 +118,8 @@ public class _Number_ {
         return true;
     }
     public static boolean isNumber(String str){
-        str = str.toLowerCase().trim();
-        if (str.contains("error") || str.contains("nan") || str.contains("infinity")){
+        String lstr = str.toLowerCase().trim();
+        if (lstr.contains("error") || lstr.contains("nan") || lstr.contains("infinity")){
             return false;
         }
         try{

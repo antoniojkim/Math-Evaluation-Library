@@ -4,9 +4,7 @@ import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects.Matrix;
 import Math_Evaluation_Library.Objects._Number_;
-import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
-import org.jblas.Decompose;
 import org.jblas.DoubleMatrix;
 import org.jblas.Solve;
 
@@ -401,22 +399,22 @@ public class _Matrix_ {
             return toDoubleMatrixSemicolon(Search.replace(strMatrix, "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", ""));
         }
         char lastSub1 = strMatrix.charAt(strMatrix.length()-2);
-        if (first == '{' && lastSub1 == '}' && last == 'τ'){
+        if (first == '{' && lastSub1 == '}' && last == 'ᵀ'){
             return toDoubleMatrixSemicolon(Search.replace(strMatrix.substring(0, strMatrix.length()-1)
                     , "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", "")).transpose();
         }
-        if (first == '{' && lastSub1 == '}' && last == 'ι'){
+        if (first == '{' && lastSub1 == '}' && last == 'ᴵ'){
             DoubleMatrix matrix = toDoubleMatrixSemicolon(Search.replace(strMatrix.substring(0, strMatrix.length()-1)
                     , "}, {", ";",   "},{", ";",   "}; {", ";",   "};{", ";",   "{", "",  "}", ""));
             if (matrix.rows == matrix.columns){
                 return Solve.pinv(matrix);
             }
         }
-        if (first == '[' && lastSub1 == ']' && last == 'τ'){
+        if (first == '[' && lastSub1 == ']' && last == 'ᵀ'){
             return toDoubleMatrixSemicolon(Search.replace(strMatrix.substring(0, strMatrix.length()-1),
                     "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",   "]", "")).transpose();
         }
-        if (first == '[' && lastSub1 == ']' && last == 'ι'){
+        if (first == '[' && lastSub1 == ']' && last == 'ᴵ'){
             DoubleMatrix matrix = toDoubleMatrixSemicolon(Search.replace(strMatrix.substring(0, strMatrix.length()-1),
                     "], [", ";",   "],[", ";",   "]; [", ";",   "];[", ";",   "[", "",  "]", ""));
             if (matrix.rows == matrix.columns){
@@ -435,13 +433,13 @@ public class _Matrix_ {
             if (rowLength == -1){
                 rowLength = row.length;
                 for (int j = 0; j<rowLength; j++){
-                    row[j] = _Number_.getNumber(strRow[j]);
+                    row[j] = Engine.evaluate(strRow[j]);
                 }
                 values[i] = row;
             }
             else if (row.length == rowLength){
                 for (int j = 0; j<rowLength; j++){
-                    row[j] = _Number_.getNumber(strRow[j]);
+                    row[j] = Engine.evaluate(strRow[j]);
                 }
                 values[i] = row;
             }

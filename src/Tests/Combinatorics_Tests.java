@@ -30,7 +30,13 @@ public class Combinatorics_Tests extends Engine_Tests {
         evaluationTest("3*4P2/(3*4C2)", 2);
 
         evaluationTest("738C10", 1.2422381175008683E22);
-        evaluationTest("738C138", "NaN");
+        evaluationTest("738C138", 1.0166709548451912E153);
+        evaluationTest("910C460", 2.166504014733614E272);
+
+        evaluationTest("Γ(4)", 6);
+        evaluationTest("Γ5", "24");
+        evaluationTest("(1.5)!", 1.329340388179138);
+
 
     }
 }

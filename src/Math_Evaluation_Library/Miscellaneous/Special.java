@@ -22,4 +22,27 @@ public class Special {
         return MathRound.round(1.36936*Math.exp(-0.8072*x*x), 4);
     }
 
+    private static final double[] gamma_coefficients = {
+            676.5203681218851,
+            -1259.1392167224028,
+            771.32342877765313,
+            -176.61502916214059,
+            12.507343278686905,
+            -0.13857109526572012,
+            9.9843695780195716e-6,
+            1.5056327351493116e-7
+    };
+    public static double gammaFunction(double z){
+        boolean isZint = z%1 == 0;
+        z--;
+        double x = 0.99999999999980993;
+        for (int i = 0; i<gamma_coefficients.length; i++){
+            x += gamma_coefficients[i]/(z+i+1);
+        }
+        double t = z + gamma_coefficients.length - 0.5;
+        double y = 2.5066282746310005 * Math.pow(t, z+0.5) * Math.exp(-t) * x;
+        if (isZint)   return Math.rint(y);
+        return MathRound.round(y, 15);
+    }
+
 }

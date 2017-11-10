@@ -10,7 +10,6 @@ import java.util.List;
 
 import static Math_Evaluation_Library.Engine.MultiParamFunctions.*;
 import static Math_Evaluation_Library.Engine.Operators.*;
-import static java.lang.Double.NaN;
 
 /**
  * Created by Antonio on 2017-07-23.
@@ -24,9 +23,18 @@ public class MathEngine extends Engine{
         }
         List<String> outputs = new ArrayList<>();
         outputs.addAll(list);
-        for (int a = 0; a < outputs.size(); a++) {
+        ITERATOR: for (int a = 0; a < outputs.size(); a++) {
             if (!_Number_.isNumber(outputs.get(a))){
                 try {
+                    for (VarFunction variableFunction : variableFunctions) {
+                        if (outputs.get(a).equals(variableFunction.getName())) {
+                            String arg = outputs.get(a+1);
+                            outputs.set(a, variableFunction.evaluate(arg));
+                            outputs.remove(a+1);
+                            a = -1;
+                            continue ITERATOR;
+                        }
+                    }
                     if (UnaryFunctions.unaryFunctionsContains(outputs.get(a))) {
                         String function = outputs.get(a);
                         int index = Scripts.getSuperScriptIndex(function.substring(function.length()-1));
@@ -96,45 +104,17 @@ public class MathEngine extends Engine{
                         }
                         a = -1;
                     }
-                    else if (outputs.get(a).equals("eval")) {
-                        String fx = outputs.get(a + 1);
-                        double x = evaluate(outputs.get(a + 2));
-                        double eval = evaluate(fx, x);
-                        outputs.set(a, String.valueOf(eval));
-                        Simplify.remove(outputs, a+2, a+1);
-                        a = -1;
-                    }
-                    else if (outputs.get(a).equals("evalint")) {
-                        Function f = new Function(outputs.get(a + 1));
-                        double av = _Number_.getNumber(outputs.get(a + 2));
-                        double bv = _Number_.getNumber(outputs.get(a + 3));
-                        double eval = NaN;
-                        if (f.isContainsVar() && f.isContainsVarOp()){
-                            eval = f.of(av, bv);
-                        }
-                        else if (!f.isContainsVar() && f.isContainsVarOp()){
-                            eval = f.of(bv)-f.of(av);
-                        }
-                        else{
-                            eval = f.of(bv)-f.of(av);
-                        }
-                        outputs.set(a, String.valueOf(eval));
-                        Simplify.remove(outputs, a+3, a+2, a+1);
-                        a = -1;
-                    }
                     else if (outputs.get(a).contains("∞")){ }
                     else if (outputs.get(a).charAt(0) == '{' || outputs.get(a).charAt(0) == '['){
                         char last = outputs.get(a).charAt(outputs.get(a).length()-1);
-                        if (last == 'τ' || last == 'ι'){
+                        if (last == 'ᵀ' || last == 'ᴵ'){
                             outputs.set(a, _Matrix_.toStrMatrix(_Matrix_.toDoubleMatrix(outputs.get(a))));
                         }
                     }
                     else if (outputs.size() > 1){
                         return "Invalid Input Error - Unrecognized character(s):  "+outputs.get(a);
                     }
-                } catch (ArrayIndexOutOfBoundsException | NumberFormatException | ArithmeticException e3) {
-                    return "NaN";
-                } catch (IndexOutOfBoundsException e4){
+                } catch (NumberFormatException | ArithmeticException | IndexOutOfBoundsException e3) {
                     return "NaN";
                 }
             }

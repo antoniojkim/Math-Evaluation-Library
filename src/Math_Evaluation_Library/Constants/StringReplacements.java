@@ -25,8 +25,8 @@ public class StringReplacements {
 
     public static final String[][] capitalInstances = {
             {"P", "npr"},   {"C", "@"},
-            {"}t", "}τ"},   {"}T", "}τ"}, {"}⁻¹", "}ι"},
-            {"E", "*10^"},  {"ED", "∆"},
+            {"}t", "}ᵀ"},   {"}T", "}ᵀ"}, {"}⁻¹", "}ᴵ"},
+            {"E", "*10^"},  {"ED", "∆"},  {"Γ", "gammaf"},
             {"Bin", "bd"},  {"NB", "nbd"}, {"geo", "gnb"}, {"ND", "ncd"}
     };
 
@@ -42,7 +42,7 @@ public class StringReplacements {
             {"elasy", "lasd"},   {"elasx", "lasd"},   {"elasd", "lasd"},   {"prime", "nconst"},  {"heron", "hron"},   {"newton", "nwton"},
             {"fibsum", "smfib"}, {"sumfib", "smfib"}, {"variance", "var"}, {"stdev", "stndv"},   {"stddev", "stndv"}, {"stndev", "stndv"},
             {"ceil", "up"},      {"nderiv", "dx"},    {"deriv", "diff"},   {"riemann", "riman"}, {"randomint", "randint"}, {"randomQ", "randq"}, {"randomq", "randq"},
-            {"gcf", "gcd"},      {"erf", "gaussrf"},
+            {"gcf", "gcd"},      {"erf", "gaussrf"},  {"gammaf", "Γ"},
 
             {"pi", "π"}, {"e_m", "γ"}, {"e", "ℯ"}, {"gr", "ϕ"}
     };

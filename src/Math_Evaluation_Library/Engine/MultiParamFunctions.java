@@ -187,6 +187,32 @@ public class MultiParamFunctions{
                     return INVALID;
                 }
             },
+            new MultiParamFunction("calc",     2, "calc(ƒ("+x+"), a) calculates ƒ(a)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        return _Number_.format(Engine.evaluate(parameters[0], parameters[1], ""));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("calcab",   3, "calcab(ƒ("+x+"), a, b) calculates ƒ("+x+", y) if ƒ has parameter "+x+", else ƒ(b)-ƒ(a)")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 3){
+                        Function f = new Function(parameters[0]);
+                        double av = Engine.evaluate(parameters[1]);
+                        double bv = Engine.evaluate(parameters[2]);
+                        if (f.isContainsVar() && f.isContainsVarOp()){
+                            return _Number_.format(f.at(av, bv));
+                        }
+                        return _Number_.format(f.at(bv)-f.at(av));
+                    }
+                    return INVALID;
+                }
+            },
             new MultiParamFunction("dxn",      3, "dxn(ƒ, "+x+", n) calculates the value of the nth derivative of ƒ at "+x)
             {
                 @Override
@@ -218,6 +244,68 @@ public class MultiParamFunctions{
                         double p1 = Engine.evaluate(parameters[2]);
                         double p2 = Engine.evaluate(parameters[3]);
                         return _Number_.format((((q2 - q1) / (q2 + q1)) / ((p2 - p1) / (p2 + p1))));
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("expcdf",   2, "expcdf(θ, "+x+"); P(X≤"+x+") for X ~ Exponential Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double theta = Engine.evaluate(parameters[0]);
+                            double x = Engine.evaluate(parameters[1]);
+                            if (theta>0 && x>=0){
+                                return _Number_.format(RandomVariables.exponentialDistributionCDF(theta, x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("expmean",  1, "expmean(θ) = θ; calculates Expected Value for Exponential Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double theta = Engine.evaluate(parameters[0]);
+                            if (theta>0){
+                                return _Number_.format(RandomVariables.exponentialDistribution_ExpectedValue(theta));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("exppdf",   2, "exppdf(θ, "+x+"); P(X="+x+") for X ~ Exponential Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 2){
+                        try{
+                            double theta = Engine.evaluate(parameters[0]);
+                            double x = Engine.evaluate(parameters[1]);
+                            if (theta>0 && x>=0){
+                                return _Number_.format(RandomVariables.exponentialDistribution(theta, x));
+                            }
+                        } catch(NumberFormatException e){}
+                    }
+                    return INVALID;
+                }
+            },
+            new MultiParamFunction("expvar",   1, "expvar(θ) = θ²; calculates Variance for Exponential Distribution")
+            {
+                @Override
+                public String evaluate(String[] parameters) {
+                    if (parameters.length == 1){
+                        try{
+                            double theta = Engine.evaluate(parameters[0]);
+                            if (theta>0){
+                                return _Number_.format(RandomVariables.exponentialDistribution_Variance(theta));
+                            }
+                        } catch(NumberFormatException e){}
                     }
                     return INVALID;
                 }

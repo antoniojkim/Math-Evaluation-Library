@@ -36,8 +36,8 @@ public class Engine {
     public static String error = "Error";
     static boolean debug = false;
     static double ans = 1;
-    static List<String> variables = new ArrayList<>();
-    static List<Double> values = new ArrayList<>();
+    static List<VarNum> variables = new ArrayList<>();
+    static List<VarFunction> variableFunctions = new ArrayList<>();
 
     public static char[] implicit = {')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', var(), varOp(), '}', 'γ', 'π', 'ϕ', 'ℯ'};
     public static char[] checkImplicit = {'(', var(), varOp(), '{', 'γ', 'π', 'ϕ', 'ℯ', '√'};
@@ -142,12 +142,12 @@ public class Engine {
 
     protected static String replaceVariables(String function){
         // Replace all variables
-        for (int a = 0; a < variables.size(); a++) {
+        for (VarNum variable : variables) {
             function = Search.replace(function, new String[][]{
-                    {"("+variables.get(a)+")", "("+_Number_.format(values.get(a))+")"},
-                    {"${"+variables.get(a)+"}", "("+_Number_.format(values.get(a))+")"},
-                    {"{"+variables.get(a)+"}", "("+_Number_.format(values.get(a))+")"},
-                    {"$"+variables.get(a), "("+_Number_.format(values.get(a))+")"}
+                    {"("+variable.var+")", "("+variable.value+")"},
+                    {"${"+variable.var+"}", "("+variable.value+")"},
+                    {"{"+variable.var+"}", "("+variable.value+")"},
+                    {"$"+variable.var, "("+variable.value+")"}
             });
         }
         return function;
@@ -194,6 +194,7 @@ public class Engine {
 
     public static final String separator = "│";
     public static String preprocessor(String function){
+        function = fixSyntax(function);
         int index = function.indexOf("⩵");
         if (index != -1){
             if (function.substring(0, index).equals(function.substring(index+1))){
@@ -207,19 +208,31 @@ public class Engine {
         index = function.indexOf("≔");
         if (index != -1){
             String var = function.substring(0, index);
-            double value = evaluate(function.substring(index+1));
-            index = variables.indexOf(var);
+            String value = function.substring(index+1);
+            index = Search.varNumSearch(variables, var);
+            boolean isNumber = _Number_.isNumber(value);
             if (index != -1) {
-                if (_Number_.isNumber(value)) {
-                    values.set(index, value);
+                if (isNumber) {
+                    variables.get(index).setValue(evaluate(value));
                 }
                 else{
                     variables.remove(index);
-                    values.remove(value);
                 }
+            } else if (isNumber){
+                variables.add(new VarNum(var, evaluate(value)));
             } else {
-                variables.add(var);
-                values.add(value);
+                for (int i = 0; i<variableFunctions.size(); i++){
+                    if (variableFunctions.get(i).getName().equals(var)){
+                        if (value.length() > 0){
+                            variableFunctions.get(i).redefine(value);
+                        }
+                        else{
+                            variableFunctions.remove(i);
+                        }
+                        return value;
+                    }
+                }
+                variableFunctions.add(new VarFunction(var, value));
             }
             return _Number_.format(value);
 
@@ -234,7 +247,7 @@ public class Engine {
                 if (function.contains(Engine.varOp)) {
                     return _Number_.format(evaluate(function, conditions[0], conditions[1]));
                 }
-                return _Number_.format(evaluate(function, conditions[0], "")-evaluate(function, conditions[1], ""));
+                return _Number_.format(evaluate(function, conditions[1], "")-evaluate(function, conditions[0], ""));
             }
             for (String condition : conditions){
                 if (_Number_.isNumber(condition)){
@@ -250,7 +263,7 @@ public class Engine {
                 if (eqindex != -1){
                     String value = condition.substring(eqindex+1);
                     if (_Number_.isNumber(value)){
-                        String var = condition.substring(eqindex);
+                        String var = condition.substring(0, eqindex);
                         function = Search.replace(function, new String[][]{
                                 {"${"+var+"}", "("+value+")"},
                                 {"{"+var+"}", "("+value+")"},
@@ -441,11 +454,11 @@ public class Engine {
                             error = "Bracket Count Error:  Missing '(' Bracket";
                             return error;
                         }
-                        continue PARSE;
+                        continue;
                     } else if (c == '{') {
                         int end = Search.indexOf(infixFunction, '}', a);
                         if (end != -1){
-                            if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'τ' || infixFunction.charAt(end+1) == 'ι')){
+                            if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'ᵀ' || infixFunction.charAt(end+1) == 'ᴵ')){
                                 output.push(infixFunction.substring(a, end+2));
                                 a = end+1;
                             }
@@ -482,7 +495,7 @@ public class Engine {
                         if (semicolon != -1 || cPlus1 == '['){
                             int end = infixFunction.indexOf("]", a);
                             if (end != -1){
-                                if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'τ' || infixFunction.charAt(end+1) == 'ι')){
+                                if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'ᵀ' || infixFunction.charAt(end+1) == 'ᴵ')){
                                     output.push(infixFunction.substring(a, end+2));
                                     a = end+1;
                                 }
@@ -495,30 +508,40 @@ public class Engine {
                             error = "Bracket Count Error - Unclosed Hard Bracket";
                             return error;
                         }
-//                        int comma1 = infixFunction.indexOf(",", a);
-//                        int close = infixFunction.indexOf("]", a);
-//                        if (comma1 == -1 || close == -1) {
-//                            error = "Syntax Error - Evaluate";
-//                            return error;
-//                        }
-//                        int comma2 = infixFunction.indexOf(",", comma1 + 1);
-//                        if (comma2 == -1) {
-//                            output.push("eval");
-//                            output.push(infixFunction.substring(a + 1, comma1));
-//                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, close)));
-//                        } else {
-//                            output.push("evalint");
-//                            output.push(infixFunction.substring(a + 1, comma1));
-//                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, comma2)));
-//                            output.push("" + evaluate(infixFunction.substring(comma2 + 1, close)));
-//                        }
-//                        a = close;
-//                        continue PARSE;
+                        int comma1 = infixFunction.indexOf(",", a);
+                        int close = infixFunction.indexOf("]", a);
+                        if (comma1 == -1 || close == -1) {
+                            error = "Syntax Error - Evaluate";
+                            return error;
+                        }
+                        int comma2 = infixFunction.indexOf(",", comma1 + 1);
+                        if (comma2 == -1) {
+                            output.push("calc");
+                            output.push(infixFunction.substring(a + 1, comma1));
+                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, close)));
+                        } else {
+                            output.push("calcab");
+                            output.push(infixFunction.substring(a + 1, comma1));
+                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, comma2)));
+                            output.push("" + evaluate(infixFunction.substring(comma2 + 1, close)));
+                        }
+                        a = close;
+                        continue;
                     }
                     int lb = infixFunction.indexOf("(", a);
                     if (infixFunction.indexOf(")", a) < lb)  lb = -1;
                     if (lb != -1) {
-                        int fnIndex = multiParamFunctionNamesIndex(infixFunction.substring(a, lb));
+                        String function = infixFunction.substring(a, lb);
+                        for (VarFunction variableFunction : variableFunctions) {
+                            if (function.equals(variableFunction.getName())) {
+                                int rb = lb + Search.getIndices(infixFunction.substring(lb), ")").get(0);
+                                output.push(function);
+                                output.push(infixFunction.substring(lb + 1, rb));
+                                a = rb;
+                                continue PARSE;
+                            }
+                        }
+                        int fnIndex = multiParamFunctionNamesIndex(function);
                         if (fnIndex != -1) {
                             try {
                                 int rb = lb + Search.getIndices(infixFunction.substring(lb), ")").get(0);
@@ -652,12 +675,12 @@ public class Engine {
         return varOp.charAt(0);
     }
 
-    public static List<String> getVariables() {
-        return variables;
-    }
-    public static List<Double> getValues() {
-        return values;
-    }
+//    public static List<String> getVariables() {
+//        return variables;
+//    }
+//    public static List<Double> getValues() {
+//        return values;
+//    }
 
     public boolean setVariable(String variable) {
         if (!variable.equalsIgnoreCase("e") && !variable.equalsIgnoreCase("π") && variable.length() == 1) {

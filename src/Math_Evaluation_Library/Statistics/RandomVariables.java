@@ -69,7 +69,7 @@ public class RandomVariables {
     }
 
     public static double poissonDistribution(double lambda, int x){
-        return Math.exp(-lambda)*Math.pow(lambda, x)/Combinatorics.fact(x);
+        return Math.exp(-lambda)*Math.pow(lambda, x)/Combinatorics.fact_int(x);
     }
     public static double poissonDistribution_ExpectedValue(double lambda){
         return lambda;
@@ -80,6 +80,19 @@ public class RandomVariables {
 
     public static double uniformDistribution(int a, int b, int x){
         return (a<=x && x<=b ? 1/(b-a+1) : 0);
+    }
+
+    public static double exponentialDistribution(double theta, double x){
+        return (x > 0 && theta > 0) ? Math.exp(-x/theta)/theta : 0;
+    }
+    public static double exponentialDistributionCDF(double theta, double x){
+        return (x > 0 && theta > 0) ? 1-Math.exp(-x/theta) : 0;
+    }
+    public static double exponentialDistribution_ExpectedValue(double theta){
+        return (theta > 0) ? theta : NaN;
+    }
+    public static double exponentialDistribution_Variance(double theta){
+        return (theta > 0) ? theta*theta : NaN;
     }
 
     public static double normalDistribution(double mean, double stdv, double x){

@@ -32,10 +32,7 @@ public class Operators {
             new Operator("!", 4, true, true){
                 @Override
                 public String evaluate(double x) {
-                    if (x%1 == 0 && x<=170){
-                        return _Number_.format(Combinatorics.fact((int)x));
-                    }
-                    return INVALID;
+                    return _Number_.format(Combinatorics.fact(x));
                 }
             },
             new Operator("%", 3, false, true){

@@ -7,6 +7,7 @@ package Math_Evaluation_Library;
 
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Objects.MathObject;
+import Math_Evaluation_Library.Objects.VarNum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,6 +109,20 @@ public class Search {
             } else {
                 return mid;
             }
+        }
+        return -1;
+    }
+
+    public static int linearSearch(List<MathObject> list, String var){
+        for (int i = 0; i<list.size(); i++){
+            if (list.get(i).getName().equals(var))    return i;
+        }
+        return -1;
+    }
+
+    public static int varNumSearch(List<VarNum> array, String var){
+        for (int i = 0; i<array.size(); i++){
+            if (array.get(i).var.equals(var))    return i;
         }
         return -1;
     }

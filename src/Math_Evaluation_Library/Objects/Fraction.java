@@ -121,6 +121,9 @@ public class Fraction{
     public boolean isFraction(){
         return denominator != 0;
     }
+    public boolean isInteger(){
+        return denominator == 1;
+    }
 
     public void reduce(){
         if (isFraction() && !(numerator == 0 || denominator == 0)){
