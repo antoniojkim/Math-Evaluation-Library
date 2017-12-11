@@ -56,7 +56,7 @@ public class UnaryExpression extends Expression {
     @Override public String postfix() { return function.postfix(param); }
     @Override
     public String hardcode(String spacing) {
-        return spacing+"new "+getClass().getSimpleName()+"(getUnaryFunction(\""+function.getFunction()+"\"),\n" +
+        return spacing+"new "+getClass().getSimpleName()+"(\""+function.getFunction()+"\",\n" +
                 param.hardcode(spacing+"        ")+")";
     }
 

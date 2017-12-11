@@ -19,7 +19,7 @@ public class Simplify_Tests extends _Tests_ {
     }
 
     public void runTests(){
-        simplificationTest("5+", "Empty Stack Error+5");//"Invalid Syntax Parsing Error:  5 +"
+        simplificationTest("5+", "5");//"Invalid Syntax Parsing Error:  5 +"
 
         simplificationTest("2*3", "6");
         simplificationTest("2*x", "2x");
@@ -32,6 +32,7 @@ public class Simplify_Tests extends _Tests_ {
         simplificationTest("x^2*x^3", "x⁵");
         simplificationTest("x^2", "x²");
 
+        simplificationTest("--sinx", "sin(x)");
         simplificationTest("sinx/cosx", "tan(x)");
         simplificationTest("cosx/sinx", "cot(x)");
         simplificationTest("(sinx)^2", "sin²(x)");

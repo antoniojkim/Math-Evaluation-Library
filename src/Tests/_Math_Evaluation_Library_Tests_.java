@@ -59,8 +59,8 @@ public class _Math_Evaluation_Library_Tests_ {
     }
 
     public static void runTest(){
-        new Derivative_Tests("Derivative").derivativeTests("e^(2x)", "2ℯ^(2x)");
-        //System.out.println(Engine.toExpression("x*2*3").hardcode());
+        new Engine_Tests("Engine").evaluationTest("deriv(sin(cosx),2)", "6");
+        //System.out.println(Engine.toExpression("2*3").infix());
     }
 
     public static void runTests(){

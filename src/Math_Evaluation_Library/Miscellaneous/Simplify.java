@@ -76,7 +76,7 @@ public class Simplify {
             if (s2 instanceof NumberExpression){
                 return new NumberExpression(s1.valueOf()-s2.valueOf());
             }
-            if (s1.valueOf() == 0)  return new UnaryExpression(neg, s2);
+            if (s1.valueOf() == 0)  return neg.simplify(s2);
         }
         else if (s2 instanceof NumberExpression){
             if (s2.valueOf() == 0)  return s1;
@@ -125,7 +125,7 @@ public class Simplify {
             }
             if (s1.valueOf() == 0)  return new NumberExpression(0);
             if (s1.valueOf() == 1)  return s2;
-            if (s1.valueOf() == -1) return new UnaryExpression("neg", s2);
+            if (s1.valueOf() == -1) return neg.simplify(s2);
             if (s2 instanceof OperatorExpression){
                 OperatorExpression oe = (OperatorExpression) s2;
                 if (oe.getParam1() instanceof NumberExpression && !(oe.getParam1() instanceof ConstantExpression)){
@@ -149,7 +149,7 @@ public class Simplify {
         else if (s2 instanceof NumberExpression){
             if (s2.valueOf() == 0)  return new NumberExpression(0);
             if (s2.valueOf() == 1)  return s1;
-            if (s2.valueOf() == -1) return new UnaryExpression("neg", s1);
+            if (s2.valueOf() == -1) return neg.simplify(s1);
             if (s1 instanceof OperatorExpression){
                 OperatorExpression oe = (OperatorExpression) s1;
                 if (oe.getParam1() instanceof NumberExpression && !(oe.getParam1() instanceof ConstantExpression)){
@@ -181,11 +181,11 @@ public class Simplify {
         else if (s1 instanceof UnaryExpression && s2 instanceof UnaryExpression){
             UnaryExpression ue1 = (UnaryExpression) s1;
             if (ue1.getFunction().getFunction().equals("neg")){
-                return new UnaryExpression(ue1.getFunction(), simplifyMultiplication(ue1.getParam(), s2));
+                return ue1.getFunction().simplify(simplifyMultiplication(ue1.getParam(), s2));
             }
             UnaryExpression ue2 = (UnaryExpression) s2;
             if (ue2.getFunction().getFunction().equals("neg")){
-                return new UnaryExpression(ue2.getFunction(), simplifyMultiplication(ue2.getParam(), s1));
+                return ue2.getFunction().simplify(simplifyMultiplication(ue2.getParam(), s1));
             }
         }
         return new OperatorExpression(multiply, s1, s2);

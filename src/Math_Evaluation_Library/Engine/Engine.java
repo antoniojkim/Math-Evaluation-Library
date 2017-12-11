@@ -652,26 +652,34 @@ public class Engine {
             String s = stack.pop();
             stackElementToExpression(s, output);
         }
+//        System.out.println();
+//        System.out.println(stack);
+//        Print.println(output);
         return output.peek();
     }
 
     private static void stackElementToExpression(String str, Stack<Expression> output){
-        if (isOperator(str)){
-            Operator operator = getOperator(str);
-            Expression e1 = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
-            if (operator.isSingleOperator()){
-                output.push(new OperatorExpression(operator, e1));
+        if (!output.empty()){
+            if (isOperator(str)){
+                Operator operator = getOperator(str);
+                Expression e1 = output.pop();
+                if (operator.isSingleOperator()){
+                    output.push(new OperatorExpression(operator, e1));
+                }
+                else if (!output.empty()){
+                    Expression e2 = output.pop();
+                    output.push(new OperatorExpression(operator, e2, e1));
+                }
+                else{
+                    output.push(e1);
+                }
             }
-            else {
-                Expression e2 = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
-                output.push(new OperatorExpression(operator, e2, e1));
+            else if (isUnaryFunction(str)){
+                Expression e = output.pop();
+                output.push(new UnaryExpression(getUnaryFunction(str), e));
             }
         }
-        else if (isUnaryFunction(str)){
-            Expression e = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
-            output.push(new UnaryExpression(getUnaryFunction(str), e));
-        }
-        else if (_Number_.isNumber(str)){
+        if (_Number_.isNumber(str)){
             output.push(new NumberExpression(str));
         }
     }

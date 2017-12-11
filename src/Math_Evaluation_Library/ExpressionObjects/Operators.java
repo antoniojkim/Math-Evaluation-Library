@@ -116,28 +116,37 @@ public class Operators {
             @Override
             public String infix(Expression e1, Expression e2){
                 String e1infix = e1.infix(), e2infix = e2.infix();
-                if (e1 instanceof NumberExpression){
-                    if (e2 instanceof UnaryExpression || e2 instanceof VariableExpression)  return e1infix+e2infix;
-                    if (e2 instanceof OperatorExpression){
-                        OperatorExpression oe = (OperatorExpression) e2;
-                        if (infixBracketOperatorsMul.containsKey(oe.getOperator().toString()) ||
-                                oe.getParam1() instanceof UnaryExpression || oe.getParam1() instanceof VariableExpression){
-                            return e1infix+e2infix;
+                if (e2 instanceof OperatorExpression){
+                    OperatorExpression oe2 = (OperatorExpression) e2;
+                    if (e1 instanceof OperatorExpression){
+                        OperatorExpression oe1 = (OperatorExpression) e1;
+                        boolean b1 = infixBracketOperators.containsKey(oe1.getOperator().toString());
+                        boolean b2 = infixBracketOperators.containsKey(oe2.getOperator().toString());
+                        if (b1 || b2) {
+                            if (b1 && b2) return "("+e1infix+")("+e2infix+")";
+                            if (b1) e1infix = "(" + e1infix + ")";
+                            else    e2infix = "(" + e2infix + ")";
+                        }
+                        else if (oe1.getParam2() instanceof NumberExpression && oe2.getParam1() instanceof NumberExpression){
+                            return e1infix+operator+e2infix;
+                        }
+                    }
+                    else if (e1 instanceof NumberExpression){
+                        if (oe2.getParam1() instanceof NumberExpression && !(oe2.getParam1() instanceof ConstantExpression)){
+                            return e1infix+operator+e2infix;
                         }
                     }
                 }
-                if (e1 instanceof OperatorExpression && infixBracketOperators.containsKey(((OperatorExpression) e1).getOperator().toString())){
-                    e1infix = "("+e1infix+")";
-                }
-                if (e2 instanceof OperatorExpression){
-                    OperatorExpression oe = (OperatorExpression) e2;
-                    if (infixBracketOperators.containsKey(oe.getOperator().toString())) e2infix = "("+e2infix+")";
-                    if ((infixBracketOperatorsMul.containsKey(oe.getOperator().toString()) ||
-                            oe.getParam1() instanceof UnaryExpression || oe.getParam1() instanceof VariableExpression)){
-                        return e1infix+e2infix;
+                else if (e2 instanceof UnaryExpression){
+                    UnaryExpression ue = (UnaryExpression) e2;
+                    if (ue.getFunction().getFunction().equals("neg")){
+                        return e1infix+operator+e2infix;
                     }
                 }
-                return e1infix+operator+e2infix;
+                else if (e2 instanceof NumberExpression && e1 instanceof NumberExpression){
+                    return e1infix+operator+e2infix;
+                }
+                return e1infix+e2infix;
             }
             @Override public Expression getDerivative(Expression f, Expression g){
                 Expression fprime = f.getDerivative(), gprime = g.getDerivative();
@@ -387,11 +396,60 @@ public class Operators {
                 }
                 return new NumberExpression(x.valueOf()*y.valueOf());
             }
+            @Override
+            public String infix(Expression e1, Expression e2){
+                String e1infix = e1.infix(), e2infix = e2.infix();
+                if (e2 instanceof OperatorExpression){
+                    OperatorExpression oe2 = (OperatorExpression) e2;
+                    if (e1 instanceof OperatorExpression){
+                        OperatorExpression oe1 = (OperatorExpression) e1;
+                        boolean b1 = infixBracketOperators.containsKey(oe1.getOperator().toString());
+                        boolean b2 = infixBracketOperators.containsKey(oe2.getOperator().toString());
+                        if (b1 || b2) {
+                            if (b1 && b2) return "("+e1infix+")("+e2infix+")";
+                            if (b1) e1infix = "(" + e1infix + ")";
+                            else    e2infix = "(" + e2infix + ")";
+                        }
+                        else if (oe1.getParam2() instanceof NumberExpression && oe2.getParam1() instanceof NumberExpression){
+                            return e1infix+operator+e2infix;
+                        }
+                    }
+                    else if (e1 instanceof NumberExpression){
+                        if (oe2.getParam1() instanceof NumberExpression && !(oe2.getParam1() instanceof ConstantExpression)){
+                            return e1infix+operator+e2infix;
+                        }
+                    }
+                }
+                else if (e2 instanceof UnaryExpression){
+                    UnaryExpression ue = (UnaryExpression) e2;
+                    if (ue.getFunction().getFunction().equals("neg")){
+                        return e1infix+operator+e2infix;
+                    }
+                }
+                else if (e2 instanceof NumberExpression && e1 instanceof NumberExpression){
+                    return e1infix+operator+e2infix;
+                }
+                return e1infix+e2infix;
+            }
             @Override public Expression getDerivative(Expression f, Expression g){
                 Expression fprime = f.getDerivative(), gprime = g.getDerivative();
                 return new OperatorExpression(Operators.getOperator("+"),
                         new OperatorExpression(Operators.getOperator("*"), f, gprime),
                         new OperatorExpression(Operators.getOperator("*"), g, fprime));
+            }
+            @Override public Expression getIntegral(Expression f, Expression g){
+                if (f instanceof NumberExpression){
+                    return new OperatorExpression(Operators.getOperator("*"),
+                            f, g.getIntegral());
+                }
+                if (g instanceof NumberExpression){
+                    return new OperatorExpression(Operators.getOperator("*"),
+                            g, f.getIntegral());
+                }
+                return super.getIntegral(f, g);
+            }
+            @Override public Expression simplify(Expression e1, Expression e2){
+                return Simplify.simplifyMultiplication(e1, e2);
             }
         });
         operatorHashMap.put("ʳ", new Operator("ʳ", 4, true, false){

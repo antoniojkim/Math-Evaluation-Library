@@ -33,7 +33,8 @@ public class Derivative {
     public static Expression calculate(Expression f){
         //String simplified = Simplify.simplify(function);
         if (f.isValid()) {
-            return f.getDerivative().simplify();
+            Expression derivative = f.getDerivative();
+            return derivative.simplify();
         }
         return new InvalidExpression("("+f.infix()+")'");
     }

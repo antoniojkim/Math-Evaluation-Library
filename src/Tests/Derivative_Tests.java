@@ -31,7 +31,7 @@ public class Derivative_Tests extends _Tests_ {
         derivativeTests("arccscx", "-1/(|x|√(x²-1))");
         derivativeTests("sinx+cosx", "cos(x)-sin(x)");
         derivativeTests("cosx+sinx", "-sin(x)+cos(x)");
-        derivativeTests("sinx+sin(cos(tanx))", "cos(x)-sin(tan(x))sec²(x)*cos(cos(tan(x)))");
+        derivativeTests("sinx+sin(cos(tanx))", "cos(x)-sin(tan(x))sec²(x)cos(cos(tan(x)))");
 
 //        derivativeTests("sinx*cosx", "");
 
@@ -40,11 +40,13 @@ public class Derivative_Tests extends _Tests_ {
 
         derivativeTests("e^x", "ℯ^x");
         derivativeTests("e^(2x)", "2ℯ^(2x)");
-        derivativeTests("2^x", "2^x*ln2");
+        derivativeTests("2^x", "2^xln2");
 
-        derivativeTests("sin(cos(tanx))", "-sin(tan(x))sec²(x)*cos(cos(tan(x)))");
+        derivativeTests("sin(cos(tanx))", "-sin(tan(x))sec²(x)cos(cos(tan(x)))");
 
         evaluationTest("deriv(x^3, 2)", "6x");
+        evaluationTest("deriv(x^3,3)", "6");
+        evaluationTest("deriv(sin(cosx),2)", "-(sin(x)sin(cos(x))sin(x)+cos(cos(x))cos(x))");
     }
 
     public void derivativeTests(String input, String expected){

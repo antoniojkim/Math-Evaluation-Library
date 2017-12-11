@@ -1015,7 +1015,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("smfib", new UnaryFunction("smfib", "smfib(n) = fib(0)+fib(1)+⋯+f(n)")
+        map.put("smfib", new UnaryFunction("smfib", "smfib(n) = fib(0)+fib(1)+⋯+fib(n)")
         {
             @Override
             public Expression evaluate(Expression x) {
