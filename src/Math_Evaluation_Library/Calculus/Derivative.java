@@ -28,12 +28,14 @@ public class Derivative {
     }
 
     public static Expression calculate(String function){
+        return calculate(toExpression(function));
+    }
+    public static Expression calculate(Expression f){
         //String simplified = Simplify.simplify(function);
-        Expression f = toExpression(function);
         if (f.isValid()) {
             return f.getDerivative().simplify();
         }
-        return new InvalidExpression("("+function+")'");
+        return new InvalidExpression("("+f.infix()+")'");
     }
 
     public static Expression exponentDerivative(Expression x, Expression y){

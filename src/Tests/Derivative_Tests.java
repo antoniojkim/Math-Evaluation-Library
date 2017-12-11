@@ -43,6 +43,8 @@ public class Derivative_Tests extends _Tests_ {
         derivativeTests("2^x", "2^x*ln2");
 
         derivativeTests("sin(cos(tanx))", "-sin(tan(x))sec²(x)*cos(cos(tan(x)))");
+
+        evaluationTest("deriv(x^3, 2)", "6x");
     }
 
     public void derivativeTests(String input, String expected){

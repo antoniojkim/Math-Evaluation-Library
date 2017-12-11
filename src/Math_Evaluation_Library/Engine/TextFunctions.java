@@ -1,9 +1,11 @@
 package Math_Evaluation_Library.Engine;
 
+import Math_Evaluation_Library.Calculus.Derivative;
 import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Constants.StringReplacements;
 import Math_Evaluation_Library.Expressions.Expression;
+import Math_Evaluation_Library.Expressions.NumberExpression;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;
 import Math_Evaluation_Library.LinearAlgebra._Vector_;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
+import static Math_Evaluation_Library.Engine.Engine.x;
 import static java.lang.Double.NaN;
 
 /**
@@ -53,7 +56,7 @@ public class TextFunctions {
 //        }
 //    }
 
-    public static final String INVALID = "Invalid Parameters";
+    public static final String INVALID = "Invalid Text Function Parameters";
 
     public static final TextFunction[] textFunctions = {
             new TextFunction("EEA", "EEA(a, b) computes the Extended Euclidean algorithm on a and b", 3, 4)
@@ -163,32 +166,30 @@ public class TextFunctions {
                     return INVALID;
                 }
             },
-            new TextFunction("deriv", "deriv(\uD835\uDC53) computes the derivative of \uD835\uDC53", 2, 3)
+            new TextFunction("deriv", "deriv(\uD835\uDC53) computes the derivative of \uD835\uDC53", 1, 2)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length)){
                         try{
-                            if (parameters.length == 2){
-                                String derivative = toExpression(parameters[0]).getDerivative().infix();;
+                            if (parameters.length == 1){
+                                String derivative = Derivative.calculate(parameters[0]).infix();
                                 return ((df ? "= " : "")+derivative);
                             }
-//                            else{
-//                                try{
-//                                    String[] derivatives = new String[Integer.parseInt(parameters[1])];
-//                                    derivatives[0] = Derivative.calculate(parameters[0]);
-//                                    for (int a = 1; a<derivatives.length; a++){
-//                                        derivatives[a] = Derivative.calculate(derivatives[a-1]);
-//                                    }
-//                                    return ((df ? "= " : "")+derivatives[derivatives.length-1]);
-//                                }catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
-//                                    String derivative = Derivative.calculate(parameters[0].replaceAll(parameters[1], Engine.var));
-//                                    if (!derivative.equals("Not Differentiable")){
-//                                        return (df ? "= " : "")+derivative.replaceAll(Engine.var, parameters[1]);
-//                                    }
-//                                    return ("Invalid Degree");
-//                                }
-//                            }
+                            else{
+                                Expression e = toExpression(parameters[0]);
+                                Expression n = toExpression(parameters[1]);
+                                if (n instanceof NumberExpression && n.valueOf() > 1) {
+                                    Expression derivative = Derivative.calculate(e);
+                                    for (int i = 1; i<n.valueOf(); ++i){
+                                        derivative = Derivative.calculate(derivative);
+                                    }
+                                    if (derivative.isValid()){
+                                        return (df ? "= " : "")+derivative.infix();
+                                    }
+                                }
+                                return ("Invalid Degree");
+                            }
                         }catch(StringIndexOutOfBoundsException e){}
                         return "Invalid Input Error - Failed to compute derivative";
                     }
@@ -218,7 +219,7 @@ public class TextFunctions {
 //                    return INVALID;
 //                }
 //            },
-            new TextFunction("int", "int(\uD835\uDC53)=∫(\uD835\uDC53d\uD835\uDC65) calculates the indefinite integral of \uD835\uDC53", 2, 3)
+            new TextFunction("int", "int(\uD835\uDC53("+x+"))=∫(\uD835\uDC53("+x+")d\uD835\uDC65) calculates the indefinite integral of \uD835\uDC53("+x+")", 1)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {

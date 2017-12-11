@@ -32,6 +32,8 @@ public class Integral_Tests extends  _Tests_{
 
         integralTests("sin(cosx)", "ʃ(sin(cos(x)))");
 
+        evaluationTest("int(cosx)", "sin(x) + C");
+
         numericalIntegralTests("sin(cos(x))", 2, 4, -1.4628367214483);
         numericalIntegralTests("sinx", 1, 3, 1.5302948024685852);
         numericalIntegralTests("x", 1, 3, 4);

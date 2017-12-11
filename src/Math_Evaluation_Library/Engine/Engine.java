@@ -337,24 +337,28 @@ public class Engine {
             e.set(var, xe);
         }
         Expression ev = e.evaluate();
-        if (displayFormat && ev instanceof NumberExpression){
-            String evaluated = ev.toString();
-            int index = evaluated.indexOf("E");
-            if (index != -1){
-                String standard = _Number_.convertToStandard(evaluated);
-                if (!evaluated.equals(standard))    return "= "+evaluated+" = "+standard;
-                return "= "+evaluated;
-            }
-            else{
-                String f = Fraction.calculateFraction(ev.valueOf(), false, true).trim();
-                if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12){
-                    return "= "+_Number_.format(evaluated);
+        if (ev instanceof NumberExpression){
+            if (displayFormat) {
+                String evaluated = ev.toString();
+                int index = evaluated.indexOf("E");
+                if (index != -1) {
+                    String standard = _Number_.convertToStandard(evaluated);
+                    if (!evaluated.equals(standard)) return "= " + evaluated + " = " + standard;
+                    return "= " + evaluated;
+                } else {
+                    String f = Fraction.calculateFraction(ev.valueOf(), false, true).trim();
+                    if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12) {
+                        return "= " + _Number_.format(evaluated);
+                    } else if (evaluated.length() > 13) {
+                        return "=  " + f + " ≈ " + Engine.evaluate(f);
+                    }
+                    return "=  " + f + " = " + _Number_.format(evaluated);
                 }
-                else if (evaluated.length() > 13){
-                    return "=  "+f+" ≈ "+Engine.evaluate(f);
-                }
-                return "=  "+f+" = "+_Number_.format(evaluated);
             }
+            return ev.toString();
+        }
+        else if (ev instanceof StringExpression){
+            return ev.infix();
         }
         return df+e.simplify().infix();
     }
