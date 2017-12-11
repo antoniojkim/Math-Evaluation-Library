@@ -356,7 +356,7 @@ public class Engine {
                 return "=  "+f+" = "+_Number_.format(evaluated);
             }
         }
-        return ev.toString();
+        return df+e.simplify().infix();
     }
 
     static UnaryFunction neg = UnaryFunctions.getUnaryFunction("neg");

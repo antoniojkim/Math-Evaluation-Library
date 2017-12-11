@@ -84,7 +84,7 @@ public class Simplify {
         else if (s1 instanceof OperatorExpression && s2 instanceof OperatorExpression){
             OperatorExpression oe1 = (OperatorExpression) s1, oe2 = (OperatorExpression) s2;
             //cos²x - sin²x = cos(2x)
-            if (oe1.getOperator().equals("^") && oe2.getOperator().equals("^") &&
+            if (oe1.getOperator().toString().equals("^") && oe2.getOperator().toString().equals("^") &&
                     oe1.getParam2().valueOf() == 2 && oe2.getParam2().valueOf() == 2 &&
                     oe1.getParam1() instanceof UnaryExpression && oe2.getParam1() instanceof UnaryExpression) {
                 UnaryExpression ue1 = (UnaryExpression) oe1.getParam1(), ue2 = (UnaryExpression) oe2.getParam1();
@@ -95,7 +95,7 @@ public class Simplify {
                 }
             }
             //m*x-n*x = (m-n)*x
-            else if (oe1.getOperator().equals("*") && oe2.getOperator().equals("*")){
+            else if (oe1.getOperator().toString().equals("*") && oe2.getOperator().toString().equals("*")){
                 if (oe1.getParam1().equals(oe2.getParam1())){
                     return simplifyMultiplication(simplifySubtraction(oe1.getParam2(), oe2.getParam2()), oe1.getParam1());
                 }
