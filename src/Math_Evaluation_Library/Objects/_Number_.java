@@ -1,14 +1,16 @@
 package Math_Evaluation_Library.Objects;
 
 import Math_Evaluation_Library.Constants.Constants;
-import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.IO;
 import Math_Evaluation_Library.Search;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -16,41 +18,35 @@ import java.util.List;
 public class _Number_ {
 
 
-    public static List<Integer> primes = new ArrayList<>();
+    public static HashMap<Integer, Integer> primes = new HashMap<>();
+    public static int largestPrimeInMap = 0;
 
     public static void loadPrimes(){
         BufferedReader br = IO.filereader("./src/Math_Evaluation_Engine/Primes.txt");
         try {
             String[] primes = br.readLine().split(",");
-            for (int a = 0; a<primes.length; a++){
-                _Number_.primes.add(Integer.parseInt(primes[a]));
+            for (String prime : primes) {
+                int n = Integer.parseInt(prime);
+                _Number_.primes.put(n, n);
             }
+            largestPrimeInMap = Integer.parseInt(primes[primes.length-1]);
         } catch (IOException ex) {        }
     }
     public static int isPrime(int num){
-        if (primes.isEmpty()){
-            loadPrimes();
-        }
-        if (primes.contains(num)){
-            return 1;
-        }
-        else if (num < primes.get(primes.size()-1)){
-            return 0;
-        }
-        else if (num < Math.pow(primes.get(primes.size()-1), 2)){
-            for (int a = 0; a<primes.size(); a++){
-                if (num%primes.get(a) == 0){
-                    return 0;
-                }
-                else if (a == primes.size()-1){
-                    return 1;
-                }
+        if (primes.isEmpty())    loadPrimes();
+        if (primes.containsKey(num))    return 1;
+        if (num < largestPrimeInMap)    return 0;
+        if (num < Math.pow(largestPrimeInMap, 2)){
+            for (int i : primes.values()){
+                if (num%i == 0)    return 0;
             }
+            primes.put(num, num);
+            return 1;
         }
         return -1;
     }
     public static List<Integer> getPrimes() {
-        return primes;
+        return new ArrayList<>(primes.values());
     }
 
     public static double getFibonnaci(int n){
@@ -65,15 +61,13 @@ public class _Number_ {
     }
 
     public static int floor2(int x){
-        if (x < 0)
-            return 0;
+        if (x < 0)  return 0;
         x |= x >> 1;
         x |= x >> 2;
         x |= x >> 4;
         x |= x >> 8;
         x |= x >> 16;
-        x++;
-        return x >> 1;
+        return (x+1) >> 1;
     }
     public static double floor2(double x){
         return 1 << (int)Math.floor(Math.log(x)/Constants.ln2);
@@ -163,7 +157,7 @@ public class _Number_ {
         return format(String.valueOf(num));
     }
     public static String format(String number){
-        return removeEnding0(number);
+        return convertInfinity(removeEnding0(number));
     }
 
     private static String removeEnding0(String number){
@@ -171,6 +165,9 @@ public class _Number_ {
             return number.substring(0, number.length()-2);
         }
         return number;
+    }
+    private static String convertInfinity(String number){
+        return Search.replace(number, "Infinity", "∞");
     }
 
     public static String convertToStandard(String num){
@@ -236,8 +233,7 @@ public class _Number_ {
     }
 
     public static List<Double> extractNumbers(String string){
-        String parsed = Engine.toPostfix(string);
-        return extractNumbers(parsed.split(" "));
+        return toExpression(string).getNumbers();
     }
     public static List<Double> extractNumbers(String[] split){
         List<Double> numbers = new ArrayList<>();

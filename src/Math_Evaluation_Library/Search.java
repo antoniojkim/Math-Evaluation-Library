@@ -157,11 +157,12 @@ public class Search {
     }
     public static int indexOf(String str, char search, int start){
         char[] values = str.toCharArray();
-        int bracket = 0, cBracket = 0;
+        int bracket = 0, cBracket = 0, hBracket = 0;
         for (int i = start; i<values.length; i++){
             char c = values[i];
-            boolean brackets = bracket == 0 && cBracket == 0;
-            if (brackets && c == search){
+            boolean brackets = bracket == 0 && cBracket == 0 && hBracket == 0;
+            boolean found = c == search;
+            if (brackets && found){
                 return i;
             }
             if (c == '('){
@@ -169,7 +170,7 @@ public class Search {
             }
             else if (c == ')'){
                 bracket--;
-                if (bracket == 0 && cBracket == 0){
+                if (found && bracket == 0 && cBracket == 0 && hBracket == 0){
                     return i;
                 }
             }
@@ -178,7 +179,16 @@ public class Search {
             }
             else if (c == '}'){
                 cBracket--;
-                if (bracket == 0 && cBracket == 0){
+                if (found && bracket == 0 && cBracket == 0 && hBracket == 0){
+                    return i;
+                }
+            }
+            else if (c == '['){
+                hBracket++;
+            }
+            else if (c == ']'){
+                hBracket--;
+                if (found && bracket == 0 && cBracket == 0 && hBracket == 0){
                     return i;
                 }
             }
@@ -234,8 +244,8 @@ public class Search {
             char[] c = function.toCharArray();
             int bracket = (c[0] == '(' ? 1 : 0), absBracket = (c[0] == '|' ? 1 : 0);
             for (int i = 1; i<c.length; i++){
-                if(bracket == 0 && Engine.checkImplicitContains(c[i]) &&
-                        (Engine.implicitContains(c[i-1]) || (c[i-1] == '|' && absBracket%2 == 0))){
+                if(bracket == 0 && Engine.checkImplicit.containsKey(c[i]) &&
+                        (Engine.implicit.containsKey(c[i-1]) || (c[i-1] == '|' && absBracket%2 == 0))){
                     indices.add(i);
                 }
                 else if (c[i-1] == '|' && c[i] == '|'){

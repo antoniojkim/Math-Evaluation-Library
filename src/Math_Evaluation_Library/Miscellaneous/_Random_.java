@@ -3,6 +3,8 @@ package Math_Evaluation_Library.Miscellaneous;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Double.NaN;
+
 /**
  * Created by Antonio on 2017-07-11.
  */
@@ -26,12 +28,15 @@ public class _Random_ {
         return (int)((high-low+1)*Math.random()+low);
     }
     public static double randomRational(int low, int high){
-        int numerator = randomint(low, high);
-        int demominator = randomint(low, high);
-        while (demominator == 0){
-            demominator = randomint(low, high);
+        if (low == 0 && high == 0) {
+            int numerator = randomint(low, high);
+            int demominator = randomint(low, high);
+            while (demominator == 0) {
+                demominator = randomint(low, high);
+            }
+            return ((double) numerator) / demominator;
         }
-        return ((double)numerator)/demominator;
+        return NaN;
     }
 
     public static int random (int[] array){

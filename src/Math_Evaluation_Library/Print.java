@@ -1,8 +1,11 @@
 package Math_Evaluation_Library;
 
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Objects._Number_;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by Antonio on 2017-07-22.
@@ -120,6 +123,23 @@ public class Print {
             }
             System.out.println("]");
         }
+    }
+
+    public static void println(Stack<Expression> stack){
+        Stack<Expression> copy = (Stack<Expression>)stack.clone();
+        List<Expression> list = new ArrayList<>();
+        while (!copy.empty()){
+            list.add(copy.pop());
+        }
+
+        System.out.print("[");
+        if (!list.isEmpty()){
+            System.out.print(list.get(list.size()-1).infix());
+            for (int i = list.size()-2; i>=0; --i){
+                System.out.print(", "+list.get(i).infix());
+            }
+        }
+        System.out.println("]");
     }
 
 }

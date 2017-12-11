@@ -1,13 +1,18 @@
-package Math_Evaluation_Library.Objects;
+package Math_Evaluation_Library.ExpressionObjects;
+
+import Math_Evaluation_Library.Expressions.Expression;
+
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 
 /**
  * Created by Antonio on 2017-10-14.
  */
-public class MultiParamFunction extends MathObject {
+public abstract class MultiParamFunction {
 
     public static int maxStrLength = 7;
     public static int minStrLength = 1;
     private int numParameters = -1;
+    private String function = "";
     private String description = "";
 
     public MultiParamFunction (String function, int numParameters){
@@ -25,7 +30,7 @@ public class MultiParamFunction extends MathObject {
         this.description = description;
     }
 
-    public String evaluate(String[] parameters){ return ""; }
+    public abstract Expression evaluate(Expression[] parameters);
 
     public int getNumParameters() {
         return numParameters;
@@ -34,7 +39,18 @@ public class MultiParamFunction extends MathObject {
         return numParameters == -1;
     }
 
+    public String getFunction() {
+        return function;
+    }
     public String getDescription() {
         return description;
+    }
+
+    public Expression[] convert(String[] parameters){
+        Expression[] ets = new Expression[parameters.length];
+        for (int i = 0; i<parameters.length; ++i){
+            ets[i] = toExpression(parameters[i]);
+        }
+        return ets;
     }
 }

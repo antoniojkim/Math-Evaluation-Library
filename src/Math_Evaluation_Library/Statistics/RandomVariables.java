@@ -69,10 +69,10 @@ public class RandomVariables {
     }
 
     public static double poissonDistribution(double lambda, int x){
-        return Math.exp(-lambda)*Math.pow(lambda, x)/Combinatorics.fact_int(x);
+        return (lambda > 0 && x > 0) ? Math.exp(-lambda)*Math.pow(lambda, x)/Combinatorics.fact_int(x) : NaN;
     }
     public static double poissonDistribution_ExpectedValue(double lambda){
-        return lambda;
+        return lambda > 0 ? lambda : NaN;
     }
     public static double poissonDistribution_Variance(double lambda){
         return lambda;
@@ -95,15 +95,26 @@ public class RandomVariables {
         return (theta > 0) ? theta*theta : NaN;
     }
 
-    public static double normalDistribution(double mean, double stdv, double x){
-        if (stdv > 0){
+    public static double normalDistribution_pdf(double mean, double variance, double x){
+        if (variance > 0){
             double t = x-mean;
-            return Math.exp(-0.5*t*t/(stdv))/(0.3989422804014327*Math.sqrt(stdv));
+            return Math.exp(-0.5*t*t/(variance))/(0.3989422804014327*Math.sqrt(variance));
         }
         return NaN;
     }
+    public static double normalDistribution_cdf(double mean, double variance, double x){
+        if (variance > 0){
+            return standardNormalDistributionCDF((x-mean)/Math.sqrt(variance));
+        }
+        return NaN;
+    }
+    public static double normalDistribution_ExpectedValue(double mean, double variance){
+        return mean;
+    }
+    public static double normalDistribution_Variance(double mean, double variance){
+        return variance;
+    }
     public static double standardNormalDistributionCDF(double x){ // Cumulative Distribution Function for Standard Normal Distribution
-        if (x >= 0){
 //            static final double stdNCDF_a1 =  0.254829592;
 //            static final double stdNCDF_a2 = -0.284496736;
 //            static final double stdNCDF_a3 =  1.421413741;
@@ -111,16 +122,14 @@ public class RandomVariables {
 //            static final double stdNCDF_a5 =  1.061405429;
 //            static final double stdNCDF_p =  0.3275911;
 
-            final double sign = x < 0 ? -0.5 : 0.5;
-            x = Math.abs(x)/ 1.41421356237309505;
+        final double sign = x >= 0 ? 0.5 : -0.5;
+        x = Math.abs(x)/ 1.41421356237309505;
 
-            // A&S formula 7.1.26
-            double t = 1.0/(1.0 + 0.3275911 *x);
-            double y = 1.0 - (((((1.061405429 *t - 1.453152027)*t) + 1.421413741)*t - 0.284496736)*t + 0.254829592)*t*Math.exp(-x*x);
+        // A&S formula 7.1.26
+        double t = 1.0/(1.0 + 0.3275911 *x);
+        double y = 1.0 - (((((1.061405429 *t - 1.453152027)*t) + 1.421413741)*t - 0.284496736)*t + 0.254829592)*t*Math.exp(-x*x);
 
-            return MathRound.round(0.5 + sign*y, 6); // MathRound.round( 0.5* Special.errorFunction(x/1.41421356237309505), 7)
-        }
-        return 0;
+        return MathRound.round(0.5 + sign*y, 6);
     }
     public static double standardNormalDistributionCDFInverse(double x){ // Cumulative Distribution Function for Standard Normal Distribution
         if (x >= 0 && x <= 1){
@@ -132,6 +141,22 @@ public class RandomVariables {
                     ((((3.13082909833*z-21.06224101826)*z+23.08336743743)*z-8.47351093090)*z+1);
 
             return MathRound.round(t, 4);
+        }
+        return NaN;
+    }
+
+
+    public static double multinomialDistribution(int n, double[] p, int[] x){
+        if (p.length == x.length) {
+            double t = Combinatorics.fact_int(n);
+            for (int i : x) {
+                t /= Combinatorics.fact_int(i);
+            }
+            for (int i = 0; i < p.length; i++) {
+                if (p[i] > 1 || p[i] < 0)   return NaN;
+                t *= Math.pow(p[i], x[i]);
+            }
+            return t;
         }
         return NaN;
     }

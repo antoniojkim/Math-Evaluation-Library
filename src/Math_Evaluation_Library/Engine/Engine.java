@@ -4,20 +4,25 @@ import Math_Evaluation_Library.Constants.Const;
 import Math_Evaluation_Library.Constants.Constants;
 import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Constants.StringReplacements;
-import Math_Evaluation_Library.Objects.*;
+import Math_Evaluation_Library.ExpressionObjects.MultiParamFunction;
+import Math_Evaluation_Library.ExpressionObjects.Operator;
+import Math_Evaluation_Library.ExpressionObjects.UnaryFunction;
+import Math_Evaluation_Library.ExpressionObjects.UnaryFunctions;
+import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Objects.Fraction;
+import Math_Evaluation_Library.Objects.TextFunction;
+import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
-import static Math_Evaluation_Library.Engine.MultiParamFunctions.multiParamFunctionNamesIndex;
-import static Math_Evaluation_Library.Engine.MultiParamFunctions.multiParamFunctions;
-import static Math_Evaluation_Library.Engine.Operators.*;
-import static Math_Evaluation_Library.Engine.UnaryFunctions.unaryFunctions;
-import static Math_Evaluation_Library.Engine.UnaryFunctions.unaryFunctionsIndex;
+import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.getMultiParamFunction;
+import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.isMultiParamFunction;
+import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
+import static Math_Evaluation_Library.ExpressionObjects.Operators.isOperator;
+import static Math_Evaluation_Library.ExpressionObjects.UnaryFunctions.getUnaryFunction;
+import static Math_Evaluation_Library.ExpressionObjects.UnaryFunctions.isUnaryFunction;
 import static java.lang.Double.NaN;
 
 /*
@@ -36,11 +41,24 @@ public class Engine {
     public static String error = "Error";
     static boolean debug = false;
     static double ans = 1;
-    static List<VarNum> variables = new ArrayList<>();
-    static List<VarFunction> variableFunctions = new ArrayList<>();
+    static Map<String, Double> variables = new HashMap<>();
+    static Map<String, Expression> variableFunctions = new HashMap<>();
 
-    public static char[] implicit = {')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', var(), varOp(), '}', 'γ', 'π', 'ϕ', 'ℯ'};
-    public static char[] checkImplicit = {'(', var(), varOp(), '{', 'γ', 'π', 'ϕ', 'ℯ', '√'};
+    public static HashMap<Character, Character> implicit = initializeImplicit();
+    public static HashMap<Character, Character> checkImplicit = initializeCheckImplicit();
+
+    public static HashMap<Character, Character> initializeImplicit(){
+        HashMap<Character, Character> implicit = new HashMap<>();
+        char[] array = {')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', var(), varOp(), '}', 'γ', 'π', 'ϕ', 'ℯ'};
+        for (char c : array)    implicit.put(c, c);
+        return implicit;
+    }
+    public static HashMap<Character, Character> initializeCheckImplicit(){
+        HashMap<Character, Character> checkImplicit = new HashMap<>();
+        char[] array = {'(', var(), varOp(), '{', 'γ', 'π', 'ϕ', 'ℯ', '√'};
+        for (char c : array)    checkImplicit.put(c, c);
+        return checkImplicit;
+    }
 
     public static String fixSyntax(String function) {
         if (function.length() == 0){
@@ -66,31 +84,29 @@ public class Engine {
             for (int a = 1; a < function.length(); a++) {
                 char f = function.charAt(a);
                 char f1 = function.charAt(a-1);
-                boolean implicitContainsf1 = implicitContains(f1);
+                boolean implicitContainsf1 = implicit.containsKey(f1);
                 if (implicitContainsf1) {
-                    if (checkImplicitContains(f)) {
+                    if (checkImplicit.containsKey(f)) {
                         function = function.substring(0, a) + "*" + function.substring(a);
                         f = function.charAt(a);
                     }
                 }
-                if (a > 1 && Scripts.isSuperScript(f1) && checkImplicitContains(f)) {
+                if (a > 1 && Scripts.isSuperScript(f1) && checkImplicit.containsKey(f)) {
                     char f2 = function.charAt(a-2);
-                    if (implicitContains(f2)){
+                    if (implicit.containsKey(f2)){
                         function = function.substring(0, a) + "*" + function.substring(a);
                         f = function.charAt(a);
                     }
                 }
-                if (f1 == ')' && (f != ')' && implicitContains(f))) {
+                if (f1 == ')' && (f != ')' && implicit.containsKey(f))) {
                     function = function.substring(0, a) + "*" + function.substring(a);
-                    f = function.charAt(a);
                 }
                 else if (a+1 < function.length()){
                     char f2 = function.charAt(a+1);
                     if (f1 == '(' && f == '-' && !_Number_.isNumber(f2)) {
                         function = function.substring(0, a) + "1*" + function.substring(a);
-                        f = function.charAt(a);
                     }
-                    else if (f == '-' && operatorContains(f1) && !_Number_.isNumber(f2)) {
+                    else if (f == '-' && isOperator(f1) && !_Number_.isNumber(f2)) {
                         function = function.substring(0, a+1) + "1*" + function.substring(a+1);
                     }
                 }
@@ -98,16 +114,16 @@ public class Engine {
         } catch (StringIndexOutOfBoundsException e){ return (error = "Invalid Input Error - Found while fixing implicit multiplication"); }
         function = Search.replace(function, StringReplacements.formReplacements2);
         for (int a = 1; a<function.length(); a++){
-            boolean implicitContainsf1 = implicitContains(function.charAt(a-1));
+            boolean implicitContainsf1 = implicit.containsKey(function.charAt(a-1));
             if (implicitContainsf1){
-                if (a+3 <= function.length() && function.substring(a, a + 3).equals("ans") && implicitContains(function.charAt(a-1))){
+                if (a+3 <= function.length() && function.substring(a, a + 3).equals("ans") && implicit.containsKey(function.charAt(a-1))){
                     function = function.substring(0, a) + "*" + function.substring(a);
                     a += 4;
                     continue;
                 }
                 int limit = Math.min(function.length()-a, UnaryFunction.maxStrLength);
                 for (int b = UnaryFunction.minStrLength; b < limit; b++) {
-                    if (unaryFunctionsIndex(function.substring(a, a+b)) != -1){
+                    if (isUnaryFunction(function.substring(a, a+b))){
                         function = function.substring(0, a) + "*" + function.substring(a);
                         a += b+1;
                         break;
@@ -115,7 +131,7 @@ public class Engine {
                 }
                 limit = Math.min(function.length()-a, MultiParamFunction.maxStrLength);
                 for (int b = MultiParamFunction.minStrLength; b < limit; b++) {
-                    if (multiParamFunctionNamesIndex(function.substring(a, a+b)) != -1){
+                    if (isMultiParamFunction(function.substring(a, a+b))){
                         function = function.substring(0, a) + "*" + function.substring(a);
                         a += b+1;
                         break;
@@ -140,19 +156,6 @@ public class Engine {
         return function;
     }
 
-    protected static String replaceVariables(String function){
-        // Replace all variables
-        for (VarNum variable : variables) {
-            function = Search.replace(function, new String[][]{
-                    {"("+variable.var+")", "("+variable.value+")"},
-                    {"${"+variable.var+"}", "("+variable.value+")"},
-                    {"{"+variable.var+"}", "("+variable.value+")"},
-                    {"$"+variable.var, "("+variable.value+")"}
-            });
-        }
-        return function;
-    }
-
     public static String getError() {
         return error;
     }
@@ -173,81 +176,71 @@ public class Engine {
         if (function.length() == 0)    return NaN;
         if (function.toLowerCase().contains("error"))     return NaN;
 
-        function = replaceVariables(function);
-        String preprocessed = preprocessor(function);
-        if (_Number_.isNumber(preprocessed))    return _Number_.getNumber(preprocessed);
+        Expression preprocessed = preprocessor(function);
+        if (!(preprocessed instanceof InvalidExpression)){
+            return preprocessed.valueOf();
+        }
 
         try {
             return _Number_.getNumber(function.trim());
         } catch (NumberFormatException e){}
-        String format = toPostfix(function);
+        Expression e = toExpression(function);
 
-        List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
-        if (x.length() > 0) Search.replace(outputs, var, x);
-        if (y.length() > 0) Search.replace(outputs, varOp, y);
-        String evaluated = evaluate(outputs);
-        try{
-            return (ans = _Number_.getNumber(evaluated));
-        }catch(NumberFormatException e){}
-        return NaN;
+        if (x.length() > 0) e.set(var, toExpression(x));
+        if (y.length() > 0) e.set(varOp, toExpression(y));
+        Expression evaluated = e.evaluate();
+        return (ans = evaluated.valueOf());
     }
 
     public static final String separator = "│";
-    public static String preprocessor(String function){
+    private static Expression preprocessor(String function){
         function = fixSyntax(function);
         int index = function.indexOf("⩵");
         if (index != -1){
             if (function.substring(0, index).equals(function.substring(index+1))){
-                return "Strings are equal";
+                return new StringExpression("Strings are equal");
             }
             else if (function.substring(0, index).equalsIgnoreCase(function.substring(index+1))){
-                return "Strings are equal ignoring case";
+                return new StringExpression("Strings are equal ignoring case");
             }
-            return "Strings are not equal";
+            return new StringExpression("Strings are not equal");
         }
         index = function.indexOf("≔");
         if (index != -1){
-            String var = function.substring(0, index);
-            String value = function.substring(index+1);
-            index = Search.varNumSearch(variables, var);
-            boolean isNumber = _Number_.isNumber(value);
-            if (index != -1) {
-                if (isNumber) {
-                    variables.get(index).setValue(evaluate(value));
-                }
-                else{
-                    variables.remove(index);
-                }
-            } else if (isNumber){
-                variables.add(new VarNum(var, evaluate(value)));
+            String lhs = function.substring(0, index);
+            String rhs = function.substring(index+1);
+            Expression value = toExpression(rhs);
+            if (value instanceof NumberExpression){
+                variables.put(lhs, value.valueOf());
+            } else if (variables.containsKey(lhs)) {
+                variables.remove(lhs);
+                return new StringExpression("");
             } else {
-                for (int i = 0; i<variableFunctions.size(); i++){
-                    if (variableFunctions.get(i).getName().equals(var)){
-                        if (value.length() > 0){
-                            variableFunctions.get(i).redefine(value);
-                        }
-                        else{
-                            variableFunctions.remove(i);
-                        }
-                        return value;
-                    }
+                if (rhs.length() == 0 && variableFunctions.containsKey(lhs)){
+                    variableFunctions.remove(lhs);
+                    return new StringExpression("");
                 }
-                variableFunctions.add(new VarFunction(var, value));
+                value.unset();
+                variableFunctions.put(lhs, value);
+                return value;
             }
-            return _Number_.format(value);
+            return value;
 
         }
         index = function.indexOf(separator);
         if (index != -1){
             String post = function.substring(index+1);
             function = function.substring(0, index);
-            if (_Number_.isNumber(post))    return _Number_.format(evaluate(function, post, ""));
+            if (_Number_.isNumber(post))    return new NumberExpression(evaluate(function, post, ""));
             String[] conditions = Search.split(Search.replace(post, " ", ""), ",");
             if (conditions.length == 2 && _Number_.isNumber(conditions[0]) && _Number_.isNumber(conditions[1])){
-                if (function.contains(Engine.varOp)) {
-                    return _Number_.format(evaluate(function, conditions[0], conditions[1]));
+                Expression e = toExpression(function), c1 = toExpression(conditions[0]), c2 = toExpression(conditions[1]);
+                if (e.containsVar(Engine.varOp)) {
+                    e.set(Engine.var, c1);
+                    e.set(Engine.varOp, c2);
+                    return e.evaluate();
                 }
-                return _Number_.format(evaluate(function, conditions[1], "")-evaluate(function, conditions[0], ""));
+                return new OperatorExpression(getOperator("-"), e.evaluate(c2), e.evaluate(c1)).evaluate();
             }
             for (String condition : conditions){
                 if (_Number_.isNumber(condition)){
@@ -273,9 +266,9 @@ public class Engine {
                     }
                 }
             }
-            return _Number_.format(evaluate(function));
+            return new NumberExpression(evaluate(function));
         }
-        return "";
+        return new InvalidExpression("Nothing to Preprocess");
     }
 
     public static String evaluateString(String function){
@@ -285,14 +278,19 @@ public class Engine {
         return evaluateString(function, "= ");
     }
     public static String evaluateString(String function, String df){
+        return evaluateString(function, "", df);
+    }
+    public static String evaluateString(String function, String x, String df){
         boolean displayFormat = df.length() > 0;
 
         function = function.trim();
         if (function.length() == 0)    return "NaN";
+        if (function.charAt(0) == '#') {
+            return "";
+        }
 
-        function = replaceVariables(function);
-        String preprocessed = preprocessor(function);
-        if (preprocessed.length() > 0)    return preprocessed;
+        Expression preprocessed = preprocessor(function);
+        if (!(preprocessed instanceof InvalidExpression))    return preprocessed.toString();
 
         String constant = Const.getConstant(function);
         if (!constant.equals("NaC"))    return df+constant;
@@ -307,13 +305,12 @@ public class Engine {
         if (lb != -1){
             def = function.substring(0, lb);
         }
-        int multiIndex = multiParamFunctionNamesIndex(Search.replace(def, StringReplacements.dynamicInputReplacement));
-        if (multiIndex != -1 && (lb == -1 || lb == function.length()-1)){
-            return multiParamFunctions[multiIndex].getDescription();
+        String mpf = Search.replace(def, StringReplacements.dynamicInputReplacement);
+        if (isMultiParamFunction(mpf) && (lb == -1 || lb == function.length()-1)){
+            return getMultiParamFunction(mpf).getDescription();
         }
-        int unaryIndex = unaryFunctionsIndex(def);
-        if (unaryIndex != -1 && (lb == -1 || lb == function.length()-1)){
-            return unaryFunctions[unaryIndex].getDescription();
+        if (isUnaryFunction(def) && (lb == -1 || lb == function.length()-1)){
+            return getUnaryFunction(def).getDescription();
         }
         int textIndex = TextFunctions.textFunctionsIndex(def);
         if (textIndex != -1){
@@ -330,342 +327,349 @@ public class Engine {
             return tf.evaluate(Search.split(parameters, ","), displayFormat);
         }
 
-        String format = toPostfix(function);
-        if (!format.toLowerCase().contains("error")) {
-            List<String> outputs = new ArrayList<>(Arrays.asList(format.split(" ")));
-            String evaluated = evaluate(outputs);
-            if (_Number_.isNumber(evaluated)){
-                if (displayFormat){
-                    int index = evaluated.indexOf("E");
-                    if (index != -1){
-                        String standard = _Number_.convertToStandard(evaluated);
-                        if (!evaluated.equals(standard))    return "= "+evaluated+" = "+standard;
-                        return "= "+evaluated;
-                    }
-                    else{
-                        String f = Fraction.calculateFraction(_Number_.getNumber(evaluated, true), false, true).trim();
-                        if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12){
-                            return "= "+_Number_.format(evaluated);
-                        }
-                        else if (evaluated.length() > 13){
-                            return "=  "+f+" ≈ "+Engine.evaluate(f);
-                        }
-                        return "=  "+f+" = "+_Number_.format(evaluated);
-                    }
-                }
-                return _Number_.format(evaluated);
+        Expression e = toExpression(function);
+        if (e instanceof InvalidExpression) {
+            return ((InvalidExpression)e).getError();
+        }
+
+        if (x.length() > 0) {
+            Expression xe = toExpression(x);
+            e.set(var, xe);
+        }
+        Expression ev = e.evaluate();
+        if (displayFormat && ev instanceof NumberExpression){
+            String evaluated = ev.toString();
+            int index = evaluated.indexOf("E");
+            if (index != -1){
+                String standard = _Number_.convertToStandard(evaluated);
+                if (!evaluated.equals(standard))    return "= "+evaluated+" = "+standard;
+                return "= "+evaluated;
             }
-            if ((!evaluated.toLowerCase().contains("error") && !evaluated.toLowerCase().contains("nan")) ||
-                    evaluated.contains("∞") || evaluated.contains("{") || evaluated.contains("}")){
-                return evaluated;
+            else{
+                String f = Fraction.calculateFraction(ev.valueOf(), false, true).trim();
+                if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12){
+                    return "= "+_Number_.format(evaluated);
+                }
+                else if (evaluated.length() > 13){
+                    return "=  "+f+" ≈ "+Engine.evaluate(f);
+                }
+                return "=  "+f+" = "+_Number_.format(evaluated);
             }
         }
-        return "NaN";
+        return ev.toString();
     }
 
-    public static String evaluate (List<String> list){
-        return MathEngine.evaluate(list);
-    }
+    static UnaryFunction neg = UnaryFunctions.getUnaryFunction("neg");
+    static Operator subtract = getOperator("-");
 
-    public static String toPostfix(String infixFunction) {
-        infixFunction = fixSyntax(infixFunction);
+    public static Expression toExpression(String infixFunction){
+        infixFunction = Engine.fixSyntax(infixFunction);
+
+        Expression preprocessed = preprocessor(infixFunction);
+        if (!(preprocessed instanceof InvalidExpression))    return preprocessed;
+
         if (infixFunction.toLowerCase().contains("error")) {
-            return error;
+            return new InvalidExpression(infixFunction);
         }
         try {
-            if (infixFunction.charAt(0) == '-' && !_Number_.isNumber(infixFunction.charAt(1))) {
-                infixFunction = "-1*" + infixFunction.substring(1);
+            if (infixFunction.charAt(0) == '-' && !Character.isDigit(infixFunction.charAt(1))) {
+                return new UnaryExpression(neg, toExpression(infixFunction.substring(1)));
             }
-        }catch (StringIndexOutOfBoundsException e){}
-        Stack<String> output = new Stack<>();
+        } catch (StringIndexOutOfBoundsException e){}
+        Stack<Expression> output = new Stack<>();
         Stack<String> stack = new Stack<>();
-        String token = "";
-        PARSE:  for (int a = 0; a < infixFunction.length(); a++) {
-            char c = infixFunction.charAt(a);
-            try {
-                if (c == '.') {
-                    token += ".";
-                } else if (c == '-' && (a == 0 || !implicitContains(infixFunction.charAt(a - 1)))) {
-                    token += "-";
+        StringBuilder token = new StringBuilder();//, str = new StringBuilder();
+        try {
+            for (int i = 0; i < infixFunction.length(); ++i) {
+                char c = infixFunction.charAt(i);
+                if (Character.isDigit(c)) {
+                    token.append(Character.getNumericValue(c));
+                } else if (c == '.' || (c == '-' && (i == 0 ||
+                        !Engine.implicit.containsKey(infixFunction.charAt(i - 1))))) {
+                    token.append(c);
                 } else if (c == ',') {
-                    if (token.length() < 1) {
-                        error = "Syntax Error";
-                        return error;
+                    if (token.length() == 0) {
+                        return new InvalidExpression("Syntax Error");
                     } else {
-                        output.push(token);
-                        token = "";
+                        output.push(new NumberExpression(token.toString()));
+                        token = new StringBuilder();
                     }
-                } else if (c == var() || c == varOp() || Constants.isConstant(c)) {
-                    if (token.length() > 0){
-                        if (token.equals("-")){
-                            output.push(token+String.valueOf(c));
+                } else if (c == Engine.var() || c == Engine.varOp()) {
+                    if (token.length() > 0) {
+                        if (token.toString().equals("-")) {
+                            output.push(new UnaryExpression(neg, new VariableExpression(c)));
+                        } else {
+                            return new InvalidExpression("Variable Error:    Token: " + token + "  char: " + c);
                         }
-                        else{
-                            error = "Constant Character Token Error:    Token: "+token+"  char: "+c;
-                            return error;
-                        }
-                        token = "";
+                        token = new StringBuilder();
+                    } else {
+                        output.push(new VariableExpression(c));
                     }
-                    else{
-                        output.push(String.valueOf(c));
-                    }
-                } else{
-                    String superScript = "";
-                    for (int b = a; b<infixFunction.length(); b++){
-                        int scriptIndex = Scripts.getSuperScriptIndex(infixFunction.charAt(b));
-                        if (scriptIndex != -1){
-                            superScript += Scripts.regularScripts[scriptIndex];
+                } else if (Constants.isConstant(c)) {
+                    if (token.length() > 0) {
+                        if (token.toString().equals("-")) {
+                            output.push(new ConstantExpression(c, Constants.getNegativeConstant(c)));
+                        } else {
+                            return new InvalidExpression("Constant Character Token Error:    Token: " + token + "  char: " + c);
                         }
-                        else{
+                        token = new StringBuilder();
+                    } else {
+                        output.push(new ConstantExpression(c, Constants.getConstant(c)));
+                    }
+                } else {
+                    if (token.length() > 0) {
+                        output.push(new NumberExpression(token.toString()));
+                        token = new StringBuilder();
+                    }
+                    StringBuilder superScript = new StringBuilder();
+                    for (int j = i; j < infixFunction.length(); ++j) {
+                        int scriptIndex = Scripts.getSuperScriptIndex(infixFunction.charAt(j));
+                        if (scriptIndex != -1) {
+                            superScript.append(Scripts.regularScripts[scriptIndex]);
+                        } else {
                             break;
                         }
                     }
-                    if (superScript.length() > 0){
-                        infixFunction = infixFunction.substring(0, a)+"^"+superScript+infixFunction.substring(a+superScript.length());
-                        c = infixFunction.charAt(a);
+                    if (superScript.length() > 0) {
+                        infixFunction = infixFunction.substring(0, i)+"^"+superScript.toString()+infixFunction.substring(i+superScript.length());
+                        --i;
+                        continue;
                     }
-
-                    int read = Integer.parseInt(String.valueOf(c));
-                    token += read;
-                }
-            } catch (NumberFormatException e) {
-                if (token.length() > 0) {
-                    output.push(token);
-                    token = "";
-                }
-                try {
                     if (c == '(') {
-                        stack.push("(");
-                        if (infixFunction.indexOf(")", a + 1) == -1) {
-                            error = "Bracket Count Error:  Missing ')' Bracket";
-                            return error;
+                        int rb = infixFunction.indexOf(")", i);
+                        if (rb == -1)   return new InvalidExpression("Bracket Count Error:  Missing ')' Bracket");
+                        String inBracket = infixFunction.substring(i+1, rb);
+                        if (variables.containsKey(inBracket)) {
+                            output.push(new NumberExpression(variables.get(inBracket)));
+                            i = rb;
                         }
-                        continue PARSE;
+                        else if (variableFunctions.containsKey(inBracket)) {
+                            output.push(variableFunctions.get(inBracket));
+                            i = rb;
+                        }
+                        else{
+                            stack.push("(");
+                        }
+                        continue;
                     } else if (c == ')') {
                         if (stack.contains("(")) {
                             while (!stack.isEmpty()) {
-                                String str = stack.pop();
-                                if (str.equals("(")) {
-                                    break;
-                                }
-                                output.push(str);
+                                String s = stack.pop();
+                                if (s.equals("(")) break;
+                                stackElementToExpression(s, output);
                             }
                         } else {
-                            error = "Bracket Count Error:  Missing '(' Bracket";
-                            return error;
+                            return new InvalidExpression("Bracket Count Error:  Missing '(' Bracket");
                         }
                         continue;
                     } else if (c == '{') {
-                        int end = Search.indexOf(infixFunction, '}', a);
-                        if (end != -1){
-                            if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'ᵀ' || infixFunction.charAt(end+1) == 'ᴵ')){
-                                output.push(infixFunction.substring(a, end+2));
-                                a = end+1;
-                            }
-                            else{
-                                output.push(infixFunction.substring(a, end+1));
-                                a = end;
+                        int end = Search.indexOf(infixFunction, '}', i);
+                        if (end != -1) {
+                            String single = infixFunction.substring(i + 1, end);
+                            if (!single.contains(",")) {
+                                if (variables.containsKey(single)){
+                                    output.push(new NumberExpression(variables.get(single)));
+                                }
+                                else{
+                                    try {
+                                        Double.parseDouble(single);
+                                    } catch (NumberFormatException e) {
+                                        output.push(new VariableExpression(single));
+                                    }
+                                }
+                            } else if (infixFunction.length() > end + 1 && (infixFunction.charAt(end + 1) == 'ᵀ' || infixFunction.charAt(end + 1) == 'ᴵ')) {
+                                output.push(new MatrixExpression(infixFunction.substring(i, end + 2)));
+                                i = end + 1;
+                            } else {
+                                output.push(new MatrixExpression(infixFunction.substring(i, end + 1)));
+                                i = end;
                             }
                             continue;
                         }
-                        error = "Bracket Count Error - Unclosed Curly Bracket";
-                        return error;
+                        return new InvalidExpression("Bracket Count Error:  Missing '}' Bracket");
                     } else if (c == '[') {
-                        int unitIndex = infixFunction.indexOf("→", a);
-                        if (unitIndex != -1){
-                            int close = infixFunction.indexOf("]", a);
-                            if (unitIndex < close){
-                                String[] parameters = _UnitConversion_.isUnitConversion(infixFunction.substring(a+1, close), unitIndex);
+                        int unitIndex = infixFunction.indexOf("→", i);
+                        if (unitIndex != -1) {
+                            int close = infixFunction.indexOf("]", i);
+                            if (unitIndex < close) {
+                                String[] parameters = _UnitConversion_.isUnitConversion(infixFunction.substring(i + 1, close), unitIndex);
                                 if (parameters != null) {
-                                    output.push("unit");
-                                    for (String param : parameters){
-                                        output.push(param);
-                                    }
-                                    a = close;
+                                    output.push(new MultiParamExpression(getMultiParamFunction("unit"), parameters));
+                                    i = close;
                                     continue;
-                                }
-                                else{
-                                    error = "Invalid Input Error - Invalid Unit Conversion:  "+infixFunction.substring(a+1, close);
-                                    return error;
+                                } else {
+                                    return new InvalidExpression("Invalid Input Error - Invalid Unit Conversion:  " + infixFunction.substring(i + 1, close));
                                 }
                             }
                         }
-                        char cPlus1 = infixFunction.charAt(a+1);
-                        int semicolon = infixFunction.indexOf(";", a);
-                        if (semicolon != -1 || cPlus1 == '['){
-                            int end = infixFunction.indexOf("]", a);
-                            if (end != -1){
-                                if (infixFunction.length() > end+1 && (infixFunction.charAt(end+1) == 'ᵀ' || infixFunction.charAt(end+1) == 'ᴵ')){
-                                    output.push(infixFunction.substring(a, end+2));
-                                    a = end+1;
-                                }
-                                else{
-                                    output.push(infixFunction.substring(a, end+1));
-                                    a = end;
+                        char cPlus1 = i + 1 < infixFunction.length() ? infixFunction.charAt(i + 1) : '\0';
+                        int semicolon = infixFunction.indexOf(";", i);
+                        if (semicolon != -1 || cPlus1 == '[') {
+                            int end = Search.indexOf(infixFunction, ']', i);
+                            if (end != -1) {
+                                if (infixFunction.length() > end + 1 && (infixFunction.charAt(end + 1) == 'ᵀ' || infixFunction.charAt(end + 1) == 'ᴵ')) {
+                                    output.push(new MatrixExpression(infixFunction.substring(i, end + 2)));
+                                    i = end + 1;
+                                } else {
+                                    output.push(new MatrixExpression(infixFunction.substring(i, end + 1)));
+                                    i = end;
                                 }
                                 continue;
                             }
-                            error = "Bracket Count Error - Unclosed Hard Bracket";
-                            return error;
+                            return new InvalidExpression("Bracket Count Error - Unclosed Hard Bracket");
                         }
-                        int comma1 = infixFunction.indexOf(",", a);
-                        int close = infixFunction.indexOf("]", a);
+                        int comma1 = infixFunction.indexOf(",", i);
+                        int close = infixFunction.indexOf("]", i);
                         if (comma1 == -1 || close == -1) {
-                            error = "Syntax Error - Evaluate";
-                            return error;
+                            return new InvalidExpression("Syntax Error - Evaluate");
                         }
                         int comma2 = infixFunction.indexOf(",", comma1 + 1);
                         if (comma2 == -1) {
-                            output.push("calc");
-                            output.push(infixFunction.substring(a + 1, comma1));
-                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, close)));
+                            Expression e1 = toExpression(infixFunction.substring(i + 1, comma1));
+                            Expression e2 = toExpression(infixFunction.substring(comma1 + 1, close));
+                            e1.set(Engine.var, e2.evaluate());
+                            output.push(e1);
                         } else {
-                            output.push("calcab");
-                            output.push(infixFunction.substring(a + 1, comma1));
-                            output.push("" + evaluate(infixFunction.substring(comma1 + 1, comma2)));
-                            output.push("" + evaluate(infixFunction.substring(comma2 + 1, close)));
+                            Expression a = toExpression(infixFunction.substring(i + 1, comma1));
+                            Expression e2 = toExpression(infixFunction.substring(comma1 + 1, comma2));
+                            Expression e3 = toExpression(infixFunction.substring(comma2 + 1, close));
+                            if (a.containsVar(Engine.varOp)) {
+                                a.set(Engine.var, e2.evaluate());
+                                a.set(Engine.varOp, e3.evaluate());
+                                output.push(a);
+                            } else {
+                                Expression b = toExpression(infixFunction.substring(i + 1, comma1));
+                                a.set(Engine.var, e2.evaluate());
+                                b.set(Engine.var, e3.evaluate());
+                                output.push(new OperatorExpression(subtract, b, a));
+                            }
                         }
-                        a = close;
+                        i = close;
                         continue;
                     }
-                    int lb = infixFunction.indexOf("(", a);
-                    if (infixFunction.indexOf(")", a) < lb)  lb = -1;
+                    int lb = infixFunction.indexOf("(", i);
+                    if (infixFunction.indexOf(")", i) < lb) lb = -1;
                     if (lb != -1) {
-                        String function = infixFunction.substring(a, lb);
-                        for (VarFunction variableFunction : variableFunctions) {
-                            if (function.equals(variableFunction.getName())) {
-                                int rb = lb + Search.getIndices(infixFunction.substring(lb), ")").get(0);
-                                output.push(function);
-                                output.push(infixFunction.substring(lb + 1, rb));
-                                a = rb;
-                                continue PARSE;
-                            }
+                        String function = infixFunction.substring(i, lb);
+                        if (variableFunctions.containsKey(function)) {
+                            int rb = Search.indexOf(infixFunction, ')', lb);
+                            Expression e = toExpression(infixFunction.substring(lb + 1, rb));
+                            Expression f = variableFunctions.get(function);
+                            f.set(var, e);
+                            output.push(f);
+                            i = rb;
+                            continue;
                         }
-                        int fnIndex = multiParamFunctionNamesIndex(function);
-                        if (fnIndex != -1) {
-                            try {
-                                int rb = lb + Search.getIndices(infixFunction.substring(lb), ")").get(0);
-                                MultiParamFunction multiParamFunction = multiParamFunctions[fnIndex];
+                        if (isMultiParamFunction(function)) {
+                            int rb = Search.indexOf(infixFunction, ')', lb);
+                            if (rb != -1 && rb > lb) {
+                                MultiParamFunction multiParamFunction = getMultiParamFunction(function);
                                 String[] parameters = Search.split(infixFunction.substring(lb + 1, rb), ",", false);
-                                output.push(multiParamFunction.getName());
-                                if (multiParamFunction.isFlexible()) {
-                                    output.push(parameters.length + "");
-                                } else if (multiParamFunction.getNumParameters() != parameters.length) {
-                                    error = "Syntax Error - Invalid Number of Parameters.  E:" + multiParamFunction.getNumParameters() + "   A:" + parameters.length;
-                                    return error;
+                                if (!multiParamFunction.isFlexible() && multiParamFunction.getNumParameters() != parameters.length) {
+                                    return new InvalidExpression("Syntax Error - Invalid Number of Parameters.  E:" + multiParamFunction.getNumParameters() + "   A:" + parameters.length);
                                 }
-                                for (String parameter : parameters) {
-                                    output.push(parameter.trim());
-                                }
-                                a = rb;
+                                output.push(new MultiParamExpression(multiParamFunction, parameters));
+                                i = rb;
                                 continue;
-                            } catch (IndexOutOfBoundsException parameterLengthError) {
-                                error = "Syntax Error";
-                                return error;
                             }
+                            return new InvalidExpression("Bracket Count Error: Multi Param Function");
                         }
                     }
-                    int o1 = -1;
-                    if (a+1 <= infixFunction.length()){
-                        o1 = operatorIndex(c);
-                    }
-                    if (o1 != -1){
-                        Operator operator1 = operators[o1];
-                        while (!stack.isEmpty() && operatorIndex(stack.peek()) == -1 && !stack.peek().equals("(")) {
-                            output.push(stack.pop());
+                    if (isOperator(c)) {
+                        Operator operator1 = getOperator(c);
+                        while (!stack.isEmpty() && !isOperator(stack.peek()) && !stack.peek().equals("(")) {
+                            String top = stack.pop();
+                            stackElementToExpression(top, output);
                         }
-                        if (stack.isEmpty() || operatorIndex(stack.peek()) == -1) {
-                            stack.push(operator1.getName());
+                        if (stack.isEmpty() || !isOperator(stack.peek())) {
+                            stack.push(operator1.toString());
                         } else {
                             while (true) {
                                 if (stack.empty()) {
-                                    stack.push(operator1.getName());
+                                    stack.push(operator1.toString());
                                     break;
                                 }
-                                int o2 = operatorIndex(stack.peek());
-                                if (o2 >= 0 && ((operator1.isAssociable() && operator1.getPrecedence() <= operators[o2].getPrecedence()) ||
-                                        (!operator1.isAssociable() && operator1.getPrecedence() < operators[o2].getPrecedence()))) {
-                                    output.push(stack.pop());
+                                Operator o2 = getOperator(stack.peek());
+                                if (o2 != null && ((operator1.isAssociable() && operator1.getPrecedence() <= o2.getPrecedence()) ||
+                                        (!operator1.isAssociable() && operator1.getPrecedence() < o2.getPrecedence()))) {
+                                    stack.pop();
+                                    Expression e1 = output.pop();
+                                    if (o2.isSingleOperator()) {
+                                        output.push(new OperatorExpression(o2, e1));
+                                        continue;
+                                    }
+                                    Expression e2 = output.pop();
+                                    output.push(new OperatorExpression(o2, e2, e1));
                                 } else {
-                                    stack.push(operator1.getName());
+                                    stack.push(operator1.toString());
                                     break;
                                 }
                             }
                         }
-                    }
-                    else{
-                        for (int b = UnaryFunction.maxStrLength; b>=UnaryFunction.minStrLength; b--){
-                            if (a+b <= infixFunction.length()){
-                                String mathf = infixFunction.substring(a, a+b);
-                                int orderIndex = unaryFunctionsIndex(mathf);
-                                if (orderIndex != -1){
-                                    String superScript = "";
-                                    for (int i = a + mathf.length(); i<infixFunction.length(); i++){
-                                        int index = Scripts.getSuperScriptNumIndex(infixFunction.charAt(i));
-                                        if (index != -1){
-                                            superScript += Scripts.regularScriptNums[index];
-                                        }
-                                        else{
+                    } else {
+                        for (int b = UnaryFunction.maxStrLength; b >= UnaryFunction.minStrLength; b--) {
+                            if (i + b <= infixFunction.length()) {
+                                String mathf = infixFunction.substring(i, i + b);
+                                if (isUnaryFunction(mathf)) {
+                                    superScript = new StringBuilder();
+                                    for (int j = i + mathf.length(); j < infixFunction.length(); j++) {
+                                        int index = Scripts.getSuperScriptNumIndex(infixFunction.charAt(j));
+                                        if (index != -1) {
+                                            superScript.append(Scripts.regularScriptNums[index]);
+                                        } else {
                                             break;
                                         }
                                     }
                                     if (stack.empty() || stack.peek().equals("(")
-                                            || (stack.size() > 0 && (unaryFunctionsIndex(stack.peek()) >= orderIndex) || operatorIndex(stack.peek()) != -1)) {
+                                            || (stack.size() > 0 && isOperator(stack.peek()))) {
                                         if (superScript.length() > 0) {
                                             stack.push("^");
-                                            stack.push(superScript);
+                                            stack.push(superScript.toString());
                                         }
                                         stack.push(mathf);
-                                        a += mathf.length()+superScript.length() - 1;
-                                    } else if (stack.size() > 0 && unaryFunctionsIndex(stack.peek()) < orderIndex) {
-                                        while (!stack.isEmpty()) {
-                                            String str = stack.peek();
-                                            if (unaryFunctionsIndex(stack.peek()) < orderIndex) {
-                                                output.push(stack.pop());
-                                            } else {
-                                                output.push(stack.pop());
-                                                break;
-                                            }
-                                        }
+                                        i += mathf.length() + superScript.length() - 1;
+                                    } else if (!stack.isEmpty()) {
+                                        Expression e = output.pop();
+                                        output.push(new UnaryExpression(getUnaryFunction(stack.pop()), e));
                                     }
                                 }
                             }
                         }
                     }
-                } catch (NumberFormatException | StringIndexOutOfBoundsException e2) {
-                    error = "NumberFormatException | StringIndexOutOfBoundsException";
-                    return error;
                 }
             }
+        }catch(EmptyStackException e){
+            System.out.println("Empty Stack Exception:   "+infixFunction);
         }
         if (token.length() > 0) {
-            output.push(token);
-            token = "";
+            output.push(new NumberExpression(token.toString()));
         }
         while (!stack.empty()) {
-            output.push(stack.pop());
+            String s = stack.pop();
+            stackElementToExpression(s, output);
         }
-        for (int a = 0; a < output.size(); a++) {
-            token += output.get(a) + " ";
-        }
-        return token.trim();
+        return output.peek();
     }
 
-    public static int implicitIndex(char item){
-        return Search.binarySearch(implicit, item);
-    }
-    public static boolean implicitContains(char item){
-        return Search.contains(implicit, item);
-    }
-
-    public static int checkImplicitIndex(char item){
-        return Search.binarySearch(checkImplicit, item);
-    }
-    public static boolean checkImplicitContains(String item){
-        return Search.contains(checkImplicit, item.charAt(0));
-    }
-    public static boolean checkImplicitContains(char item){
-        return Search.contains(checkImplicit, item);
+    private static void stackElementToExpression(String str, Stack<Expression> output){
+        if (isOperator(str)){
+            Operator operator = getOperator(str);
+            Expression e1 = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
+            if (operator.isSingleOperator()){
+                output.push(new OperatorExpression(operator, e1));
+            }
+            else {
+                Expression e2 = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
+                output.push(new OperatorExpression(operator, e2, e1));
+            }
+        }
+        else if (isUnaryFunction(str)){
+            Expression e = output.empty() ? new InvalidExpression("Empty Stack Error") : output.pop();
+            output.push(new UnaryExpression(getUnaryFunction(str), e));
+        }
+        else if (_Number_.isNumber(str)){
+            output.push(new NumberExpression(str));
+        }
     }
 
     public static char var(){
@@ -673,21 +677,6 @@ public class Engine {
     }
     public static char varOp(){
         return varOp.charAt(0);
-    }
-
-//    public static List<String> getVariables() {
-//        return variables;
-//    }
-//    public static List<Double> getValues() {
-//        return values;
-//    }
-
-    public boolean setVariable(String variable) {
-        if (!variable.equalsIgnoreCase("e") && !variable.equalsIgnoreCase("π") && variable.length() == 1) {
-            this.var = variable;
-            return true;
-        }
-        return false;
     }
 
 }

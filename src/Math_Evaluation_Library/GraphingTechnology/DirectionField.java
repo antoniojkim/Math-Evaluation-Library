@@ -5,10 +5,7 @@
 */
 package Math_Evaluation_Library.GraphingTechnology;
 
-import Math_Evaluation_Library.Objects.Function;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 /**
 
@@ -26,11 +23,11 @@ public class DirectionField extends Graph{
     /*
     */
     
-    private Function f;
-    
-    public DirectionField(String header, Function f) {
+//    private Function f;
+//
+    public DirectionField(String header) {//, Function f
         super(header, -31, 31, -31, 31, false);
-        this.f = f;
+        //this.f = f;
     }
     
 //    public DirectionField(Function f){
@@ -40,20 +37,20 @@ public class DirectionField extends Graph{
     
     @Override
     protected void draw (Graphics2D g){
-        g.setColor(Color.BLUE);
-        double line_length = 1999/10000.0;
-        for (double x = -25; x<=25; x+=0.5){
-            for (double y = -25; y<=25; y+=0.5){
-                double theta = Math.atan(f.of(x, y));
-                double x_width = Math.cos(theta)*line_length,
-                        y_height = Math.sin(theta)*line_length;
-                double x1 = getCoordinateX(x-x_width);
-                double y1 = getCoordinateY(y-y_height);
-                double x2 = getCoordinateX(x+x_width);
-                double y2 = getCoordinateY(y+y_height);
-                g.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
-            }
-        }
+//        g.setColor(Color.BLUE);
+//        double line_length = 1999/10000.0;
+//        for (double x = -25; x<=25; x+=0.5){
+//            for (double y = -25; y<=25; y+=0.5){
+//                double theta = Math.atan(f.of(x, y));
+//                double x_width = Math.cos(theta)*line_length,
+//                        y_height = Math.sin(theta)*line_length;
+//                double x1 = getCoordinateX(x-x_width);
+//                double y1 = getCoordinateY(y-y_height);
+//                double x2 = getCoordinateX(x+x_width);
+//                double y2 = getCoordinateY(y+y_height);
+//                g.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+//            }
+//        }
     }
     
     

@@ -1,7 +1,7 @@
 package Tests;
 
 import Math_Evaluation_Library.Constants.Constants;
-import Math_Evaluation_Library.Engine.*;
+import Math_Evaluation_Library.Engine.TextFunctions;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.Objects.MathObject;
 import Math_Evaluation_Library.Sort;
@@ -17,16 +17,11 @@ public class Sort_Tests extends _Tests_ {
 
     @Override
     public void run(){
-        mathObjectSortTest("Multi Param Functions", MultiParamFunctions.multiParamFunctions);
-        mathObjectSortTest("Unary Functions", UnaryFunctions.unaryFunctions);
-        mathObjectSortTest("Operators", Operators.operators);
         mathObjectSortTest("Text Functions", TextFunctions.textFunctions);
         mathObjectSortTest("Volume Formulas", ShapeFormulas.shapes3D);
         mathObjectSortTest("Area Formulas", ShapeFormulas.shapes2D);
 
         charArraySortTest("Constant characters", Constants.constantChar);
-        charArraySortTest("Implicit", Engine.implicit);
-        charArraySortTest("Check Implicit", Engine.checkImplicit);
     }
 
 
@@ -93,7 +88,7 @@ public class Sort_Tests extends _Tests_ {
 //    public String arrayToString(char[] array){
 //        String str = "";
 //        for (char c : array){
-//            str += String.valueOf(c)+" ";
+//            str += String.evaluate(c)+" ";
 //        }
 //        return str.trim();
 //    }

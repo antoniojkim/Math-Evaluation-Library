@@ -23,7 +23,7 @@ public class VarFunction extends MathObject {
     }
 
     public String evaluate(String parameter){
-        return Engine.evaluateString(f, parameter);
+        return Engine.evaluateString(f, parameter, "");
     }
 
     public void redefine(String function){

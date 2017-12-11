@@ -5,7 +5,7 @@ package Math_Evaluation_Library.Miscellaneous;
  */
 public class Special {
 
-    private static final double[] errorFunctionCoefficients = {0.17087277, -0.82215223, 1.48851587, -1.13520398, 0.27886807, -0.18628806, 0.09678418, 0.37409196, 1.00002368, -1.26551223};
+//    private static final double[] errorFunctionCoefficients = {0.17087277, -0.82215223, 1.48851587, -1.13520398, 0.27886807, -0.18628806, 0.09678418, 0.37409196, 1.00002368, -1.26551223};
     public static double errorFunction(double x){
 //        double t = 1/(1+0.5*Math.abs(x));
 //        double y = t;

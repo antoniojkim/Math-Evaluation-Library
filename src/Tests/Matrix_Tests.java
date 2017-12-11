@@ -1,13 +1,15 @@
 package Tests;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.LinearAlgebra.Eigenvalues;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects.Matrix;
-import org.jblas.DoubleMatrix;
 
 import java.util.List;
+
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 
 /**
  * Created by Antonio on 2017-07-22.
@@ -68,16 +70,14 @@ public class Matrix_Tests extends _Tests_{
 
     public void matrixOperationTest(String input, String expected){
         input = input.trim();
-        String evaluated = Engine.evaluateString(input).trim();
-        expected = expected.trim();
-        if (!evaluated.equals(expected)){
+        Expression e = toExpression(input);
+        if (!e.evaluate().toString().equals(expected)){
             String syntax = Engine.fixSyntax(input).trim();
-            String postfix = Engine.toPostfix(input);
             System.out.println("\nMatrix Operation Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+postfix);
-            System.out.println("     Actual:    "+evaluated);
+            System.out.println("     Postfix:   "+e.postfix());
+            System.out.println("     Actual:    "+e.evaluate().toString());
             System.out.println("     Expected:  "+expected);
             System.exit(1);
         }

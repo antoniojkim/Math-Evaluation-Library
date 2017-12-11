@@ -1,12 +1,13 @@
 package Math_Evaluation_Library.Calculus;
 
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Objects.Fraction;
-import Math_Evaluation_Library.Objects.Function;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 import static java.lang.Double.NaN;
 
 /**
@@ -15,38 +16,39 @@ import static java.lang.Double.NaN;
 public class Roots {
 
     public static double NewtonsMethod (String function, double x){
+        return NewtonsMethod(toExpression(function), x);
+    }
+    public static double NewtonsMethod (Expression f, double x){
         double xn = x;
         int decimalplaces = 15;
-        Function f = new Function(function);
-        Function fprime = new Function(Derivative.calculate(function));
-        System.out.println(f.function());
-        System.out.println(fprime.function());
+        Expression fprime = f.getDerivative();
 //        newton(cosx-x*sinx, 1) 0.860333589019
 //        newton(sin(cosx)*tanx, 3) 3.141592653589793
-        if (fprime.isFunction()){
+        if (fprime.isValid()){
             for (int a = 0; a<300; a++){
-                xn = x-(f.of(x)/fprime.of(x));
-                if (f.of(xn) == 0){
+                xn = x-(f.valueAt(x)/fprime.valueAt(x));
+                if (f.valueAt(xn) == 0){
                     return xn;
                 }
-                else if (MathRound.roundf(xn, decimalplaces).equals(MathRound.roundf(x, decimalplaces)) || MathRound.roundf(f.of(xn), decimalplaces).equals("0")){
-                    return xn;
-                }
-                x = xn;
-            }
-        }
-        else{
-            for (int a = 0; a<150; a++){
-                xn = x-(f.of(x)/Derivative.nDeriv(function, x));
-                if (f.of(xn) == 0){
-                    return xn;
-                }
-                else if (MathRound.roundf(xn, decimalplaces).equals(MathRound.roundf(x, decimalplaces)) || MathRound.roundf(f.of(xn), decimalplaces).equals("0")){
+                else if (MathRound.roundf(xn, decimalplaces).equals(MathRound.roundf(x, decimalplaces)) ||
+                        MathRound.roundf(f.valueAt(xn), decimalplaces).equals("0")){
                     return xn;
                 }
                 x = xn;
             }
         }
+//        else if (f.isValid()){
+//            for (int a = 0; a<150; a++){
+//                xn = x-(f.valueAt(x)/Derivative.nDeriv(function, x));
+//                if (f.valueAt(xn) == 0){
+//                    return xn;
+//                }
+//                else if (MathRound.roundf(xn, decimalplaces).equals(MathRound.roundf(x, decimalplaces)) || MathRound.roundf(f.of(xn), decimalplaces).equals("0")){
+//                    return xn;
+//                }
+//                x = xn;
+//            }
+//        }
         return NaN;
     }
 

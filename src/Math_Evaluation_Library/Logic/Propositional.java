@@ -1,13 +1,8 @@
 package Math_Evaluation_Library.Logic;
 
-import Math_Evaluation_Library.Miscellaneous.Simplify;
-import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -44,87 +39,87 @@ public class Propositional {
 
 
     public static String valuate(String proposition, boolean... values){
-        proposition = fixSyntax(proposition);
-        String postfixStr = toPostfix(proposition);
-        List<String> postfix = new ArrayList<>(Arrays.asList(Search.split(postfixStr, " ")));
-//        Print.println(postfix);
-        List<String> variables = new ArrayList<>();
-        for(String term : postfix){
-            if (!term.equalsIgnoreCase("T") && !term.equalsIgnoreCase("F") && !operatorContains(term)){
-                if (variables.isEmpty()){
-                    variables.add(term);
-                }
-                else{
-                    int index = Search.binarySearchIndex(variables, term);
-                    if (index == variables.size()){
-                        variables.add(term);
-                    }
-                    else if (!variables.get(index).equals(term)){
-                        variables.add(index, term);
-                    }
-                }
-            }
-        }
-        if (variables.size() > values.length){
-            return "Missing Propositional Variable Values";
-        }
-        for (int i = 0; i<variables.size(); i++){
-            postfixStr = Search.replace(postfixStr, variables.get(i), (values[i] ? "T" : "F"));
-        }
-        postfix.clear();
-        postfix.addAll(Arrays.asList(Search.split(postfixStr, " ")));
-        for (int i = 0; i<postfix.size(); i++){
-            int index = operatorIndex(postfix.get(i));
-            if (index != -1){
-                if (singleOperator[index] && i > 0){
-                    boolean term = postfix.get(i-1).equalsIgnoreCase("T");
-                    switch(postfix.get(i)){
-                        case "¬":
-                            postfix.set(i-1, !term ? "T" : "F");
-                            Simplify.remove(postfix, i);    i -= 1;
-                            break;
-                        default:    break;
-                    }
-                }
-                else if (!singleOperator[index] && i > 1){
-                    boolean term1 = postfix.get(i-2).equalsIgnoreCase("T");
-                    boolean term2 = postfix.get(i-1).equalsIgnoreCase("T");
-                    switch(postfix.get(i)){
-                        case "∧":
-                            postfix.set(i-2, (term1 && term2) ? "T" : "F");
-                            Simplify.remove(postfix, i, i-1);    i -= 2;
-                            break;
-                        case "∨":
-                            postfix.set(i-2, (term1 || term2) ? "T" : "F");
-                            Simplify.remove(postfix, i, i-1);    i -= 2;
-                            break;
-                        case "→":
-                            postfix.set(i-2, (!term1 || term2) ? "T" : "F");
-                            Simplify.remove(postfix, i, i-1);    i -= 2;
-                            break;
-                        case "↔":
-                            postfix.set(i-2, ((!term1 || term2) && (!term2 || term1)) ? "T" : "F");
-                            Simplify.remove(postfix, i, i-1);    i -= 2;
-                            break;
-                        case "↓":
-                            postfix.set(i-2, (!term1 && !term2) ? "T" : "F");
-                            Simplify.remove(postfix, i, i-1);    i -= 2;
-                            break;
-                        default:    break;
-                    }
-                }
-                else{
-                    return "Operators Error:  "+postfixStr;
-                }
-            }
-        }
-        if (postfix.size() == 1){
-            return postfix.get(0);
-        }
-        else{
-            System.out.println("Postfix size > 0");
-            Print.println(postfix);
-        }
+//        proposition = fixSyntax(proposition);
+//        String postfixStr = toPostfix(proposition);
+//        List<String> postfix = new ArrayList<>(Arrays.asList(Search.split(postfixStr, " ")));
+////        Print.println(postfix);
+//        List<String> variables = new ArrayList<>();
+//        for(String term : postfix){
+//            if (!term.equalsIgnoreCase("T") && !term.equalsIgnoreCase("F") && !operatorContains(term)){
+//                if (variables.isEmpty()){
+//                    variables.add(term);
+//                }
+//                else{
+//                    int index = Search.binarySearchIndex(variables, term);
+//                    if (index == variables.size()){
+//                        variables.add(term);
+//                    }
+//                    else if (!variables.get(index).equals(term)){
+//                        variables.add(index, term);
+//                    }
+//                }
+//            }
+//        }
+//        if (variables.size() > values.length){
+//            return "Missing Propositional Variable Values";
+//        }
+//        for (int i = 0; i<variables.size(); i++){
+//            postfixStr = Search.replace(postfixStr, variables.get(i), (values[i] ? "T" : "F"));
+//        }
+//        postfix.clear();
+//        postfix.addAll(Arrays.asList(Search.split(postfixStr, " ")));
+//        for (int i = 0; i<postfix.size(); i++){
+//            int index = operatorIndex(postfix.get(i));
+//            if (index != -1){
+//                if (singleOperator[index] && i > 0){
+//                    boolean term = postfix.get(i-1).equalsIgnoreCase("T");
+//                    switch(postfix.get(i)){
+//                        case "¬":
+//                            postfix.set(i-1, !term ? "T" : "F");
+//                            Simplify.remove(postfix, i);    i -= 1;
+//                            break;
+//                        default:    break;
+//                    }
+//                }
+//                else if (!singleOperator[index] && i > 1){
+//                    boolean term1 = postfix.get(i-2).equalsIgnoreCase("T");
+//                    boolean term2 = postfix.get(i-1).equalsIgnoreCase("T");
+//                    switch(postfix.get(i)){
+//                        case "∧":
+//                            postfix.set(i-2, (term1 && term2) ? "T" : "F");
+//                            Simplify.remove(postfix, i, i-1);    i -= 2;
+//                            break;
+//                        case "∨":
+//                            postfix.set(i-2, (term1 || term2) ? "T" : "F");
+//                            Simplify.remove(postfix, i, i-1);    i -= 2;
+//                            break;
+//                        case "→":
+//                            postfix.set(i-2, (!term1 || term2) ? "T" : "F");
+//                            Simplify.remove(postfix, i, i-1);    i -= 2;
+//                            break;
+//                        case "↔":
+//                            postfix.set(i-2, ((!term1 || term2) && (!term2 || term1)) ? "T" : "F");
+//                            Simplify.remove(postfix, i, i-1);    i -= 2;
+//                            break;
+//                        case "↓":
+//                            postfix.set(i-2, (!term1 && !term2) ? "T" : "F");
+//                            Simplify.remove(postfix, i, i-1);    i -= 2;
+//                            break;
+//                        default:    break;
+//                    }
+//                }
+//                else{
+//                    return "Operators Error:  "+postfixStr;
+//                }
+//            }
+//        }
+//        if (postfix.size() == 1){
+//            return postfix.get(0);
+//        }
+//        else{
+//            System.out.println("Postfix size > 0");
+//            Print.println(postfix);
+//        }
         return "";
     }
 

@@ -14,7 +14,7 @@ public class Binary_Tests extends Engine_Tests {
 
         String[] tests = {"10", "11", "100", "101", "110", "111"};
         for (String test : tests){
-            evaluationTest("bin(tobin("+test+"))", test);
+            evaluationTest("frbin(tobin("+test+"))", test);
         }
 
     }

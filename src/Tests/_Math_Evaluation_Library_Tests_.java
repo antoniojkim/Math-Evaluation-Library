@@ -1,5 +1,8 @@
 package Tests;
 
+import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.Expression;
+
 /**
  * Created by Antonio on 2017-07-11.
  */
@@ -10,7 +13,54 @@ public class _Math_Evaluation_Library_Tests_ {
     public static void main (String[] args){
 
         runTests();
+        //runTrial();
 
+    }
+
+    public static void runTrial(){
+
+        /*
+        0.05770045938362367
+        6.554458
+        0.05770045938362367
+        0.300642
+        3 3 1 2 + * sin * 4 5 8 + / ln +
+         */
+
+        String function = "sin(cos(tan(x)))";
+        Expression e = Engine.toExpression(function);
+        System.out.println(e.infix());
+        System.out.println(e.postfix());
+//        System.out.println(pre.evaluate(4));
+//        System.out.println(Engine.evaluate(function, 4));
+        int trials = 1;
+        double avg = 0;
+        long start = 0, end = 0;
+        double sum = 0;
+        for (int i = 0; i<trials; ++i){
+            start = System.nanoTime();
+            Expression evaluated = e.getDerivative();
+//            Expression integral = e.getIntegral();
+            end = System.nanoTime();
+            avg += (end-start);
+            System.out.println(evaluated.infix());
+//            System.out.println(n1);
+//            if (n2 instanceof MatrixExpression){
+//                System.out.println(((MatrixExpression)n2.evaluateExpression()).getStrMatrix());
+//            }
+//            else{
+//                System.out.println(n2.evaluate());
+//            }
+        }
+        System.out.println(trials+" trials");
+        System.out.println("Average:   "+(avg/(trials*1000000.0)));
+        System.out.println("Total:     "+(avg/(1000000.0)));
+
+    }
+
+    public static void runTest(){
+        new Derivative_Tests("Derivative").derivativeTests("e^(2x)", "2ℯ^(2x)");
+        //System.out.println(Engine.toExpression("x*2*3").hardcode());
     }
 
     public static void runTests(){
@@ -26,7 +76,7 @@ public class _Math_Evaluation_Library_Tests_ {
                 new Summation_Tests("Summation"),
                 new Combinatorics_Tests("Combinatorics"),
                 new Random_Variables_Tests("Random Variables"),
-                new Propositional_Logic_Tests("Propositional Logic"),
+                //new Propositional_Logic_Tests("Propositional Logic"),
                 new Binary_Tests("Binary"),
 
                 new Derivative_Tests("Derivative"),

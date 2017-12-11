@@ -2,6 +2,8 @@ package Tests;
 
 import Math_Evaluation_Library.Engine.Engine;
 
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
+
 /**
  * Created by Antonio on 2017-07-11.
  */
@@ -103,15 +105,14 @@ public class _Tests_ {
     }
     public void evaluationTest(String input, String expected){
         input = input.trim();
-        String evaluated = Engine.evaluateString(input).trim();
+        String evaluated = Engine.evaluateString(input);
         expected = expected.trim();
         if (!evaluated.equals(expected)){
             String syntax = Engine.fixSyntax(input).trim();
-            String postfix = Engine.toPostfix(input);
             System.out.println("\n"+test_name+" Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+postfix);
+            System.out.println("     Postfix:   "+toExpression(input).postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);
             System.exit(1);
@@ -121,13 +122,13 @@ public class _Tests_ {
     public void evaluationTest(String input, double expected){
         input = input.trim();
         double evaluated = Engine.evaluate(input);
-        if (Math.abs(evaluated-expected) > 1E-14){
+        if ((!String.valueOf(expected).equals("NaN") && String.valueOf(evaluated).equals("NaN"))
+                || Math.abs(evaluated-expected) > 1E-14){
             String syntax = Engine.fixSyntax(input).trim();
-            String postfix = Engine.toPostfix(input);
             System.out.println("\n"+test_name+" Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+postfix);
+            System.out.println("     Postfix:   "+toExpression(input).postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);
             System.exit(1);

@@ -68,6 +68,7 @@ public class Combinatorics {
     }
 
     public static double permute(int n, int r){
+        if (r > n)     return 0;
         if (r == 0)    return 1;
         if (r == 1)    return n;
         if (n > 170){
@@ -88,15 +89,13 @@ public class Combinatorics {
         if (2*r > n)   r = n-r;
         if (n > 170){
             double num = n;
-            for (int i = n-1; i>(n-r); i--){
+            for (int i = n-1; i>(n-r); --i){
                 num *= i;
             }
             if (num == Double.POSITIVE_INFINITY){
                 return Math.exp(lnfact(n)-(lnfact(n-r)+lnfact(r)));
             }
             return num/fact(r);
-        }
-        if (n > 170){
         }
         return (fact(n) / (fact(n - r) * fact(r)));
     }

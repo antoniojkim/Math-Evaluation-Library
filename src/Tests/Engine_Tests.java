@@ -1,8 +1,10 @@
 package Tests;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.Expression;
 
 import static Math_Evaluation_Library.Engine.Engine.separator;
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -24,7 +26,7 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("floor_2(64)", 64);
         evaluationTest("floor_2(65)", 64);
 
-        InfixToPostfixTest("sin{x}", "{x} sin");
+        InfixToPostfixTest("sin{i}", "i sin");
         InfixToPostfixTest("sec²x", "x sec 2 ^");
 
         InfixToPostfixTest("-1/(|x|√(x²-1))", "-1 x abs x 2 ^ 1 - √ * /");
@@ -49,7 +51,7 @@ public class Engine_Tests extends _Tests_{
 
         evaluationTest("gcd(12, 18, 36)", 6);
 
-        InfixToPostfixTest("heron(6, 6, 6)", "heron 3 6 6 6");
+        InfixToPostfixTest("heron(6, 6, 6)", "heron 6 6 6");
         evaluationTest("heron(6, 6, 6)", 15.588457268119896);
 
         evaluationTest("proj([1, 2], [3, 4])", "11/25·[3, 4] = [33/25, 132/25] is the projection of [1, 2] onto [3, 4]");
@@ -63,11 +65,11 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("n≔3", 3);
         evaluationTest("(n)*{n}", 9);
 
-        evaluationTest("f:=x^2", "x^2");
-        InfixToPostfixTest("f(2)", "f 2");
+        evaluationTest("f:=x^2", "x²");
+        InfixToPostfixTest("f(2)", "2 2 ^");
         evaluationTest("f(2)", 4);
 
-        evaluationTest("b≔Bin(10, 0.5, x)", "Bin(10,0.5,x)");
+        evaluationTest("b≔Bin(10, 0.5, x)", "Bin(10, 0.5, x)");
         evaluationTest("b(3)", 0.1171875);
     }
 
@@ -86,12 +88,14 @@ public class Engine_Tests extends _Tests_{
     }
     public void InfixToPostfixTest(String input, String expected){
         input = input.trim();
-        String parsed = Engine.toPostfix(input).trim();
-        expected = expected.trim();
-        if (!parsed.equals(expected)){
+        Expression e = toExpression(input);
+        String postfix = e.postfix();
+        if (!postfix.equals(expected)){
             System.out.println("\nInfix to Postfix Test Failed:");
             System.out.println("     Input:     "+input);
-            System.out.println("     Parsed:    "+parsed);
+            System.out.println("     Syntax:    "+Engine.fixSyntax(input));
+            System.out.println("     Infix:     "+e.infix());
+            System.out.println("     Postfix:   "+postfix);
             System.out.println("     Expected:  "+expected);
             System.exit(1);
         }

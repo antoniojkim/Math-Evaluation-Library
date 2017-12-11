@@ -20,14 +20,18 @@ public class StringReplacements {
             {"<->", "↔"}, {"d->", "↓"}, {"!^", "↓"}, {"->", "→"}, {"_=", "≡"}, {"\\|", separator}, {"|\\", separator}, {"||", separator},
             {"=s", "⩵"}, {"==", "⩵"}, {":=", "≔"}, {"xor", "⊻"},{"floor_2", "floor₂"},
             {"\\and", "∧"}, {"\\or", "∨"}, {"\\iff", "↔"}, {"\\not", "¬"},
-            {"<<", "≪"},  {">>", "≫"},  {"@", "C"}, {"}I", "}⁻¹"}, {"}^-1", "}⁻¹"}
+            {"<<", "≪"},  {">>", "≫"},  {"@", "C"}, {"}I", "}⁻¹"}, {"}^-1", "}⁻¹"}, {"]I", "]⁻¹"}, {"]^-1", "]⁻¹"}
     };
 
     public static final String[][] capitalInstances = {
+            {"RREF", "rowr"},{"RREf", "rowr"},{"RCEF", "rowc"},{"RCEf", "rowc"},
             {"P", "npr"},   {"C", "@"},
-            {"}t", "}ᵀ"},   {"}T", "}ᵀ"}, {"}⁻¹", "}ᴵ"},
-            {"E", "*10^"},  {"ED", "∆"},  {"Γ", "gammaf"},
-            {"Bin", "bd"},  {"NB", "nbd"}, {"geo", "gnb"}, {"ND", "ncd"}
+            {"}t", "}ᵀ"},   {"}T", "}ᵀ"},    {"}⁻¹", "}ᴵ"},
+            {"]t", "]ᵀ"},   {"]T", "]ᵀ"},    {"]⁻¹", "]ᴵ"},
+            {"ND", "ngd"},  {"Exp", "rvxp"}, {"Γ", "gammaf"},
+            {"Bin", "bd"},  {"NB", "nbd"},   {"geo", "gnb"},
+            {"Var", "rvvar"},
+            {"E", "*10^"},  {"ED", "∆"}
     };
 
     public static final String[][] formReplacements = {
@@ -57,10 +61,13 @@ public class StringReplacements {
             {"acsc", "arccsc"}, {"csc⁻¹", "arccsc"}, {"acot", "arccot"},  {"cot⁻¹", "arccot"},
 
             {"diff", "deriv"}, {"riman", "riemann"}, {"max\\*", "max"}, {"lasd", "elasd"}, {"nconst", "prime"},
-            {"hron", "heron"}, {"nwton", "newton"},  {"nbd", "NB"},     {"bd", "Bin"},     {"gnb", "geo"},     {"ncd", "ND"}
+            {"hron", "heron"}, {"nwton", "newton"},  {"nbd", "NB"},     {"bd", "Bin"},     {"gnb", "geo"},
+            {"ngd", "ND"},     {"rvxp", "Exp"},      {"rvvar", "Var"},  {"Cdf", "cdf"},    {"Pdf", "pdf"},    {"pf", "pdf"},
+
+            {"rowr", "RREF"},  {"rowc", "RCEF"}
     };
     public static final String[][] textFunctionReplacements = {
-            {"RCEf", "RCEF"}, {"RREf", "RREF"}, {"antideriv", "int"}, {"antidiff", "int"}, {"cmplx", "complex"},
+            {"antideriv", "int"}, {"antidiff", "int"}, {"cmplx", "complex"},
             {"directF", "slopeF"}, {"perpendicular", "perp"}, {"plt", "plot"}, {"primf", "primef"}, {"projection", "proj"},
             {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "postfix"},
             {"len", "strln"}, {"strlen", "strln"}, {"count", "strln"}

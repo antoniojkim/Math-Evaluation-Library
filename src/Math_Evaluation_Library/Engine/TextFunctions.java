@@ -1,24 +1,20 @@
 package Math_Evaluation_Library.Engine;
 
-import Math_Evaluation_Library.Calculus.Derivative;
-import Math_Evaluation_Library.Calculus.Integral;
 import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Constants.StringReplacements;
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;
-import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.LinearAlgebra._Vector_;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects.Fraction;
-import Math_Evaluation_Library.Objects.Function;
 import Math_Evaluation_Library.Objects.TextFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
-import org.jblas.DoubleMatrix;
 
 import java.awt.*;
 import java.io.IOException;
@@ -28,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 import static java.lang.Double.NaN;
 
 /**
@@ -48,7 +45,7 @@ public class TextFunctions {
 //            System.out.println(
 //                    "            new TextFunction(\""+equation+"\")\n{\n" +
 //                            "                @Override\n" +
-//                            "                public String Engine.evaluate(String[] parameters, boolean df) {\n" +
+//                            "                public String Engine.evaluateString(String[] parameters, boolean df) {\n" +
 //                            "                    if (validNumParameters(parameters.length)){\n\n}\n" +
 //                            "                    return INVALID;\n" +
 //                            "                }\n" +
@@ -73,24 +70,6 @@ public class TextFunctions {
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length))    return EEA_LDE(false, parameters);
                     return INVALID;
-                }
-            },
-            new TextFunction("RCEF", "RCEF(\uD835\uDC5A) calculates the Reduced Column Echelon Form where the input is the columns of matrix \uD835\uDC5A")
-            {
-                @Override
-                public String evaluate(String strMatrix, boolean df) {
-                    DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix).transpose();
-                    if (matrix != null)    return (df ? "= " : "")+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
-                    return "Invalid Matrix";
-                }
-            },
-            new TextFunction("RREF", "RREF(\uD835\uDC5A) calculates the Reduced Row Echelon Form where the input is the rows of matrix \uD835\uDC5A")
-            {
-                @Override
-                public String evaluate(String strMatrix, boolean df) {
-                    DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
-                    if (matrix != null)    return (df ? "= " : "")+_Matrix_.toStrMatrix(_Matrix_.rowReduce(matrix));
-                    return "Invalid Matrix";
                 }
             },
             new TextFunction("area", "area(\uD835\uDC60) gives the area formula for shape \uD835\uDC60. Providing arguments produces a calculated area", -1)
@@ -191,38 +170,29 @@ public class TextFunctions {
                     if (validNumParameters(parameters.length)){
                         try{
                             if (parameters.length == 2){
-                                String derivative = Derivative.calculate(parameters[0]);
+                                String derivative = toExpression(parameters[0]).getDerivative().infix();;
                                 return ((df ? "= " : "")+derivative);
                             }
-                            else{
-                                try{
-                                    String[] derivatives = new String[Integer.parseInt(parameters[1])];
-                                    derivatives[0] = Derivative.calculate(parameters[0]);
-                                    for (int a = 1; a<derivatives.length; a++){
-                                        derivatives[a] = Derivative.calculate(derivatives[a-1]);
-                                    }
-                                    return ((df ? "= " : "")+derivatives[derivatives.length-1]);
-                                }catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
-                                    String derivative = Derivative.calculate(parameters[0].replaceAll(parameters[1], Engine.var));
-                                    if (!derivative.equals("Not Differentiable")){
-                                        return (df ? "= " : "")+derivative.replaceAll(Engine.var, parameters[1]);
-                                    }
-                                    return ("Invalid Degree");
-                                }
-                            }
+//                            else{
+//                                try{
+//                                    String[] derivatives = new String[Integer.parseInt(parameters[1])];
+//                                    derivatives[0] = Derivative.calculate(parameters[0]);
+//                                    for (int a = 1; a<derivatives.length; a++){
+//                                        derivatives[a] = Derivative.calculate(derivatives[a-1]);
+//                                    }
+//                                    return ((df ? "= " : "")+derivatives[derivatives.length-1]);
+//                                }catch (NumberFormatException | ArrayIndexOutOfBoundsException e){
+//                                    String derivative = Derivative.calculate(parameters[0].replaceAll(parameters[1], Engine.var));
+//                                    if (!derivative.equals("Not Differentiable")){
+//                                        return (df ? "= " : "")+derivative.replaceAll(Engine.var, parameters[1]);
+//                                    }
+//                                    return ("Invalid Degree");
+//                                }
+//                            }
                         }catch(StringIndexOutOfBoundsException e){}
                         return "Invalid Input Error - Failed to compute derivative";
                     }
                     return INVALID;
-                }
-            },
-            new TextFunction("det", "det(\uD835\uDC5A) calculates the determinant of \uD835\uDC5A")
-            {
-                @Override
-                public String evaluate(String strMatrix, boolean df) {
-                    DoubleMatrix matrix = _Matrix_.toDoubleMatrix(strMatrix);
-                    if (matrix != null)    return (df ? "= " : "")+_Number_.format(_Matrix_.getDeterminant(matrix));
-                    return "Invalid Matrix";
                 }
             },
             new TextFunction("dict", "dict(\uD835\uDC64) opens up the browser and searches for the definition to the word \uD835\uDC64")
@@ -241,7 +211,7 @@ public class TextFunctions {
 //            new TextFunction("graph")
 //            {
 //                @Override
-//                public String evaluate(String[] parameters, boolean df) {
+//                public String evaluateString(String[] parameters, boolean df) {
 //                    if (validNumParameters(parameters.length)){
 //
 //                    }
@@ -253,7 +223,7 @@ public class TextFunctions {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length)){
-                        String antiderivative = Integral.calculate(parameters[0]);
+                        String antiderivative = toExpression(parameters[0]).getIntegral().infix();
                         if (!antiderivative.contains("Not Antidifferentiable")){
                             if(parameters.length == 1){
                                 return (df ? "= " : "")+antiderivative+" + C";
@@ -262,12 +232,12 @@ public class TextFunctions {
                                 return (df ? "= " : "")+Engine.evaluate(antiderivative, Double.parseDouble(parameters[1]));
                             }
                         }
-                        else if(parameters.length == 2){
-                            antiderivative = Integral.calculate(parameters[0].replaceAll(parameters[1], Engine.var));
-                            if (!antiderivative.contains("Not Antidifferentiable")){
-                                return (df ? "= " : "")+antiderivative.replaceAll(Engine.var, parameters[1]);
-                            }
-                        }
+//                        else if(parameters.length == 2){
+//                            antiderivative = Integral.calculate(parameters[0].replaceAll(parameters[1], Engine.var));
+//                            if (!antiderivative.contains("Not Antidifferentiable")){
+//                                return (df ? "= " : "")+antiderivative.replaceAll(Engine.var, parameters[1]);
+//                            }
+//                        }
                         return "Invalid Input Error - Failed to compute integral";
                     }
                     return INVALID;
@@ -386,7 +356,7 @@ public class TextFunctions {
 //            new TextFunction("plot")
 //            {
 //                @Override
-//                public String evaluate(String[] parameters, boolean df) {
+//                public String evaluateString(String[] parameters, boolean df) {
 //                    if (validNumParameters(parameters.length)){
 //
 //                    }
@@ -397,7 +367,7 @@ public class TextFunctions {
             {
                 @Override
                 public String evaluate(String parameter, boolean df) {
-                    return Engine.toPostfix(parameter);
+                    return toExpression(parameter).postfix();
                 }
             },
             new TextFunction("prime", "prime(\uD835\uDC65) determines whether \uD835\uDC65 is prime or composite")
@@ -645,7 +615,7 @@ public class TextFunctions {
 //            new TextFunction("slopeF")
 //            {
 //                @Override
-//                public String evaluate(String[] parameters, boolean df) {
+//                public String evaluateString(String[] parameters, boolean df) {
 //                    if (validNumParameters(parameters.length)){
 //
 //                    }
@@ -710,30 +680,30 @@ public class TextFunctions {
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
-                    if (validNumParameters(parameters.length)){
-                        //=(tangent, (e^x)*(cosx), 0)
-                        double x = Engine.evaluate(parameters[1]),
-                                y = Engine.evaluate(parameters[0], x),
-                                m = Derivative.nDeriv(parameters[0], x);
-                        String mf = Fraction.getFraction(m, true);
-                        if (m == 1){
-                            mf = "";
-                        }
-                        double b = y-m*x;
-                        String bf = Fraction.getFraction(b, true);
-                        if (bf.startsWith("-")){
-                            if (bf.startsWith("(")){
-                                bf = "- ("+bf.substring(2);
-                            }
-                            else{
-                                bf = "- "+bf.substring(1);
-                            }
-                        }
-                        else{
-                            bf = "+ "+bf;
-                        }
-                        return "y = "+mf+"x "+bf;
-                    }
+//                    if (validNumParameters(parameters.length)){
+//                        //=(tangent, (e^x)*(cosx), 0)
+//                        double x = Engine.evaluate(parameters[1]),
+//                                y = Engine.evaluate(parameters[0], x),
+//                                m = Derivative.nDeriv(parameters[0], x);
+//                        String mf = Fraction.getFraction(m, true);
+//                        if (m == 1){
+//                            mf = "";
+//                        }
+//                        double b = y-m*x;
+//                        String bf = Fraction.getFraction(b, true);
+//                        if (bf.startsWith("-")){
+//                            if (bf.startsWith("(")){
+//                                bf = "- ("+bf.substring(2);
+//                            }
+//                            else{
+//                                bf = "- "+bf.substring(1);
+//                            }
+//                        }
+//                        else{
+//                            bf = "+ "+bf;
+//                        }
+//                        return "y = "+mf+"x "+bf;
+//                    }
                     return INVALID;
                 }
             },
@@ -783,10 +753,10 @@ public class TextFunctions {
                             while (rs > mod){
                                 rs -= mod;
                             }
-                            Function f = new Function(parameters[0]);
+                            Expression e = toExpression(parameters[0]);
                             List<Integer> congruent = new ArrayList<>();
                             for (int a = 0; a<mod; a++){
-                                if (f.of(a)%mod == rs)    congruent.add(a);
+                                if (e.valueAt(a)%mod == rs)    congruent.add(a);
                             }
                             String equation =  parameters[0]+" ≡ "+rs+" (mod "+mod+")";
                             if (congruent.size() > 0){
@@ -929,18 +899,18 @@ public class TextFunctions {
     }
 
     private static DirectionField field;
-    private static void drawDirectionField(String function){
-//        Main.w.minimizeHeight();
-//        Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
-//        Main.w.centerAlign();
-//        Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
-        if (field != null && field.isVisible()){
-            field.dispose();
-        }
-        Function f = new Function(function);
-        field = new DirectionField("Direction Fields by Antonio Kim", f);
-        field.Open();
-    }
+//    private static void drawDirectionField(String function){
+////        Main.w.minimizeHeight();
+////        Main.w.setSize((int)(p.getScreenWidth()/2), Main.w.getHeight());
+////        Main.w.centerAlign();
+////        Main.w.setLocation(Main.w.getX(), Main.w.getHeight()/2);
+//        if (field != null && field.isVisible()){
+//            field.dispose();
+//        }
+//        Function f = new Function(function);
+//        field = new DirectionField("Direction Fields by Antonio Kim", f);
+//        field.Open();
+//    }
 
 
 }

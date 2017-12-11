@@ -15,23 +15,24 @@ public class Integral_Tests extends  _Tests_{
     @Override
     public void run(){
         integralTests("2", "2x");
-        integralTests("x^3", "(1/4)x⁴");
+        integralTests("x^3", "x⁴/4");
         integralTests("3x²", "x³");
-        integralTests("2cosx", "2sinx");
-        integralTests("3sinx", "-3cosx");
-        integralTests("cos(3x)", "3sin(3x)");
-        integralTests("2cos(3x)", "6sin(3x)");
-        integralTests("tanx+3x²", "-ln|cosx|+x³");
+        integralTests("2cosx", "2sin(x)");
+        integralTests("3sinx", "-3cos(x)");
+        integralTests("cos(3x)", "sin(3x)/3");
+        integralTests("6cos(2x)", "3sin(2x)");
+        integralTests("tanx+3x²", "-ln|cos(x)|+x³");
         integralTests("1/x", "ln|x|");
         integralTests("2/x", "2ln|x|");
         integralTests("e^x", "ℯ^x");
-        integralTests("ln(2x)", "x(ln(2x)-1)");
-        integralTests("2*logx", "(2(x/ln10))(lnx-1)");
-        integralTests("3*(secx)^2", "3tanx");
+        integralTests("ln(2x)", "x*ln(2x)-x");
+        integralTests("2*logx", "2(x*ln(x)-x)/ln10");
+        integralTests("3*(secx)^2", "3tan(x)");
         integralTests("√x", "(2/3)x^(3/2)");
 
-        integralTests("sin(cosx)", "ʃ(sin(cosx))");
+        integralTests("sin(cosx)", "ʃ(sin(cos(x)))");
 
+        numericalIntegralTests("sin(cos(x))", 2, 4, -1.4628367214483);
         numericalIntegralTests("sinx", 1, 3, 1.5302948024685852);
         numericalIntegralTests("x", 1, 3, 4);
 //        numericalIntegralTests("sin(cosx)", 1, 5, -1.5910876205726525);
@@ -39,7 +40,7 @@ public class Integral_Tests extends  _Tests_{
 
     public void integralTests(String input, String expected){
         input = input.trim();
-        String integral = Integral.calculate(input).trim();
+        String integral = Integral.calculate(input).infix().trim();
         expected = expected.trim();
         if (!integral.equals(expected)){
             System.out.println("\nIntegration Test Failed:");
