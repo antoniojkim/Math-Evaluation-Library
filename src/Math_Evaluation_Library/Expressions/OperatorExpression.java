@@ -81,14 +81,26 @@ public class OperatorExpression extends Expression {
     public boolean equals(Expression e) {
         if (e instanceof OperatorExpression){
             OperatorExpression oe = (OperatorExpression) e;
-            if (operator.toString().equals(oe.getOperator().toString())){
+            if (operator.toString().equals(oe.operator().toString())){
                 if (operator.isSingleOperator()){
-                    return param1.equals(oe.getParam1());
+                    return param1.equals(oe.param1());
                 }
-                return param1.equals(oe.getParam1()) && param2.equals(oe.getParam2());
+                return param1.equals(oe.param1()) && param2.equals(oe.param2());
             }
         }
         return false;
+    }
+    @Override
+    public boolean equals(String str) {
+        return str.length() == 1 && operator.toString().charAt(0) == str.charAt(0);
+    }
+
+    @Override
+    public boolean isRational(){
+        if (operator.toString().equals("/")){
+            return param1.isInteger() && param2.isInteger();
+        }
+        return super.isRational();
     }
 
     @Override
@@ -113,6 +125,13 @@ public class OperatorExpression extends Expression {
         }
         return operator.postfix(param1, param2);
     }
+    @Override
+    public String toTeX() {
+        if (operator.isSingleOperator()){
+            return operator.toTeX(param1);
+        }
+        return operator.toTeX(param1, param2);
+    }
 
     @Override
     public String hardcode(String spacing) {
@@ -122,13 +141,13 @@ public class OperatorExpression extends Expression {
         return hardcode+")";
     }
 
-    @Override public Expression getDerivative(){
+    @Override public Expression calculateDerivative(){
         if (operator.isSingleOperator()){
             return operator.getDerivative(param1);
         }
         return operator.getDerivative(param1, param2);
     }
-    @Override public Expression getIntegral(){
+    @Override public Expression calculateIntegral(){
         if (operator.isSingleOperator()){
             return operator.getIntegral(param1);
         }
@@ -142,8 +161,8 @@ public class OperatorExpression extends Expression {
         return operator.simplify(param1, param2);
     }
 
-    public Operator getOperator(){    return operator;  }
-    public Expression getParam1(){    return param1;  }
-    public Expression getParam2(){    return param2;  }
+    public Operator operator(){    return operator;  }
+    public Expression param1(){    return param1;  }
+    public Expression param2(){    return param2;  }
 
 }

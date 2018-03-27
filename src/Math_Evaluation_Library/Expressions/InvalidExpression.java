@@ -41,6 +41,7 @@ public class InvalidExpression extends Expression {
 
     @Override public String infix() { return error; }
     @Override public String postfix() { return error; }
+    @Override public String toTeX() { return error; }
     @Override public String hardcode(String spacing) { return spacing+"new "+getClass().getSimpleName()+"(\""+error+"\")"; }
 
 

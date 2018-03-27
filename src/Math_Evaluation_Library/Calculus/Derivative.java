@@ -33,7 +33,7 @@ public class Derivative {
     public static Expression calculate(Expression f){
         //String simplified = Simplify.simplify(function);
         if (f.isValid()) {
-            Expression derivative = f.getDerivative();
+            Expression derivative = f.calculateDerivative();
             return derivative.simplify();
         }
         return new InvalidExpression("("+f.infix()+")'");
@@ -42,26 +42,26 @@ public class Derivative {
     public static Expression exponentDerivative(Expression x, Expression y){
         if (y instanceof NumberExpression){
             return new OperatorExpression("*", y,
-                    new OperatorExpression("*", x.getDerivative(),
+                    new OperatorExpression("*", x.calculateDerivative(),
                             new OperatorExpression("^", x, new NumberExpression(y.valueOf()-1))));
         }
         else if (x instanceof ConstantExpression && ((ConstantExpression) x).getConstant() == 'ℯ'){
             return new OperatorExpression("*",
                     new OperatorExpression("^", x, y),
-                    y.getDerivative());
+                    y.calculateDerivative());
         }
         else if (x instanceof NumberExpression){
             return new OperatorExpression(Operators.getOperator("*"),
                     new OperatorExpression(Operators.getOperator("*"),
                             new OperatorExpression(Operators.getOperator("^"), x, y),
                             new UnaryExpression(getUnaryFunction("ln"), new NumberExpression(2))),
-                    y.getDerivative());
+                    y.calculateDerivative());
         }
         return new InvalidExpression("");
     }
     public static Expression sqrtDerivative(Expression x){
         return new OperatorExpression("/",
-                x.getDerivative(),
+                x.calculateDerivative(),
                 new OperatorExpression("*",
                         new NumberExpression(2),
                         new OperatorExpression("√", x)));

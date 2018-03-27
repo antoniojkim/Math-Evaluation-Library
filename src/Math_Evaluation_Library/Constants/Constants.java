@@ -43,6 +43,16 @@ public class Constants {
             default:    return NaN;
         }
     }
+    public static String getTeX(char c){
+        switch (c){
+            case 'π':   return "\\pi";
+            case 'ℯ':   return "e";
+            case 'ϕ':   return "\\phi";
+            case 'γ':   return "\\gamma";
+            case '∞':   return "\\infty";
+            default:    return String.valueOf(c);
+        }
+    }
 
     public static char[] constantChar = {'γ', 'π', 'ϕ', 'ℯ', '∞'};
     public static boolean isConstant(String str){

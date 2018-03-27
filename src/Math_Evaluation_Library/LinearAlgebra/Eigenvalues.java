@@ -1,11 +1,10 @@
 package Math_Evaluation_Library.LinearAlgebra;
 
 import Math_Evaluation_Library.Calculus.Roots;
-import Math_Evaluation_Library.Objects.Fraction;
-import Math_Evaluation_Library.Objects.Matrix;
-import Math_Evaluation_Library.Sort;
+import org.jblas.DoubleMatrix;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -13,60 +12,49 @@ import java.util.List;
  */
 public class Eigenvalues {
 
-    public static List<Fraction> calculate(Matrix matrix){
+    public static List<Double> calculate(DoubleMatrix matrix){
         return calculateEigenvalues(matrix);
     }
-    public static List<Fraction> calculateEigenvalues(Matrix m){
-        if (m.numRows() == m.numColumns()){
-            Matrix matrix = m.getCopy();
-            matrix.println();
+    public static List<Double> calculateEigenvalues(DoubleMatrix m){
+        if (m.rows == m.columns){
+            DoubleMatrix matrix = m.dup();
 
-            List<Fraction> eigenvalues = new ArrayList<>();
+            List<Double> eigenvalues = new ArrayList<>();
 
-            if (matrix.numRows() == 2){
+            if (matrix.rows == 2){
                 eigenvalues.addAll(get2by2EigenValues(matrix));
             }
-            else if (matrix.numRows() == 3){
+            else if (matrix.rows == 3){
                 eigenvalues.addAll(get3by3EigenValues(matrix));
             }
-            else{
-                Matrix lambda = new Matrix(m.numRows(), m.numColumns(), -1);
-                lambda.println();
 
-            }
-
-            Sort.quicksort(eigenvalues);
+            eigenvalues.sort(Comparator.naturalOrder());
             return eigenvalues;
         }
         return null;
     }
-    private static List<Fraction> get2by2EigenValues(Matrix m){
-        if (m.numRows() == m.numColumns() && m.numRows() == 2){
-            Fraction a = m.get(0, 0);
-            Fraction b = m.get(0, 1);
-            Fraction c = m.get(1, 0);
-            Fraction d = m.get(1, 1);
-            return Roots.quadraticFormula(new Fraction(1), a.getCopy().add(d).multiply(-1), a.getCopy().multiply(d).subtract(b.getCopy().multiply(c)));
+    private static List<Double> get2by2EigenValues(DoubleMatrix m){
+        if (m.rows == 2 && m.rows == m.columns){
+            double a = m.get(0, 0);
+            double b = m.get(1, 0);
+            double c = m.get(0, 1);
+            double d = m.get(1, 1);
+            return Roots.quadraticFormula(1.0, -(a+d), a*d-b*c);
         }
         return null;
     }
-    private static List<Fraction> get3by3EigenValues(Matrix m){
-        if (m.numRows() == m.numColumns() && m.numRows() == 3){
-            double a = m.get(0, 0).getValue();
-            double b = m.get(0, 1).getValue();
-            double c = m.get(0, 2).getValue();
-            double d = m.get(1, 0).getValue();
-            double e = m.get(1, 1).getValue();
-            double f = m.get(1, 2).getValue();
-            double g = m.get(2, 0).getValue();
-            double h = m.get(2, 1).getValue();
-            double i = m.get(2, 2).getValue();
-            List<Double> roots = Roots.cubicFormula(-1, i+e+a, f*h-e*i+c*g+b*d-a*i-a*e, c*d*h-c*e*g+b*f*g-b*d*i-a*f*h+a*e*i);
-            List<Fraction> eigenvalues = new ArrayList<>();
-            for (int j = 0; j<roots.size(); j++){
-                eigenvalues.add(new Fraction(roots.get(j)));
-            }
-            return eigenvalues;
+    private static List<Double> get3by3EigenValues(DoubleMatrix m){
+        if (m.rows == 3 && m.rows == m.columns){
+            double a = m.get(0, 0);
+            double b = m.get(1, 0);
+            double c = m.get(2, 0);
+            double d = m.get(0, 1);
+            double e = m.get(1, 1);
+            double f = m.get(2, 1);
+            double g = m.get(0, 2);
+            double h = m.get(1, 2);
+            double i = m.get(2, 2);
+            return Roots.cubicFormula(-1, i+e+a, f*h-e*i+c*g+b*d-a*i-a*e, c*d*h-c*e*g+b*f*g-b*d*i-a*f*h+a*e*i);
         }
         return null;
     }

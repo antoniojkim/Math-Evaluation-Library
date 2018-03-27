@@ -1,5 +1,6 @@
 package Math_Evaluation_Library.Expressions;
 
+import Math_Evaluation_Library.Constants.Constants;
 import Math_Evaluation_Library.Engine.Engine;
 
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
@@ -11,8 +12,12 @@ public class ConstantExpression extends NumberExpression {
 
     char constant;
 
+    public ConstantExpression(char var){
+        super(Constants.getConstant(var), false);
+        this.constant = var;
+    }
     public ConstantExpression(char var, double val){
-        super(val);
+        super(val, false);
         this.constant = var;
     }
 
@@ -25,12 +30,17 @@ public class ConstantExpression extends NumberExpression {
 
     @Override
     public String infix() {
-        return String.valueOf(constant);
+        return constant == 'ℯ' ? "e" : String.valueOf(constant);
     }
 
     @Override
     public String postfix() {
-        return String.valueOf(constant);
+        return infix();
+    }
+
+    @Override
+    public String toTeX() {
+        return Constants.getTeX(constant);
     }
 
     @Override
@@ -39,7 +49,7 @@ public class ConstantExpression extends NumberExpression {
     }
 
     @Override
-    public Expression getIntegral(){
+    public Expression calculateIntegral(){
         return new OperatorExpression(getOperator("*"), this, new VariableExpression(Engine.var));
     }
 }

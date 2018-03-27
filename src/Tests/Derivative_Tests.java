@@ -38,8 +38,8 @@ public class Derivative_Tests extends _Tests_ {
         derivativeTests("ln(x)", "1/x");
         derivativeTests("|x|", "|x|/x");
 
-        derivativeTests("e^x", "ℯ^x");
-        derivativeTests("e^(2x)", "2ℯ^(2x)");
+        derivativeTests("e^x", "e^x");
+        derivativeTests("e^(2x)", "2e^(2x)");
         derivativeTests("2^x", "2^xln2");
 
         derivativeTests("sin(cos(tanx))", "-sin(tan(x))sec²(x)cos(cos(tan(x)))");

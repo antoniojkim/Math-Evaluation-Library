@@ -58,6 +58,13 @@ public abstract class Operator {
         return e1.postfix()+" "+e2.postfix()+" "+operator;
     }
 
+    public String toTeX(Expression e1){
+        return associable ? e1.toTeX()+operator : operator+e1.toTeX();
+    }
+    public String toTeX(Expression e1, Expression e2){
+        return e1.toTeX()+operator+e2.toTeX();
+    }
+
     public Expression getDerivative(Expression e1){
         return new InvalidExpression("("+(associable ? e1.infix()+operator : operator+e1.infix())+")'");
     }

@@ -42,6 +42,21 @@ public abstract class MultiParamFunction {
     public String getFunction() {
         return function;
     }
+    public String getTeX(Expression[] parameters) {
+        StringBuilder TeX = new StringBuilder("\\operatorname{"+getFunction()+"}\\left(");
+        boolean first = true;
+        for (Expression e : parameters){
+            if (first){
+                first = false;
+            }
+            else{
+                TeX.append(", ");
+            }
+            TeX.append(e.toTeX());
+        }
+        TeX.append("\\right)");
+        return TeX.toString();
+    }
     public String getDescription() {
         return description;
     }

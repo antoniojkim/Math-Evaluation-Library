@@ -2,7 +2,6 @@ package Math_Evaluation_Library.Calculus;
 
 import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
-import Math_Evaluation_Library.Objects.Fraction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Roots {
     public static double NewtonsMethod (Expression f, double x){
         double xn = x;
         int decimalplaces = 15;
-        Expression fprime = f.getDerivative();
+        Expression fprime = f.calculateDerivative();
 //        newton(cosx-x*sinx, 1) 0.860333589019
 //        newton(sin(cosx)*tanx, 3) 3.141592653589793
         if (fprime.isValid()){
@@ -52,19 +51,6 @@ public class Roots {
         return NaN;
     }
 
-    public static List<Fraction> quadraticFormula(Fraction a, Fraction b, Fraction c){
-        List<Fraction> roots = new ArrayList<>();
-        Fraction discriminant = b.getCopy().expt(2).subtract(a.getCopy().multiply(c).multiply(4));
-        if (discriminant.getValue() == 0){
-            roots.add(b.getCopy().multiply(-1).divide(a.getCopy().multiply(2)));
-        }
-        else if (discriminant.getValue() > 0){
-            discriminant.sqrt();
-            roots.add(b.getCopy().multiply(-1).add(discriminant).divide(a.getCopy().multiply(2)));
-            roots.add(b.getCopy().multiply(-1).subtract(discriminant).divide(a.getCopy().multiply(2)));
-        }
-        return roots;
-    }
     public static List<Double> quadraticFormula(double a, double b, double c){
         List<Double> roots = new ArrayList<>();
         if (a != 0){

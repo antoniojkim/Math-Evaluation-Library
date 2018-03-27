@@ -40,11 +40,15 @@ public class UnaryExpression extends Expression {
     public boolean equals(Expression e) {
         if (e instanceof UnaryExpression){
             UnaryExpression ue = (UnaryExpression) e;
-            if (function.getFunction().equals(ue.getFunction().getFunction())){
-                return param.equals(ue.getParam());
+            if (function.toString().equals(ue.function().toString())){
+                return param.equals(ue.param());
             }
         }
         return false;
+    }
+    @Override
+    public boolean equals(String function){
+        return this.function.toString().equals(function);
     }
 
     @Override
@@ -54,16 +58,17 @@ public class UnaryExpression extends Expression {
 
     @Override public String infix() {   return function.infix(param);   }
     @Override public String postfix() { return function.postfix(param); }
+    @Override public String toTeX() { return function.toTeX(param); }
     @Override
     public String hardcode(String spacing) {
-        return spacing+"new "+getClass().getSimpleName()+"(\""+function.getFunction()+"\",\n" +
+        return spacing+"new "+getClass().getSimpleName()+"(\""+function.toString()+"\",\n" +
                 param.hardcode(spacing+"        ")+")";
     }
 
-    @Override public Expression getDerivative(){    return function.getDerivative(param);   }
-    @Override public Expression getIntegral(){      return function.getIntegral(param);     }
+    @Override public Expression calculateDerivative(){    return function.getDerivative(param);   }
+    @Override public Expression calculateIntegral(){      return function.getIntegral(param);     }
     @Override public Expression simplify(){         return function.simplify(param);        }
 
-    public UnaryFunction getFunction(){     return function;    }
-    public Expression getParam(){     return param;    }
+    public UnaryFunction function(){     return function;    }
+    public Expression param(){     return param;    }
 }

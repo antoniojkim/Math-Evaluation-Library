@@ -6,13 +6,14 @@ import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Constants.StringReplacements;
 import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Expressions.NumberExpression;
+import Math_Evaluation_Library.Expressions.VariableExpression;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;
 import Math_Evaluation_Library.LinearAlgebra._Vector_;
+import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
-import Math_Evaluation_Library.Objects.Fraction;
 import Math_Evaluation_Library.Objects.TextFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
@@ -24,11 +25,11 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
 import static Math_Evaluation_Library.Engine.Engine.x;
-import static java.lang.Double.NaN;
 
 /**
  * Created by Antonio on 2017-10-19.
@@ -92,76 +93,70 @@ public class TextFunctions {
                     return "Invalid Input Error - Could not find Area";
                 }
             },
-            new TextFunction("complex", "complex([+-*/]) produces the complex operation formula for the specified operator", -1)
-            {
-                @Override
-                public String evaluate(String[] parameters, boolean df) {
-                    if (parameters.length == 5)    return complex(parameters);
-                    if (parameters.length == 1 && parameters[0].length() == 1){
-                        switch (parameters[0].charAt(0)){
-                            case '+':   return "(a+bi) + (c+di) = (a+c) + (b+d)i";
-                            case '-':   return "(a+bi) - (c+di) = (a-c) + (b-d)i";
-                            case '*':   return "(a+bi)(c+di) = (ac-bd) + (ad+bc)i";
-                            case '/':   return "(a+bi)/(c+di) = (ac+bd)/(c²+d²) + [(bc-ad)/(c²+d²)]i";
-                            default:    return "Invalid Input Error - Unrecognized Operation";
-                        }
-                    }
-                    return INVALID;
-                }
-            },
+//            new TextFunction("complex", "complex([+-*/]) produces the complex operation formula for the specified operator", -1)
+//            {
+//                @Override
+//                public String evaluate(String[] parameters, boolean df) {
+//                    if (parameters.length == 5)    return complex(parameters);
+//                    if (parameters.length == 1 && parameters[0].length() == 1){
+//                        switch (parameters[0].charAt(0)){
+//                            case '+':   return "(a+bi) + (c+di) = (a+c) + (b+d)i";
+//                            case '-':   return "(a+bi) - (c+di) = (a-c) + (b-d)i";
+//                            case '*':   return "(a+bi)(c+di) = (ac-bd) + (ad+bc)i";
+//                            case '/':   return "(a+bi)/(c+di) = (ac+bd)/(c²+d²) + [(bc-ad)/(c²+d²)]i";
+//                            default:    return "Invalid Input Error - Unrecognized Operation";
+//                        }
+//                    }
+//                    return INVALID;
+//                }
+//            },
             new TextFunction("cubic", "cubic(a, b, c, d) calculates the roots of ax³+bx²+cx+d", 4)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length)){
-                        String string = "";
-                        Fraction a = new Fraction(Engine.evaluate(parameters[0]));
-                        Fraction b = new Fraction(Engine.evaluate(parameters[1]));
-                        Fraction c = new Fraction(Engine.evaluate(parameters[2]));
-                        Fraction d = new Fraction(Engine.evaluate(parameters[3]));
+                        Expression a = Engine.toExpression(parameters[0]).simplify();
+                        Expression b = Engine.toExpression(parameters[1]).simplify();
+                        Expression c = Engine.toExpression(parameters[2]).simplify();
+                        Expression d = Engine.toExpression(parameters[3]).simplify();
 
                         //cubic(1, 0, 3, -1)
-                        String function = " "+a.getString()+"x³ + "+b.getString()+"x² + "+c.getString()+"x + "+d.getString();
-                        function = Search.replace(function, new String[][]{
-                                {"+ -", "-"}, {" 1x", " x"}, {"+ 0x²", ""}, {"- 0x²", ""}, {"+ 0x", ""}, {"- 0x", ""}});
-                        if (function.endsWith(" 0"))    function = function.substring(0, function.length()-4);
+                        Expression function = a.multiply(new VariableExpression("x").pow(3))
+                                .add(b.multiply(new VariableExpression("x").pow(2)))
+                                .add(c.multiply(new VariableExpression("x"))).add(d).simplify();
 
-                        if (a.getValue() == 0 || a.getValue() == NaN || b.getValue() == NaN ||
-                                c.getValue() == NaN || d.getValue() == NaN){
-                            return "Invalid Input Error - Invalid Cubic Function:  "+function;
+                        if (a.valueOf() == 0 || a.isValid() || b.isValid() || c.isValid() || d.isValid()){
+                            return "Invalid Input Error - Invalid Cubic Function:  "+function.infix();
                         }
 
-
-                        List<Double> roots = Roots.cubicFormula(a.getValue(), b.getValue(), c.getValue(), d.getValue());
-                        double[] zeros = new double[roots.size()];
-                        for (int i = 0; i<zeros.length; i++){
-                            zeros[i] = roots.get(i);
-                        }
-                        Sort.quicksort(zeros);
+                        StringBuilder string = new StringBuilder();
+                        List<Double> roots = Roots.cubicFormula(a.valueOf(), b.valueOf(), c.valueOf(), d.valueOf());
+                        roots.sort(Comparator.naturalOrder());
                         if (!roots.isEmpty()){
                             boolean simplified = false;
-                            string = "x = ";
-                            for (int i = 0; i<zeros.length; i++){
-                                if (i != 0)    string += ", ";
-                                String frac = Fraction.getFraction(zeros[i]);
-                                if (!frac.equals(zeros[i]+""))    simplified = true;
-                                string += frac;//_Number_.format(roots.get(i)+"");
+                            string.append("x = ");
+                            for (int i = 0; i<roots.size(); i++){
+                                if (i != 0)    string.append(", ");
+                                Expression frac = Fraction.toExpression(roots.get(i));
+                                if (!(frac instanceof NumberExpression))    simplified = true;
+                                string.append(frac.infix());//_Number_.format(roots.get(i)+"");
                             }
                             if (roots.size() == 1){
-                                string += "  is the only real root found for "+function;
+                                string.append("  equals the only real root found for ").append(function.infix());
                             }
                             else{
-                                string += "  are the real roots of "+function;
+                                string.append("  are the real roots of ").append(function.infix());
                             }
                             if (!simplified){
-                                string += ". The Approximate Forms:  x = ";
-                                for (int i = 0; i<zeros.length; i++){
-                                    string += (i!= 0) ? ", "+zeros[i] : zeros[i];
+                                string.append(". The Approximate Forms:  x = ");
+                                for (int i = 0; i<roots.size(); i++){
+                                    if (i!= 0) string.append(", ");
+                                    string.append(roots.get(i).doubleValue());
                                 }
                             }
-                            return string;
+                            return string.toString();
                         }
-                        return "Could not find any real roots for "+function;
+                        return "Could not find any real roots for "+function.infix();
                     }
                     return INVALID;
                 }
@@ -224,7 +219,7 @@ public class TextFunctions {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length)){
-                        String antiderivative = toExpression(parameters[0]).getIntegral().infix();
+                        String antiderivative = toExpression(parameters[0]).calculateIntegral().infix();
                         if (!antiderivative.contains("Not Antidifferentiable")){
                             if(parameters.length == 1){
                                 return (df ? "= " : "")+antiderivative+" + C";
@@ -301,12 +296,12 @@ public class TextFunctions {
                     return INVALID;
                 }
             },
-            new TextFunction("perp", "perp(u, v) = perpᵥ(u) = u - proj(u, v) = u - (u·v)v/‖v‖²  is the perpendicular of u onto v", -1)
+            new TextFunction("perp", "perp(u, v) = perpᵥ(u) = u - proj(u, v) = u - (u·v)v/‖v‖²  equals the perpendicular of u onto v", -1)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (parameters.length == 0){
-                        return "perpᵥ(u) = u - proj(u, v) = u - (u·v)v/‖v‖²  is the perpendicular of u onto v";
+                        return "perpᵥ(u) = u - proj(u, v) = u - (u·v)v/‖v‖²  equals the perpendicular of u onto v";
                     }
                     else if (parameters.length > 3 && parameters.length%2 == 0){
 
@@ -349,7 +344,7 @@ public class TextFunctions {
                         }
                         perpendicular += "]";
 
-                        return perpendicular+" is the perpendicular of "+uVector+" onto "+vVector;
+                        return perpendicular+" equals the perpendicular of "+uVector+" onto "+vVector;
                     }
                     return INVALID;
                 }
@@ -371,13 +366,13 @@ public class TextFunctions {
                     return toExpression(parameter).postfix();
                 }
             },
-            new TextFunction("prime", "prime(\uD835\uDC65) determines whether \uD835\uDC65 is prime or composite")
+            new TextFunction("prime", "prime(\uD835\uDC65) determines whether \uD835\uDC65 equals prime or composite")
             {
                 @Override
                 public String evaluate(String parameter, boolean df) {
                     try {
                         int num = Integer.parseInt(parameter);
-                        String[] prime = {"is composite", "is prime"};
+                        String[] prime = {"equals composite", "equals prime"};
                         List<Integer> factors = new ArrayList<>();
                         factors.add(1);
                         int startPoint = 2;
@@ -409,7 +404,7 @@ public class TextFunctions {
                     double num = Engine.evaluate(parameter);
                     double number = num;
                     if (num%1 == 0 && Math.abs(num)<Integer.MAX_VALUE){
-                        if (_Number_.isPrime((int)num) == 1)    return (int)num+" is prime and so it is its own prime factorization";
+                        if (_Number_.isPrime((int)num) == 1)    return (int)num+" equals prime and so it equals its own prime factorization";
                         List<List<Integer>> factors = new ArrayList<>();
                         double limit = Math.sqrt(num);
                         int a;
@@ -457,12 +452,12 @@ public class TextFunctions {
                     return "Non-integer so no prime factors";
                 }
             },
-            new TextFunction("proj", "proj(u, v) = projᵥ(u) = (u·v)v/‖v‖²  is the projection of u onto v", -1)
+            new TextFunction("proj", "proj(u, v) = projᵥ(u) = (u·v)v/‖v‖²  equals the projection of u onto v", -1)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (parameters.length == 2){
-                        return "projᵥ(u) = (u·v)v/‖v‖²  is the projection of u onto v";
+                        return "projᵥ(u) = (u·v)v/‖v‖²  equals the projection of u onto v";
                     }
                     else if (parameters.length > 3 && parameters.length%2 == 0){
                         int vector_size = parameters.length/2;
@@ -492,25 +487,25 @@ public class TextFunctions {
                         }
                         vVector += "]";
 
-                        String projection = "";
+                        StringBuilder projection = new StringBuilder();
                         double dotUV = _Vector_.dotProduct(u, v);
                         double dotVV = _Vector_.dotProduct(v, v);
                         if (dotUV == 0){
-                            projection = "0·"+vVector+" = [0";
+                            projection.append("0·").append(vVector).append(" = [0");
                             for (int a = 1; a<v.length; a++){
-                                projection += ", 0";
+                                projection.append(", 0");
                             }
                         }
                         else{
-                            Fraction coefficient = new Fraction(dotUV, dotVV);
-                            coefficient.reduce();
-                            projection = coefficient.getString()+"·"+vVector+" = ["+coefficient.multiply(v[0]).getString();
+                            Expression coefficient = Fraction.reduce(dotUV, dotVV);
+                            projection.append(coefficient.infix()).append("·");
+                            projection.append(vVector).append(" = [").append(Fraction.toExpression(coefficient.valueOf()*v[0]).infix());
                             for (int a = 1; a<v.length; a++){
-                                projection += ", "+coefficient.multiply(v[a]).getString();
+                                projection.append(", ").append(Fraction.toExpression(coefficient.valueOf()*v[a]).toRational().infix());
                             }
                         }
-                        projection += "]";
-                        return  projection+" is the projection of "+uVector+" onto "+vVector;
+                        projection.append("]");
+                        return  projection+" equals the projection of "+uVector+" onto "+vVector;
                     }
                     return INVALID;
                 }
@@ -520,86 +515,86 @@ public class TextFunctions {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
                     if (validNumParameters(parameters.length)){
-                        Fraction a = new Fraction(Engine.evaluate(parameters[0]));
-                        Fraction b = new Fraction(Engine.evaluate(parameters[1]));
-                        Fraction c = new Fraction(Engine.evaluate(parameters[2]));
+                        Expression a = Engine.toExpression(parameters[0]).toNumberExpression();
+                        Expression b = Engine.toExpression(parameters[1]).toNumberExpression();
+                        Expression c = Engine.toExpression(parameters[2]).toNumberExpression();
 
-                        String function = " "+a.getString()+"x² + "+b.getString()+"x + "+c.getString();
-                        function = function.replaceAll("\\+ \\-", "\\- ");
-                        function = function.replaceAll(" 1x", " x");
-                        function = function.replaceAll(" \\+ 0x", "");
-                        function = function.replaceAll(" \\- 0x", "");
-                        if (function.endsWith(" 0")){
-                            function = function.substring(0, function.length()-4);
-                        }
+                        //cubic(1, 0, 3, -1)
+                        Expression function = a.multiply(new VariableExpression("x").pow(2))
+                                .add(b.multiply(new VariableExpression("x"))).add(c).simplify();
 
-                        if (a.getValue() == 0){
+                        if (a.valueOf() == 0){
                             return "Invalid Input Error - Invalid Quadratic: "+function;
                         }
-                        double discriminant = (b.getValue()*b.getValue()-4*a.getValue()*c.getValue());
+                        double discriminant = (b.valueOf()*b.valueOf()-4*a.valueOf()*c.valueOf());
 
                         if (discriminant > 0){
                             double sqrt = Math.sqrt(discriminant);
                             if (sqrt%1 == 0){
                                 discriminant = sqrt;
-                                return "x = "+(new Fraction(-1*b.getValue()+discriminant, 2*a.getValue())).getString()+",  "+
-                                        (new Fraction(-1*b.getValue()-discriminant, 2*a.getValue())).getString()+"  are the roots of "+function;
+                                return "x = "+Fraction.reduce(-1*b.valueOf()+discriminant, 2*a.valueOf()).infix()+",  "+
+                                        Fraction.reduce(-1*b.valueOf()-discriminant, 2*a.valueOf()).infix()+"  are the roots of "+function.infix();
                             }
                             else{
-                                b.multiply(-1);
-                                a.multiply(2);
+                                b = b.multiply(-1);
+                                a = a.multiply(2);
                                 if (a.isInteger() && b.isInteger() && c.isInteger()) {
-                                    double gcd = Mod.gcd(discriminant * discriminant, a.getValue());
-                                    if (b.getValue() != 0) {
-                                        gcd = Mod.gcd(b.getValue(), gcd);
+                                    double gcd = Mod.gcd(discriminant * discriminant, a.valueOf());
+                                    if (b.valueOf() != 0) {
+                                        gcd = Mod.gcd(b.valueOf(), gcd);
                                     }
                                     if (gcd != 0) {
-                                        b.divide(gcd);
-                                        a.divide(gcd);
+                                        b = b.divide(gcd);
+                                        a = a.divide(gcd);
                                         discriminant /= (gcd * gcd);
                                     }
                                 }
-                                String roots = "x = ";
-                                String frac = Fraction.getFraction(discriminant, true);
-                                if (b.getValue() != 0){
-                                    Fraction x1 = new Fraction((b.getValue()+sqrt)/a.getValue());
-                                    Fraction x2 = new Fraction((b.getValue()-sqrt)/a.getValue());
-                                    if (!x1.isFraction() && !x2.isFraction()){
-                                        roots += b.getString()+" ± √"+frac;
-                                        if (a.getValue() != 1){    roots = "("+roots+")/"+a.getString();   }
+                                StringBuilder roots = new StringBuilder("x = ");
+                                Expression frac = Fraction.toExpression(discriminant);
+                                if (b.valueOf() != 0){
+                                    Expression x1 = Fraction.reduce(b.valueOf()+sqrt, a.valueOf());
+                                    Expression x2 = Fraction.reduce(b.valueOf()-sqrt, a.valueOf());
+                                    if (!x1.isRational() && !x2.isRational()){
+                                        roots.append(b.infix()).append(" ± √").append(frac);
+                                        if (a.valueOf() != 1){
+                                            roots = new StringBuilder("("+roots.toString()+")/"+a.infix());
+                                        }
                                     }
                                     else{
-                                        if (x1.isFraction()){    roots += x1.getString()+", ";   }
+                                        if (x1.isRational()){    roots.append(x1.infix()).append(", ");   }
                                         else{
-                                            String root = b.getString()+"+√"+frac;
-                                            if (a.getValue() != 1){    root = "("+root+")/"+a.getString();   }
-                                            roots += root+", ";
+                                            String root = b.infix()+"+√"+frac;
+                                            if (a.valueOf() != 1){    root = "("+root+")/"+a.infix();   }
+                                            roots.append(root).append(", ");
                                         }
-                                        if (x2.isFraction()){    roots += x2.getString();   }
+                                        if (x2.isRational()){    roots.append(x2.infix());   }
                                         else{
-                                            String root = b.getString()+"-√"+frac;
-                                            if (a.getValue() != 1){    root = "("+root+")/"+a.getString();   }
-                                            roots += root+", ";
+                                            String root = b.infix()+"-√"+frac;
+                                            if (a.valueOf() != 1){    root = "("+root+")/"+a.infix();   }
+                                            roots.append(root).append(", ");
                                         }
                                     }
-                                    roots += " are the roots of "+function+" = 0. "+
-                                            "Approximate Forms:  x = "+x1.getValue()+", "+x2.getValue();
+                                    roots.append(" are the roots of ").append(function).append(" = 0. ")
+                                            .append("Approximate Forms:  x = ")
+                                            .append(x1.valueOf()).append(", ")
+                                            .append(x2.valueOf());
                                 }
                                 else{
-                                    if (a.getValue() != 1){
-                                        roots += "(±√"+frac+")/"+a.getString();
+                                    if (a.valueOf() != 1){
+                                        roots.append("(±√").append(frac).append(")/").append(a.infix());
                                     }
                                     else{
-                                        roots += "±√"+frac;
+                                        roots.append("±√").append(frac);
                                     }
-                                    roots += "  are the roots of "+function+". "+
-                                            "Approximate Forms:  x = ±"+(b.getValue()+sqrt)/a.getValue();
+                                    roots.append("  are the roots of ").append(function).append(". ")
+                                            .append("Approximate Forms:  x = ±")
+                                            .append((b.valueOf() + sqrt) / a.valueOf());
                                 }
-                                return roots;
+                                return roots.toString();
                             }
                         }
                         else if (discriminant == 0){
-                            return "x = "+(new Fraction(-1*b.getValue(), 2*a.getValue())).getString()+"  is the root of "+function;
+                            return "x = "+Fraction.reduce(-1*b.valueOf(), 2*a.valueOf()).infix()+"  equals the root of "+function.infix();
                         }
                         return function+" has no real roots";
                     }
@@ -623,7 +618,7 @@ public class TextFunctions {
 //                    return INVALID;
 //                }
 //            },
-            new TextFunction("sort", "sort([<,>], a₁,…,aₙ) sorts a₁,…,aₙ is the specified order (default ascending)", -1)
+            new TextFunction("sort", "sort([<,>], a₁,…,aₙ) sorts a₁,…,aₙ equals the specified order (default ascending)", -1)
             {
                 @Override
                 public String evaluate(String[] parameters, boolean df) {
@@ -654,7 +649,7 @@ public class TextFunctions {
                                 }
                                 str += ""+int_elements[a];
                             }
-                            str += "} is sorted in "+(ascending ? "ascending" : "descending")+" numerical unaryFunctions";
+                            str += "} equals sorted in "+(ascending ? "ascending" : "descending")+" numerical unaryFunctions";
                         }catch(NumberFormatException e){
                             Sort.quicksort(elements, ascending);
                             for (int a = 0; a<elements.length; a++){
@@ -663,7 +658,7 @@ public class TextFunctions {
                                 }
                                 str += ""+elements[a];
                             }
-                            str += "} is sorted in "+(ascending ? "ascending" : "descending")+" lexicographical unaryFunctions";
+                            str += "} equals sorted in "+(ascending ? "ascending" : "descending")+" lexicographical unaryFunctions";
                         }
                         return str;
                     }
@@ -762,7 +757,7 @@ public class TextFunctions {
                             String equation =  parameters[0]+" ≡ "+rs+" (mod "+mod+")";
                             if (congruent.size() > 0){
                                 String output = "x ≡ "+congruent.get(0);
-                                if (congruent.size() == 1)    return output+" is the solutions to "+equation;
+                                if (congruent.size() == 1)    return output+" equals the solutions to "+equation;
                                 for (int a = 1; a<congruent.size(); a++){
                                     output += ", "+congruent.get(a);
                                 }
@@ -808,13 +803,13 @@ public class TextFunctions {
                         lineB[i] = lineC[i];
                     }
                 }
-                if (a<0)    lineB[0] = -1*lineB[0];
-                if (b<0)    lineB[1] = -1*lineB[1];
+                if (a<0)    lineB[0] = -lineB[0];
+                if (b<0)    lineB[1] = -lineB[1];
                 int ratio = (int)(d/gcd);
-                String particularX = Fraction.getFraction(lineB[0]*ratio);
-                if (_Number_.isNumber(particularX))    particularX = MathRound.roundf(lineB[0]*ratio, 13);
-                String particularY = Fraction.getFraction(lineB[1]*ratio);
-                if (_Number_.isNumber(particularY))    particularY = MathRound.roundf(lineB[1]*ratio, 13);
+                Expression particularX = Fraction.toExpression(lineB[0]*ratio);
+//                if (_Number_.isNumber(particularX))    particularX = MathRound.roundf(lineB[0]*ratio, 13);
+                Expression particularY = Fraction.toExpression(lineB[1]*ratio);
+//                if (_Number_.isNumber(particularY))    particularY = MathRound.roundf(lineB[1]*ratio, 13);
                 String result = "";
                 if (b < 0){ result = (a+"("+particularX+") - "+Math.abs(b)+"("+particularY+") = "+_Number_.format(d)); }
                 else{       result = (a+"("+particularX+") + "+b+"("+particularY+") = "+_Number_.format(d)); }
@@ -835,63 +830,63 @@ public class TextFunctions {
                 }
                 return result;
             }
-        }catch (NumberFormatException | StringIndexOutOfBoundsException e){}
-        return "Invalid Input Error - Failed to compute EEA/LDE";
+        }catch (NumberFormatException | StringIndexOutOfBoundsException ignored){}
+        return "Invalid Input Error - Failed to compute "+(EEA ? "EEA" : "LDE");
     }
 
-    public static String complex (String[] parameters){
-        double realU = Engine.evaluate(parameters[0]);
-        String realUf = Fraction.getFraction(realU);
-        double imU = Engine.evaluate(parameters[1]);
-        String[] signs = {" - ", "", " + "};
-        String imUf = "";
-        if (imU != 0){
-            imUf = signs[_Number_.getSign(imU)+1]+Fraction.getFraction(Math.abs(imU), true)+"i";
-        }
-        String operation = parameters[2];
-        double realV = Engine.evaluate(parameters[3]);
-        String realVf = Fraction.getFraction(realV);
-        double imV = Engine.evaluate(parameters[4]);
-        String imVf = "";
-        if (imV != 0){
-            imVf = signs[_Number_.getSign(imV)+1]+Fraction.getFraction(Math.abs(imV), true)+"i";
-        }
-        String computation = "("+realUf+imUf+")"+operation+"("+realVf+imVf+")";
-        if (operation.equals("+")){
-            String realX = Fraction.getFraction(realU+realV);
-            String imX = (imU+imV != 0) ? signs[_Number_.getSign(imU+imV)+1]+Fraction.getFraction(Math.abs(imU+imV), true)+"i" : "";
-            return computation+" = "+realX+imX;
-        }
-        else if (operation.equals("-")){
-            String realX = Fraction.getFraction(realU-realV);
-            String imX = (imU-imV != 0) ? signs[_Number_.getSign(imU-imV)+1]+Fraction.getFraction(Math.abs(imU-imV), true)+"i" : "";
-            return computation+" = "+realX+imX;
-        }
-        else if (operation.equals("*")){
-            String realX = Fraction.getFraction(realU*realV-imU*imV);
-            String imX = "";
-            if (realU*imV+imU*realV != 0){
-                imX = signs[_Number_.getSign(realU*imV+imU*realV)+1]+Fraction.getFraction(Math.abs(realU*imV+imU*realV), true)+"i";
-            }
-            return computation+" = "+realX+imX;
-        }
-        else if (operation.equals("/")){
-            double real = (realU*realV + imU*imV)/(realV*realV + imV*imV);
-            double im = (imU*realV - realU*imV)/(realV*realV + imV*imV);
-            String realX = Fraction.getFraction(real);
-            String imX = im != 0 ? signs[_Number_.getSign(im)+1]+Fraction.getFraction(Math.abs(im), true)+"i" : "";
-            return computation+" = "+realX+imX;
-        }
-        return "Invalid Input Error - Unrecognized Operation";
-    }
+//    public static String complex (String[] parameters){
+////        double realU = Engine.evaluate(parameters[0]);
+//        Expression realU = Engine.toExpression(parameters[0]).toRational();
+//        double imU = Engine.evaluate(parameters[1]);
+//        String[] signs = {" - ", "", " + "};
+//        String imUf = "";
+//        if (imU != 0){
+//            imUf = signs[_Number_.getSign(imU)+1]+Fraction.getFraction(Math.abs(imU), true)+"i";
+//        }
+//        String operation = parameters[2];
+//        double realV = Engine.evaluate(parameters[3]);
+//        String realVf = Fraction.getFraction(realV);
+//        double imV = Engine.evaluate(parameters[4]);
+//        String imVf = "";
+//        if (imV != 0){
+//            imVf = signs[_Number_.getSign(imV)+1]+Fraction.getFraction(Math.abs(imV), true)+"i";
+//        }
+//        String computation = "("+realUf+imUf+")"+operation+"("+realVf+imVf+")";
+//        if (operation.equals("+")){
+//            String realX = Fraction.getFraction(realU+realV);
+//            String imX = (imU+imV != 0) ? signs[_Number_.getSign(imU+imV)+1]+Fraction.getFraction(Math.abs(imU+imV), true)+"i" : "";
+//            return computation+" = "+realX+imX;
+//        }
+//        else if (operation.equals("-")){
+//            String realX = Fraction.getFraction(realU-realV);
+//            String imX = (imU-imV != 0) ? signs[_Number_.getSign(imU-imV)+1]+Fraction.getFraction(Math.abs(imU-imV), true)+"i" : "";
+//            return computation+" = "+realX+imX;
+//        }
+//        else if (operation.equals("*")){
+//            String realX = Fraction.getFraction(realU*realV-imU*imV);
+//            String imX = "";
+//            if (realU*imV+imU*realV != 0){
+//                imX = signs[_Number_.getSign(realU*imV+imU*realV)+1]+Fraction.getFraction(Math.abs(realU*imV+imU*realV), true)+"i";
+//            }
+//            return computation+" = "+realX+imX;
+//        }
+//        else if (operation.equals("/")){
+//            double real = (realU*realV + imU*imV)/(realV*realV + imV*imV);
+//            double im = (imU*realV - realU*imV)/(realV*realV + imV*imV);
+//            String realX = Fraction.getFraction(real);
+//            String imX = im != 0 ? signs[_Number_.getSign(im)+1]+Fraction.getFraction(Math.abs(im), true)+"i" : "";
+//            return computation+" = "+realX+imX;
+//        }
+//        return "Invalid Input Error - Unrecognized Operation";
+//    }
 
     public static String line (double slope, double x, double y){
-        String slopef = Fraction.getFraction(slope, true);
+        Expression slopef = Fraction.toExpression(slope);
         double yint = (y-x*slope);
         if (yint < 0){
-            return "y = "+slopef+"x - "+Fraction.getFraction(Math.abs(yint));
+            return "y = "+slopef+"*x - "+Fraction.toExpression(Math.abs(yint));
         }
-        return "y = "+slopef+"x + "+Fraction.getFraction(yint);
+        return "y = "+slopef+"*x + "+Fraction.toExpression(yint);
     }
 
 

@@ -17,7 +17,6 @@ import static Math_Evaluation_Library.Engine.Engine.toExpression;
  */
 public class _Number_ {
 
-
     public static HashMap<Integer, Integer> primes = new HashMap<>();
     public static int largestPrimeInMap = 0;
 
@@ -93,6 +92,14 @@ public class _Number_ {
             }
         }
         return num;
+    }
+
+    private static long fXOR(long a){
+        long[] r = {a, 1, a+1, 0};
+        return r[(int)(a % 4)];
+    }
+    public static long getXorRange(long a, long b){
+        return fXOR(b)^fXOR(a-1);
     }
 
 

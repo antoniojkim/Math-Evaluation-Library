@@ -70,7 +70,7 @@ public class VariableExpression extends Expression {
     public boolean equals(Expression e) {
         if (e instanceof VariableExpression){
             VariableExpression ve = (VariableExpression) e;
-            if (var.equals(ve.getName())) {
+            if (var.equals(ve.getVar())) {
                 if (set && ve.isSet()) {
                     return val.equals(ve.getVal());
                 }
@@ -86,7 +86,7 @@ public class VariableExpression extends Expression {
         return new ArrayList<>();
     }
 
-    public String getName(){ return var; }
+    public String getVar(){ return var; }
 
     @Override
     public String infix() {
@@ -96,6 +96,10 @@ public class VariableExpression extends Expression {
     @Override
     public String postfix() {
         return set ? val.postfix() : var;
+    }
+    @Override
+    public String toTeX() {
+        return set ? val.toTeX() : var;
     }
 
     @Override
@@ -108,19 +112,19 @@ public class VariableExpression extends Expression {
     }
 
     @Override
-    public Expression getDerivative(){
+    public Expression calculateDerivative(){
         if (set){
-            return val.getDerivative();
+            return val.calculateDerivative();
         }
         else if (var.equals(Engine.var)){
             return new NumberExpression(1);
         }
-        return super.getDerivative();
+        return super.calculateDerivative();
     }
     @Override
-    public Expression getIntegral(){
+    public Expression calculateIntegral(){
         if (set){
-            return val.getIntegral();
+            return val.calculateIntegral();
         }
         else if (var.equals(Engine.var)){
             return new OperatorExpression(getOperator("*"),
@@ -129,7 +133,7 @@ public class VariableExpression extends Expression {
                             new VariableExpression(Engine.var),
                             new NumberExpression(2)));
         }
-        return super.getIntegral();
+        return super.calculateIntegral();
     }
 
     public boolean isSet(){ return set; }

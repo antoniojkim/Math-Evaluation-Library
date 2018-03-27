@@ -29,12 +29,19 @@ public class Simplify_Tests extends _Tests_ {
         simplificationTest("2*x*3*2", "12x");
         simplificationTest("2*x*3*2*2", "24x");
         simplificationTest("2*3*x*2", "12x");
+        simplificationTest("2x+3x", "5x");
+        simplificationTest("2x+x", "3x");
+        simplificationTest("x+2x", "3x");
+        simplificationTest("3x-2x", "x");
+        simplificationTest("3x-x", "2x");
+        simplificationTest("x-3x", "-2x");
         simplificationTest("x^2*x^3", "x⁵");
         simplificationTest("x^2", "x²");
 
         simplificationTest("--sinx", "sin(x)");
         simplificationTest("sinx/cosx", "tan(x)");
         simplificationTest("cosx/sinx", "cot(x)");
+        simplificationTest("1/sinx", "csc(x)");
         simplificationTest("(sinx)^2", "sin²(x)");
         simplificationTest("(sinx)^2+(cosx)^2", "1");
         simplificationTest("2*(sinx)^2+2*(cosx)^2", "2");
@@ -55,6 +62,8 @@ public class Simplify_Tests extends _Tests_ {
 
         simplificationTest("gcd(2, 3, 4)", "gcd(2, 3, 4)");
 
+        simplificationTest("sin(1-i)", "sin(1-i)");
+
 
     }
 
@@ -65,7 +74,7 @@ public class Simplify_Tests extends _Tests_ {
         if (!simplified.equals(expected)){
             System.out.println("\nSimplification Test Failed:");
             System.out.println("     Input:         "+input);
-            System.out.println("     Posfix:        "+toExpression(input).postfix());
+            System.out.println("     Postfix:       "+toExpression(input).postfix());
             System.out.println("     Simplified:    "+simplified);
             System.out.println("     Expected:      "+expected);
             System.exit(1);

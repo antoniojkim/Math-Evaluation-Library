@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import static Math_Evaluation_Library.Engine.Engine.x;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
-import static Math_Evaluation_Library.ExpressionObjects.Operators.infixBracketOperators;
+import static Math_Evaluation_Library.ExpressionObjects.Operators.infixBracketOperatorsR;
 
 /**
  * Created by Antonio on 2017-10-17.
@@ -21,7 +21,7 @@ public class UnaryFunctions {
 
 //    public static void main (String[] args){
 //        for (UnaryFunction function :  unaryFunctionMap.values()){
-//            System.out.println("map.put(\""+function.getFunction()+"\", \""+function.getDescription()+"\");");
+//            System.out.println("map.put(\""+function.toString()+"\", \""+function.getDescription()+"\");");
 //
 //        }
 //    }
@@ -41,19 +41,23 @@ public class UnaryFunctions {
                 return "|"+x.infix()+"|";
             }
             @Override
+            public String toTeX(Expression x){
+                return "\\left|"+x.infix()+"\\right|";
+            }
+            @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("*"),
                         new OperatorExpression(getOperator("/"),
                                 new UnaryExpression(this, x), x),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
-                // Technically, it is 1/2 x^2 sgn(x).
-                return x.getIntegral();
+                // Technically, it equals 1/2 x^2 sgn(x).
+                return x.calculateIntegral();
             }
         });
-        map.put("arccos", new UnaryFunction("arccos", "arccos(x) is the Inverse Cosine function")
+        map.put("arccos", new UnaryFunction("arccos", "arccos(x) equals the Inverse Cosine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -63,7 +67,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
                         new UnaryExpression(getUnaryFunction("neg"),
-                                x.getDerivative()),
+                                x.calculateDerivative()),
                         new OperatorExpression(getOperator("√"),
                                 new OperatorExpression(getOperator("-"),
                                         new NumberExpression(1),
@@ -87,7 +91,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arccosh", new UnaryFunction("arccosh", "arccosh(x) is the Inverse Hyperbolic Cosine function")
+        map.put("arccosh", new UnaryFunction("arccosh", "arccosh(x) equals the Inverse Hyperbolic Cosine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -96,7 +100,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("*"),
                                 new OperatorExpression(getOperator("√"),
                                         new OperatorExpression(getOperator("-"),
@@ -125,7 +129,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arccot", new UnaryFunction("arccot", "arccot(x) is the Inverse Cotangent function")
+        map.put("arccot", new UnaryFunction("arccot", "arccot(x) equals the Inverse Cotangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -135,7 +139,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
                         new UnaryExpression(getUnaryFunction("neg"),
-                                x.getDerivative()),
+                                x.calculateDerivative()),
                         new OperatorExpression(getOperator("+"),
                                 new OperatorExpression(getOperator("^"),
                                         x, new NumberExpression(2)),
@@ -160,7 +164,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arccoth", new UnaryFunction("arccoth", "arccoth(x) is the Inverse Hyperbolic Cotangent function")
+        map.put("arccoth", new UnaryFunction("arccoth", "arccoth(x) equals the Inverse Hyperbolic Cotangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -169,7 +173,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("-"),
                                 new NumberExpression(1),
                                 new OperatorExpression(getOperator("^"),
@@ -194,7 +198,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arccsc", new UnaryFunction("arccsc", "arccsc(x) is the Inverse Cosecant function")
+        map.put("arccsc", new UnaryFunction("arccsc", "arccsc(x) equals the Inverse Cosecant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -204,7 +208,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
                         new UnaryExpression(getUnaryFunction("neg"),
-                                x.getDerivative()),
+                                x.calculateDerivative()),
                         new OperatorExpression(getOperator("*"),
                                 new UnaryExpression(getUnaryFunction("abs"), x),
                                 new OperatorExpression(getOperator("√"),
@@ -238,7 +242,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arccsch", new UnaryFunction("arccsch", "arccsch(x) is the Inverse Hyperbolic Cosecant function")
+        map.put("arccsch", new UnaryFunction("arccsch", "arccsch(x) equals the Inverse Hyperbolic Cosecant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -248,7 +252,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
                         new UnaryExpression(getUnaryFunction("neg"),
-                                x.getDerivative()),
+                                x.calculateDerivative()),
                         new OperatorExpression(getOperator("*"),
                                 new UnaryExpression(getUnaryFunction("abs"), x),
                                 new OperatorExpression(getOperator("√"),
@@ -274,7 +278,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arcsec", new UnaryFunction("arcsec", "arcsec(x) is the Inverse Secant function")
+        map.put("arcsec", new UnaryFunction("arcsec", "arcsec(x) equals the Inverse Secant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -283,7 +287,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("*"),
                                 new UnaryExpression(getUnaryFunction("abs"), x),
                                 new OperatorExpression(getOperator("√"),
@@ -317,7 +321,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arcsech", new UnaryFunction("arcsech", "arcsech(x) is the Inverse Hyperbolic Secant function")
+        map.put("arcsech", new UnaryFunction("arcsech", "arcsech(x) equals the Inverse Hyperbolic Secant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -336,7 +340,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("*"),
                                         x, new OperatorExpression(getOperator("-"),
                                                 x, new NumberExpression(1)))),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -365,7 +369,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arcsin", new UnaryFunction("arcsin", "arcsin(x) is the Inverse Sine function")
+        map.put("arcsin", new UnaryFunction("arcsin", "arcsin(x) equals the Inverse Sine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -374,7 +378,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("√"),
                                 new OperatorExpression(getOperator("-"),
                                         new NumberExpression(1),
@@ -398,7 +402,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arcsinh", new UnaryFunction("arcsinh", "arcsinh(x) is the Inverse Hyperbolic Sine function")
+        map.put("arcsinh", new UnaryFunction("arcsinh", "arcsinh(x) equals the Inverse Hyperbolic Sine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -407,7 +411,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("√"),
                                 new OperatorExpression(getOperator("+"),
                                         new OperatorExpression(getOperator("^"),
@@ -432,7 +436,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arctan", new UnaryFunction("arctan", "arctan(x) is the Inverse Tangent function")
+        map.put("arctan", new UnaryFunction("arctan", "arctan(x) equals the Inverse Tangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -441,7 +445,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("+"),
                                 new OperatorExpression(getOperator("^"),
                                         x, new NumberExpression(2)),
@@ -466,7 +470,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("arctanh", new UnaryFunction("arctanh", "arctanh(x) is the Inverse Hyperbolic Tangent function")
+        map.put("arctanh", new UnaryFunction("arctanh", "arctanh(x) equals the Inverse Hyperbolic Tangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -475,7 +479,7 @@ public class UnaryFunctions {
             @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("/"),
-                        x.getDerivative(),
+                        x.calculateDerivative(),
                         new OperatorExpression(getOperator("-"),
                                 new NumberExpression(1),
                                 new OperatorExpression(getOperator("^"),
@@ -507,7 +511,7 @@ public class UnaryFunctions {
                 return new NumberExpression(Math.ceil(x.valueOf()));
             }
         });
-        map.put("cos", new UnaryFunction("cos", "cos(x) is the Cosine function")
+        map.put("cos", new UnaryFunction("cos", "cos(x) equals the Cosine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -518,7 +522,7 @@ public class UnaryFunctions {
                 return new UnaryExpression(getUnaryFunction("neg"),
                         new OperatorExpression(getOperator("*"),
                                 new UnaryExpression(getUnaryFunction("sin"), x),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -527,19 +531,19 @@ public class UnaryFunctions {
                 }
                 if (x instanceof OperatorExpression) {
                     OperatorExpression oe = (OperatorExpression) x;
-                    if (oe.getOperator().toString().equals("*") &&
-                            oe.getParam1() instanceof NumberExpression &&
-                            oe.getParam2() instanceof VariableExpression){
+                    if (oe.operator().toString().equals("*") &&
+                            oe.param1() instanceof NumberExpression &&
+                            oe.param2() instanceof VariableExpression){
                         return new OperatorExpression(getOperator("/"),
                                 new UnaryExpression(getUnaryFunction("sin"), x),
-                                oe.getParam1());
+                                oe.param1());
                     }
                     return new UnaryExpression(getUnaryFunction("sin"), x);
                 }
                 return super.getIntegral(x);
             }
         });
-        map.put("cosh", new UnaryFunction("cosh", "cosh(x) is the Hyperbolic Cosine function")
+        map.put("cosh", new UnaryFunction("cosh", "cosh(x) equals the Hyperbolic Cosine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -549,7 +553,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("*"),
                         new UnaryExpression(getUnaryFunction("sinh"), x),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -559,7 +563,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("cot", new UnaryFunction("cot", "cot(x) is the Cotangent function")
+        map.put("cot", new UnaryFunction("cot", "cot(x) equals the Cotangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -572,7 +576,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("^"),
                                         new UnaryExpression(getUnaryFunction("csc"), x),
                                         new NumberExpression(2)),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -583,7 +587,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("coth", new UnaryFunction("coth", "coth(x) is the Hyperbolic Cotangent function")
+        map.put("coth", new UnaryFunction("coth", "coth(x) equals the Hyperbolic Cotangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -596,7 +600,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("^"),
                                         new UnaryExpression(getUnaryFunction("csch"), x),
                                         new NumberExpression(2)),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -607,7 +611,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("csc", new UnaryFunction("csc", "csc(x) is the Cosecant function")
+        map.put("csc", new UnaryFunction("csc", "csc(x) equals the Cosecant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -620,7 +624,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("*"),
                                         new UnaryExpression(getUnaryFunction("cot"), x),
                                         new UnaryExpression(getUnaryFunction("csc"), x)),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -634,7 +638,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("csch", new UnaryFunction("csch", "csch(x) is the Hyperbolic Cosecant function")
+        map.put("csch", new UnaryFunction("csch", "csch(x) equals the Hyperbolic Cosecant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -647,7 +651,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("*"),
                                         new UnaryExpression(getUnaryFunction("coth"), x),
                                         new UnaryExpression(getUnaryFunction("csch"), x)),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -672,7 +676,7 @@ public class UnaryFunctions {
             @Override
             public Expression evaluate(Expression x) {
                 if (x instanceof MatrixExpression)
-                    return new NumberExpression(_Matrix_.getDeterminant(((MatrixExpression) x).getMatrix()));
+                    return new NumberExpression(_Matrix_.getDeterminant(((MatrixExpression) x).doubleMatrix()));
                 return new InvalidExpression("Invalid Argument Error:  det expected matrix as input");
             }
         });
@@ -690,10 +694,14 @@ public class UnaryFunctions {
                 return new NumberExpression(Math.exp(x.valueOf()));
             }
             @Override
+            public String toTeX(Expression x){
+                return "e^{"+x.toTeX()+"}";
+            }
+            @Override
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("*"),
                         new UnaryExpression(this, x),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -709,8 +717,8 @@ public class UnaryFunctions {
             public Expression evaluate(Expression x) {
                 if (x instanceof MultiParamExpression){
                     MultiParamExpression mpe = (MultiParamExpression)x;
-                    if (mpe.getFunction() instanceof RandomVariable){
-                        return ((RandomVariable)mpe.getFunction()).getExpectedValue(mpe.getParameters());
+                    if (mpe.function() instanceof RandomVariable){
+                        return ((RandomVariable)mpe.function()).getExpectedValue(mpe.parameters());
                     }
                 }
                 return new InvalidExpression("Invalid Argument Error:  Exp expected a random variable as input");
@@ -757,7 +765,7 @@ public class UnaryFunctions {
                 return new InvalidExpression("Invalid Argument Error:  frbin expected integer");
             }
         });
-        map.put("ln", new UnaryFunction("ln", "ln(x) is the Natural Logarithm")
+        map.put("ln", new UnaryFunction("ln", "ln(x) equals the Natural Logarithm")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -765,15 +773,15 @@ public class UnaryFunctions {
             }
             @Override
             public Expression getDerivative(Expression x){
-                return new OperatorExpression(getOperator("/"), x.getDerivative(), x);
+                return new OperatorExpression(getOperator("/"), x.calculateDerivative(), x);
             }
             @Override
             public Expression getIntegral(Expression x){
                 if (x instanceof VariableExpression ||
                         (x instanceof OperatorExpression &&
-                                ((OperatorExpression) x).getOperator().toString().equals("*") &&
-                                ((OperatorExpression) x).getParam1() instanceof NumberExpression &&
-                                ((OperatorExpression) x).getParam2() instanceof VariableExpression)) {
+                                ((OperatorExpression) x).operator().toString().equals("*") &&
+                                ((OperatorExpression) x).param1() instanceof NumberExpression &&
+                                ((OperatorExpression) x).param2() instanceof VariableExpression)) {
                     return new OperatorExpression(getOperator("-"),
                             new OperatorExpression(getOperator("*"),
                                     new VariableExpression(Engine.var),
@@ -783,7 +791,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("log", new UnaryFunction("log", "log(x) = log₁₀(x), is the Base 10 Logarithm")
+        map.put("log", new UnaryFunction("log", "log(x) = log₁₀(x), equals the Base 10 Logarithm")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -791,7 +799,7 @@ public class UnaryFunctions {
             }
             @Override
             public Expression getDerivative(Expression x){
-                return new OperatorExpression(getOperator("/"), x.getDerivative(),
+                return new OperatorExpression(getOperator("/"), x.calculateDerivative(),
                         new OperatorExpression(getOperator("*"),
                                 x, new UnaryExpression(getUnaryFunction("ln"), new NumberExpression(10))));
             }
@@ -809,7 +817,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("lp", new UnaryFunction("lp", "lp(x) = ln(x+1), is the Natural Logarithm of (x+1)")
+        map.put("lp", new UnaryFunction("lp", "lp(x) = ln(x+1), equals the Natural Logarithm of (x+1)")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -817,7 +825,7 @@ public class UnaryFunctions {
             }
             @Override
             public Expression getDerivative(Expression x){
-                return new OperatorExpression(getOperator("/"), x.getDerivative(),
+                return new OperatorExpression(getOperator("/"), x.calculateDerivative(),
                         new OperatorExpression(getOperator("+"), x, new NumberExpression(1)));
             }
             @Override
@@ -847,25 +855,34 @@ public class UnaryFunctions {
             public String infix(Expression x){
                 String xinfix = x.infix();
                 if (x instanceof OperatorExpression &&
-                        infixBracketOperators.containsKey(((OperatorExpression) x).getOperator().toString())){
+                        infixBracketOperatorsR.containsKey(((OperatorExpression) x).operator().toString())){
                     xinfix = "("+xinfix+")";
                 }
                 return "-"+xinfix;
             }
             @Override
+            public String toTeX(Expression x){
+                String xTeX = x.toTeX();
+                if (x instanceof OperatorExpression &&
+                        infixBracketOperatorsR.containsKey(((OperatorExpression) x).operator().toString())){
+                    xTeX = "\\left("+xTeX+"\\right)";
+                }
+                return "-"+xTeX;
+            }
+            @Override
             public Expression getDerivative(Expression x){
-                return new UnaryExpression(this, x.getDerivative());
+                return new UnaryExpression(this, x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
-                return new UnaryExpression(this, x.getIntegral());
+                return new UnaryExpression(this, x.calculateIntegral());
             }
             @Override
             public Expression simplify(Expression x){
                 if (x instanceof UnaryExpression){
                     UnaryExpression ue = (UnaryExpression) x;
-                    if (ue.getFunction().getFunction().equals("neg")){
-                        return ue.getParam().simplify();
+                    if (ue.function().toString().equals("neg")){
+                        return ue.param().simplify();
                     }
                 }
                 return super.simplify(x);
@@ -885,7 +902,7 @@ public class UnaryFunctions {
                 return new NumberExpression(RandomVariables.standardNormalDistributionCDFInverse(x.valueOf()));
             }
         });
-        map.put("prime", new UnaryFunction("prime", "prime(x), determines whether x is prime")
+        map.put("prime", new UnaryFunction("prime", "prime(x), determines whether x equals prime")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -906,7 +923,7 @@ public class UnaryFunctions {
             @Override
             public Expression evaluate(Expression x) {
                 if (x instanceof MatrixExpression){
-                    return new MatrixExpression(_Matrix_.rowReduce(((MatrixExpression) x).getMatrix().transpose()));
+                    return new MatrixExpression(_Matrix_.rowReduce(((MatrixExpression) x).doubleMatrix().transpose()));
                 }
                 return new InvalidExpression("Invalid Argument Error:  RCEF expected matrix as input");
             }
@@ -916,12 +933,19 @@ public class UnaryFunctions {
             @Override
             public Expression evaluate(Expression x) {
                 if (x instanceof MatrixExpression){
-                    return new MatrixExpression(_Matrix_.rowReduce(((MatrixExpression) x).getMatrix()));
+                    return new MatrixExpression(_Matrix_.rowReduce(((MatrixExpression) x).doubleMatrix()));
                 }
                 return new InvalidExpression("Invalid Argument Error:  RREF expected matrix as input");
             }
+            @Override
+            public String toTeX(Expression x){
+                if (x instanceof MatrixExpression){
+                    return "\\operatorname{RREF}"+x.toTeX();
+                }
+                return super.toTeX(x);
+            }
         });
-        map.put("sec", new UnaryFunction("sec", "sec(x) is the Secant function")
+        map.put("sec", new UnaryFunction("sec", "sec(x) equals the Secant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -933,7 +957,7 @@ public class UnaryFunctions {
                         new OperatorExpression(getOperator("*"),
                                 new UnaryExpression(getUnaryFunction("tan"), x),
                                 new UnaryExpression(getUnaryFunction("sec"), x)),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -946,7 +970,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("sech", new UnaryFunction("sech", "sech(x) is the Hyperbolic Secant function")
+        map.put("sech", new UnaryFunction("sech", "sech(x) equals the Hyperbolic Secant function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -959,7 +983,7 @@ public class UnaryFunctions {
                                 new OperatorExpression(getOperator("*"),
                                         new UnaryExpression(getUnaryFunction("tanh"), x),
                                         new UnaryExpression(getUnaryFunction("sech"), x)),
-                                x.getDerivative()));
+                                x.calculateDerivative()));
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -974,7 +998,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("sin", new UnaryFunction("sin", "sin(x) is the Sine function")
+        map.put("sin", new UnaryFunction("sin", "sin(x) equals the Sine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -984,7 +1008,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("*"),
                         new UnaryExpression(getUnaryFunction("cos"), x),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -995,7 +1019,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("sinh", new UnaryFunction("sinh", "sinh(x) is the Hyperbolic Sine function")
+        map.put("sinh", new UnaryFunction("sinh", "sinh(x) equals the Hyperbolic Sine function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -1005,7 +1029,7 @@ public class UnaryFunctions {
             public Expression getDerivative(Expression x){
                 return new OperatorExpression(getOperator("*"),
                         new UnaryExpression(getUnaryFunction("cosh"), x),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -1024,7 +1048,7 @@ public class UnaryFunctions {
                 return new InvalidExpression("Invalid Argument Error:  Expected n∈ℤ⁺, n∈[0, 1470]");
             }
         });
-        map.put("tan", new UnaryFunction("tan", "tan(x) is the Tangent function")
+        map.put("tan", new UnaryFunction("tan", "tan(x) equals the Tangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -1036,7 +1060,7 @@ public class UnaryFunctions {
                         new OperatorExpression(getOperator("^"),
                                 new UnaryExpression(getUnaryFunction("sec"), x),
                                 new NumberExpression(2)),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -1049,7 +1073,7 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("tanh", new UnaryFunction("tanh", "tanh(x) is the Hyperbolic Tangent function")
+        map.put("tanh", new UnaryFunction("tanh", "tanh(x) equals the Hyperbolic Tangent function")
         {
             @Override
             public Expression evaluate(Expression x) {
@@ -1061,7 +1085,7 @@ public class UnaryFunctions {
                         new OperatorExpression(getOperator("^"),
                                 new UnaryExpression(getUnaryFunction("sech"), x),
                                 new NumberExpression(2)),
-                        x.getDerivative());
+                        x.calculateDerivative());
             }
             @Override
             public Expression getIntegral(Expression x){
@@ -1087,8 +1111,8 @@ public class UnaryFunctions {
             public Expression evaluate(Expression x) {
                 if (x instanceof MultiParamExpression){
                     MultiParamExpression mpe = (MultiParamExpression)x;
-                    if (mpe.getFunction() instanceof RandomVariable){
-                        return ((RandomVariable)mpe.getFunction()).getVariance(mpe.getParameters());
+                    if (mpe.function() instanceof RandomVariable){
+                        return ((RandomVariable)mpe.function()).getVariance(mpe.parameters());
                     }
                 }
                 return new InvalidExpression("Invalid Argument Error:  Exp expected a random variable as input");
@@ -1116,7 +1140,7 @@ public class UnaryFunctions {
 //            if (isUnaryFunction(item.substring(0, i)))   return true;
 //        }
         for (UnaryFunction function : unaryFunctionMap.values()){
-            if (item.startsWith(function.getFunction())){
+            if (item.startsWith(function.toString())){
                 return true;
             }
         }

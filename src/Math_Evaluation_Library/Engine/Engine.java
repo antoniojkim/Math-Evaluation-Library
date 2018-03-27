@@ -9,7 +9,7 @@ import Math_Evaluation_Library.ExpressionObjects.Operator;
 import Math_Evaluation_Library.ExpressionObjects.UnaryFunction;
 import Math_Evaluation_Library.ExpressionObjects.UnaryFunctions;
 import Math_Evaluation_Library.Expressions.*;
-import Math_Evaluation_Library.Objects.Fraction;
+import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Objects.TextFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Search;
@@ -98,47 +98,9 @@ public class Engine {
                         f = function.charAt(a);
                     }
                 }
-                if (f1 == ')' && (f != ')' && implicit.containsKey(f))) {
-                    function = function.substring(0, a) + "*" + function.substring(a);
-                }
-                else if (a+1 < function.length()){
-                    char f2 = function.charAt(a+1);
-                    if (f1 == '(' && f == '-' && !_Number_.isNumber(f2)) {
-                        function = function.substring(0, a) + "1*" + function.substring(a);
-                    }
-                    else if (f == '-' && isOperator(f1) && !_Number_.isNumber(f2)) {
-                        function = function.substring(0, a+1) + "1*" + function.substring(a+1);
-                    }
-                }
             }
         } catch (StringIndexOutOfBoundsException e){ return (error = "Invalid Input Error - Found while fixing implicit multiplication"); }
         function = Search.replace(function, StringReplacements.formReplacements2);
-        for (int a = 1; a<function.length(); a++){
-            boolean implicitContainsf1 = implicit.containsKey(function.charAt(a-1));
-            if (implicitContainsf1){
-                if (a+3 <= function.length() && function.substring(a, a + 3).equals("ans") && implicit.containsKey(function.charAt(a-1))){
-                    function = function.substring(0, a) + "*" + function.substring(a);
-                    a += 4;
-                    continue;
-                }
-                int limit = Math.min(function.length()-a, UnaryFunction.maxStrLength);
-                for (int b = UnaryFunction.minStrLength; b < limit; b++) {
-                    if (isUnaryFunction(function.substring(a, a+b))){
-                        function = function.substring(0, a) + "*" + function.substring(a);
-                        a += b+1;
-                        break;
-                    }
-                }
-                limit = Math.min(function.length()-a, MultiParamFunction.maxStrLength);
-                for (int b = MultiParamFunction.minStrLength; b < limit; b++) {
-                    if (isMultiParamFunction(function.substring(a, a+b))){
-                        function = function.substring(0, a) + "*" + function.substring(a);
-                        a += b+1;
-                        break;
-                    }
-                }
-            }
-        }
         int numLbracket = 0;
         int numRbracket = 0;
         for (int a = 0; a < function.length(); a++) {
@@ -154,10 +116,6 @@ public class Engine {
             numRbracket++;
         }
         return function;
-    }
-
-    public static String getError() {
-        return error;
     }
 
     public static double evaluate(String function, double num) {
@@ -210,8 +168,10 @@ public class Engine {
             String lhs = function.substring(0, index);
             String rhs = function.substring(index+1);
             Expression value = toExpression(rhs);
-            if (value instanceof NumberExpression){
-                variables.put(lhs, value.valueOf());
+            Expression evaluated = value.evaluate();
+            if (evaluated instanceof NumberExpression){
+                variables.put(lhs, evaluated.valueOf());
+                return evaluated;
             } else if (variables.containsKey(lhs)) {
                 variables.remove(lhs);
                 return new StringExpression("");
@@ -222,10 +182,8 @@ public class Engine {
                 }
                 value.unset();
                 variableFunctions.put(lhs, value);
-                return value;
             }
             return value;
-
         }
         index = function.indexOf(separator);
         if (index != -1){
@@ -292,41 +250,6 @@ public class Engine {
         Expression preprocessed = preprocessor(function);
         if (!(preprocessed instanceof InvalidExpression))    return preprocessed.toString();
 
-        String constant = Const.getConstant(function);
-        if (!constant.equals("NaC"))    return df+constant;
-        try {   return df+_Number_.format(_Number_.getNumber(function));    } catch (NumberFormatException e){}
-
-        for (String[] formula : Formulas.formulas){
-            if (formula[0].equals(function))    return formula[1];
-        }
-
-        String def = function;
-        int lb = function.indexOf("(");
-        if (lb != -1){
-            def = function.substring(0, lb);
-        }
-        String mpf = Search.replace(def, StringReplacements.dynamicInputReplacement);
-        if (isMultiParamFunction(mpf) && (lb == -1 || lb == function.length()-1)){
-            return getMultiParamFunction(mpf).getDescription();
-        }
-        if (isUnaryFunction(def) && (lb == -1 || lb == function.length()-1)){
-            return getUnaryFunction(def).getDescription();
-        }
-        int textIndex = TextFunctions.textFunctionsIndex(def);
-        if (textIndex != -1){
-            if (lb == -1 || lb == function.length()-1){
-                return TextFunctions.textFunctions[textIndex].getDescription();
-            }
-            //Check text cases
-            String parameters = function.substring(lb+1);
-            if (parameters.lastIndexOf(')') != -1)    parameters = parameters.substring(0, parameters.length()-1);
-            TextFunction tf = TextFunctions.textFunctions[textIndex];
-            if (tf.numParameters() == null) {
-                return tf.evaluate(parameters, displayFormat);
-            }
-            return tf.evaluate(Search.split(parameters, ","), displayFormat);
-        }
-
         Expression e = toExpression(function);
         if (e instanceof InvalidExpression) {
             return ((InvalidExpression)e).getError();
@@ -338,7 +261,7 @@ public class Engine {
         }
         Expression ev = e.evaluate();
         if (ev instanceof NumberExpression){
-            if (displayFormat) {
+            if (displayFormat && !(ev instanceof ComplexExpression)) {
                 String evaluated = ev.toString();
                 int index = evaluated.indexOf("E");
                 if (index != -1) {
@@ -346,19 +269,20 @@ public class Engine {
                     if (!evaluated.equals(standard)) return "= " + evaluated + " = " + standard;
                     return "= " + evaluated;
                 } else {
-                    String f = Fraction.calculateFraction(ev.valueOf(), false, true).trim();
-                    if (_Number_.isNumber(f) || f.contains("Infinity") || function.trim().contains(f) || f.length() > 12) {
-                        return "= " + _Number_.format(evaluated);
+                    Expression f = Fraction.toExpression(ev.valueOf());
+                    String infix = f.infix();
+                    if (f instanceof NumberExpression || infix.contains("Infinity") || function.trim().contains(infix) || infix.length() > 12) {
+                        return "= " + f.valueOf();
                     } else if (evaluated.length() > 13) {
-                        return "=  " + f + " ≈ " + Engine.evaluate(f);
+                        return "=  " + infix + " ≈ " + f.valueOf();
                     }
-                    return "=  " + f + " = " + _Number_.format(evaluated);
+                    return "=  " + infix + " = " + evaluated;
                 }
             }
-            return ev.toString();
+            return df+ev.toString();
         }
         else if (ev instanceof StringExpression){
-            return ev.infix();
+            return df+ev.infix();
         }
         return df+e.simplify().infix();
     }
@@ -367,7 +291,47 @@ public class Engine {
     static Operator subtract = getOperator("-");
 
     public static Expression toExpression(String infixFunction){
+        return toExpression(infixFunction, false);
+    }
+    public static Expression toExpression(String infixFunction, boolean displayFormat){
         infixFunction = Engine.fixSyntax(infixFunction);
+
+        if (infixFunction.length() == 0)    return new InvalidExpression("Empty Input Error");
+
+        String def = infixFunction;
+        int lb = infixFunction.indexOf("(");
+        if (lb != -1){
+            def = infixFunction.substring(0, lb);
+        }
+        String mpf = Search.replace(def, StringReplacements.dynamicInputReplacement);
+        if (isMultiParamFunction(mpf) && (lb == -1 || lb == infixFunction.length()-1)){
+            return new StringExpression(getMultiParamFunction(mpf).getDescription());
+        }
+        if (isUnaryFunction(def) && (lb == -1 || lb == infixFunction.length()-1)){
+            return new StringExpression(getUnaryFunction(def).getDescription());
+        }
+        int textIndex = TextFunctions.textFunctionsIndex(def);
+        if (textIndex != -1){
+            if (lb == -1 || lb == infixFunction.length()-1){
+                return new StringExpression(TextFunctions.textFunctions[textIndex].getDescription());
+            }
+            //Check text cases
+            String parameters = infixFunction.substring(lb+1);
+            if (parameters.lastIndexOf(')') != -1)    parameters = parameters.substring(0, parameters.length()-1);
+            TextFunction tf = TextFunctions.textFunctions[textIndex];
+            if (tf.numParameters() == null) {
+                return new StringExpression(tf.evaluate(parameters, displayFormat));
+            }
+            return new StringExpression(tf.evaluate(Search.split(parameters, ","), displayFormat));
+        }
+
+        String constant = Const.getConstant(infixFunction);
+        if (!constant.equals("NaC"))    return new StringExpression(constant);
+        try {   return new NumberExpression(_Number_.getNumber(infixFunction));    } catch (NumberFormatException ignored){}
+
+        for (String[] formula : Formulas.formulas){
+            if (formula[0].equals(infixFunction))    return new StringExpression(formula[1]);
+        }
 
         Expression preprocessed = preprocessor(infixFunction);
         if (!(preprocessed instanceof InvalidExpression))    return preprocessed;
@@ -386,6 +350,10 @@ public class Engine {
         try {
             for (int i = 0; i < infixFunction.length(); ++i) {
                 char c = infixFunction.charAt(i);
+//                System.out.println();
+//                System.out.println(stack);
+//                System.out.println(output);
+//                System.out.println(c);
                 if (Character.isDigit(c)) {
                     token.append(Character.getNumericValue(c));
                 } else if (c == '.' || (c == '-' && (i == 0 ||
@@ -398,6 +366,14 @@ public class Engine {
                         output.push(new NumberExpression(token.toString()));
                         token = new StringBuilder();
                     }
+                } else if (c == 'i'){
+                    if (token.length() == 0){
+                        output.push(new ComplexExpression(1));
+                    }
+                    else{
+                        output.push(new ComplexExpression(token.toString()));
+                    }
+                    token = new StringBuilder();
                 } else if (c == Engine.var() || c == Engine.varOp()) {
                     if (token.length() > 0) {
                         if (token.toString().equals("-")) {
@@ -422,7 +398,12 @@ public class Engine {
                     }
                 } else {
                     if (token.length() > 0) {
-                        output.push(new NumberExpression(token.toString()));
+                        if (token.length() == 1 && token.toString().equals("-")){
+                            stack.push("neg");
+                        }
+                        else{
+                            output.push(new NumberExpression(token.toString()));
+                        }
                         token = new StringBuilder();
                     }
                     StringBuilder superScript = new StringBuilder();
@@ -473,12 +454,14 @@ public class Engine {
                             if (!single.contains(",")) {
                                 if (variables.containsKey(single)){
                                     output.push(new NumberExpression(variables.get(single)));
+                                    i = end;
                                 }
                                 else{
                                     try {
                                         Double.parseDouble(single);
                                     } catch (NumberFormatException e) {
                                         output.push(new VariableExpression(single));
+                                        i = end;
                                     }
                                 }
                             } else if (infixFunction.length() > end + 1 && (infixFunction.charAt(end + 1) == 'ᵀ' || infixFunction.charAt(end + 1) == 'ᴵ')) {
@@ -551,7 +534,7 @@ public class Engine {
                         i = close;
                         continue;
                     }
-                    int lb = infixFunction.indexOf("(", i);
+                    lb = infixFunction.indexOf("(", i);
                     if (infixFunction.indexOf(")", i) < lb) lb = -1;
                     if (lb != -1) {
                         String function = infixFunction.substring(i, lb);
@@ -624,7 +607,7 @@ public class Engine {
                                             break;
                                         }
                                     }
-                                    if (stack.empty() || stack.peek().equals("(")
+                                    if (stack.empty() || stack.peek().equals("(") || stack.peek().equals("neg")
                                             || (stack.size() > 0 && isOperator(stack.peek()))) {
                                         if (superScript.length() > 0) {
                                             stack.push("^");
@@ -654,7 +637,12 @@ public class Engine {
         }
 //        System.out.println();
 //        System.out.println(stack);
-//        Print.println(output);
+//        System.out.println(output);
+        while (output.size() > 1){
+            Expression e2 = output.pop();
+            Expression e1 = output.pop();
+            output.push(new OperatorExpression("*", e1, e2));
+        }
         return output.peek();
     }
 

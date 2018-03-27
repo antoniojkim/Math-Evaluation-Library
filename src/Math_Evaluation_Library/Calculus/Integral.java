@@ -17,14 +17,14 @@ public class Integral {
         return value(function, a, b);
     }
     public static double value(Expression f, double a, double b){
-        Expression integral = f.getIntegral();
+        Expression integral = f.calculateIntegral();
         if (integral.isValid()){
             return integral.valueAt(b)-integral.valueAt(a);
         }
         return simpsons(f, a, b);
     }
 
-    private static final double errorMargin = Math.pow(10, -16);
+    private static final double errorMargin = 1e-16;
     private static double simpsons(Expression f, double a, double b){
         //double n = 50;//Math.max(Math.min((int)((b-a)*1634), 10000), 1500)
         double range = b-a;
@@ -54,7 +54,7 @@ public class Integral {
         //String simplified = Simplify.simplify(function);
         Expression f = toExpression(function);
         if (f.isValid()) {
-            return f.getIntegral().simplify();
+            return f.calculateIntegral().simplify();
         }
         return new InvalidExpression("ʃ("+function+")'");
     }

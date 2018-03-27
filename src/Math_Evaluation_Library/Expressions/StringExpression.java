@@ -33,5 +33,6 @@ public class StringExpression extends Expression {
 
     @Override public String infix() {   return str;     }
     @Override public String postfix() { return str;     }
+    @Override public String toTeX() {   return str;     }
     @Override public String hardcode(String spacing) { return spacing+"new "+getClass().getSimpleName()+"(\""+str+"\")"; }
 }

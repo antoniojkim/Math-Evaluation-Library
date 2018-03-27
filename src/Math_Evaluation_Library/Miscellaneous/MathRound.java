@@ -13,7 +13,8 @@ public class MathRound {
 
     public static double round(double num, int place){
         try{
-            if (place == 0){
+            if (num == 0 || place == 0 ||
+                    (num > 0 && Math.getExponent(num)+place > 308) || (num < 0 && Math.getExponent(num)-place < -308)){
                 return num;
             }
             double rounded = num*Math.pow(10, place);

@@ -24,9 +24,9 @@ public class Integral_Tests extends  _Tests_{
         integralTests("tanx+3x²", "-ln|cos(x)|+x³");
         integralTests("1/x", "ln|x|");
         integralTests("2/x", "2ln|x|");
-        integralTests("e^x", "ℯ^x");
-        integralTests("ln(2x)", "xln(2x)-x");
-        integralTests("2*logx", "2(xln(x)-x)/ln10");
+        integralTests("e^x", "e^x");
+        integralTests("ln(2x)", "x(ln(2x)-1)");
+        integralTests("2*logx", "2x(ln(x)-1)/ln10");
         integralTests("3*(secx)^2", "3tan(x)");
         integralTests("√x", "(2/3)x^(3/2)");
 
@@ -35,7 +35,7 @@ public class Integral_Tests extends  _Tests_{
         evaluationTest("int(cosx)", "sin(x) + C");
 
         numericalIntegralTests("sin(cos(x))", 2, 4, -1.4628367214483);
-        numericalIntegralTests("sinx", 1, 3, 1.5302948024685852);
+        numericalIntegralTests("sinx", 1, 3, 1.53029480246859);
         numericalIntegralTests("x", 1, 3, 4);
 //        numericalIntegralTests("sin(cosx)", 1, 5, -1.5910876205726525);
     }

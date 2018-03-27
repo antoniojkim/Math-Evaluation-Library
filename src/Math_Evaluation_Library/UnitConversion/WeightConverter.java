@@ -17,7 +17,7 @@ public class WeightConverter extends UnitConverter {
         List<String> tempUnit2 = new ArrayList<>();
         List<Double> tempRelation = new ArrayList<>();
 
-        // tempRelation amount of tempUnit1 is equal to 1 tempUnit2
+        // tempRelation amount of tempUnit1 equals equal to 1 tempUnit2
 
         tempUnit1.add("ug");    tempUnit2.add("mg");    tempRelation.add(1E3);
         tempUnit1.add("ug");    tempUnit2.add("g");     tempRelation.add(1E6);

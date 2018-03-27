@@ -15,7 +15,12 @@ public class MultiParamExpression extends Expression {
 
     public MultiParamExpression(MultiParamFunction function, String... parameters){
         this.function = function;
-        this.parameters = function.convert(parameters);
+        if (parameters.length == 1 && parameters[0].length() == 0){
+            this.parameters = new Expression[]{};
+        }
+        else{
+            this.parameters = function.convert(parameters);
+        }
     }
     public MultiParamExpression(MultiParamFunction function, Expression[] parameters){
         this.function = function;
@@ -72,10 +77,10 @@ public class MultiParamExpression extends Expression {
     public boolean equals(Expression e) {
         if (e instanceof MultiParamExpression){
             MultiParamExpression mpe = (MultiParamExpression) e;
-            if (function.getFunction().equals(mpe.getFunction().getFunction()) &&
-                    parameters.length == mpe.getParameters().length){
+            if (function.getFunction().equals(mpe.function().getFunction()) &&
+                    parameters.length == mpe.parameters().length){
                 for (int i = 0; i<parameters.length; ++i){
-                    if (!parameters[i].equals(mpe.getParameters()[i]))  return false;
+                    if (!parameters[i].equals(mpe.parameters()[i]))  return false;
                 }
                 return true;
             }
@@ -120,6 +125,11 @@ public class MultiParamExpression extends Expression {
     }
 
     @Override
+    public String toTeX() {
+        return function.getTeX(parameters);
+    }
+
+    @Override
     public String hardcode(String spacing) {
         String hardcode = spacing+"new "+getClass().getSimpleName()+"(getMultiParamFunction(\""+function.getFunction()+"\")";
         for (Expression e : parameters){
@@ -137,6 +147,6 @@ public class MultiParamExpression extends Expression {
         return new MultiParamExpression(function, simplified);
     }
 
-    public MultiParamFunction getFunction(){    return function;    }
-    public Expression[] getParameters(){    return parameters;    }
+    public MultiParamFunction function(){    return function;    }
+    public Expression[] parameters(){    return parameters;    }
 }

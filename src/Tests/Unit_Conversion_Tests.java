@@ -14,7 +14,7 @@ public class Unit_Conversion_Tests extends Engine_Tests {
     public void run(){
 
         evaluationTest("[1mi->km]", 1.609344);
-        evaluationTest("[2.356mth->s]", 6195862.90751904);
+        evaluationTest("[2.356mth->s]", 6195862.907519041);
 //        evaluationTest("[32yr->s]", 6195862.90751904);
         evaluationTest("[2.356km->s]", "NaN");
         evaluationTest("[1m/s->km/h]", 3.6);

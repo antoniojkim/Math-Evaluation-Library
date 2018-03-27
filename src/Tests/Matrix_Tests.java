@@ -3,9 +3,9 @@ package Tests;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.LinearAlgebra.Eigenvalues;
+import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.Miscellaneous._Random_;
-import Math_Evaluation_Library.Objects.Fraction;
-import Math_Evaluation_Library.Objects.Matrix;
+import org.jblas.DoubleMatrix;
 
 import java.util.List;
 
@@ -15,6 +15,11 @@ import static Math_Evaluation_Library.Engine.Engine.toExpression;
  * Created by Antonio on 2017-07-22.
  */
 public class Matrix_Tests extends _Tests_{
+
+    public static void main(String[] args){
+        DoubleMatrix m = new DoubleMatrix(new double[][]{{1.56, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+        System.out.println(m.toString("%.16s", "{{", "}}", ", ", "}, {"));
+    }
 
     public Matrix_Tests(String name) {
         super(name);
@@ -54,16 +59,20 @@ public class Matrix_Tests extends _Tests_{
                 {_Random_.randomint(-1*limit, limit)+"", _Random_.randomint(-1*limit, limit)+"", _Random_.randomint(-1*limit, limit)+""},
                 {_Random_.randomint(-1*limit, limit)+"", _Random_.randomint(-1*limit, limit)+"", _Random_.randomint(-1*limit, limit)+""}};//{{"1", "-2"}, {"-2", "0"}};
 
-        Matrix matrix1 = new Matrix(matrix1str);
-        List<Fraction> eigenvalues = Eigenvalues.calculate(matrix1);
+        DoubleMatrix matrix1 = new DoubleMatrix(new double[][]{
+                {_Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit)},
+                {_Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit)},
+                {_Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit), _Random_.randomint(-limit, limit)}});//{{"1", "-2"}, {"-2", "0"}};
+
+        List<Double> eigenvalues = Eigenvalues.calculate(matrix1);
         System.out.print("\nThe Real Eigenvalues of ");
-        matrix1.print();
+        System.out.println(_Matrix_.toStrMatrix(matrix1));
         System.out.print(" are: ");
         for (int a = 0; a<eigenvalues.size(); a++){
             if (a != 0){
                 System.out.print(", ");
             }
-            System.out.print(eigenvalues.get(a).getString());
+            System.out.print(eigenvalues.get(a));
         }
         System.out.println("\n");
     }

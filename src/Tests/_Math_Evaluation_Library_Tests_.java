@@ -8,6 +8,8 @@ import Math_Evaluation_Library.Expressions.Expression;
  */
 public class _Math_Evaluation_Library_Tests_ {
 
+    // mvn install:install-file -Dfile="Math Evaluation Library.jar" -DgroupId=jhk-math-library -DartifactId=jhk-math-library -Dversion=1.0.1 -Dpackaging=jar
+
     static boolean inSeconds = true;
 
     public static void main (String[] args){
@@ -39,14 +41,14 @@ public class _Math_Evaluation_Library_Tests_ {
         double sum = 0;
         for (int i = 0; i<trials; ++i){
             start = System.nanoTime();
-            Expression evaluated = e.getDerivative();
-//            Expression integral = e.getIntegral();
+            Expression evaluated = e.calculateDerivative();
+//            Expression integral = e.calculateIntegral();
             end = System.nanoTime();
             avg += (end-start);
             System.out.println(evaluated.infix());
 //            System.out.println(n1);
 //            if (n2 instanceof MatrixExpression){
-//                System.out.println(((MatrixExpression)n2.evaluateExpression()).getStrMatrix());
+//                System.out.println(((MatrixExpression)n2.evaluateExpression()).strMatrix());
 //            }
 //            else{
 //                System.out.println(n2.evaluate());
@@ -59,7 +61,8 @@ public class _Math_Evaluation_Library_Tests_ {
     }
 
     public static void runTest(){
-        new Engine_Tests("Engine").evaluationTest("deriv(sin(cosx),2)", "6");
+        //new Engine_Tests("Engine").InfixToPostfixTest("sinx*-sinx", "");
+        new Simplify_Tests("Simplify").simplificationTest("-1/(|x|√(x²-1))", "-1/(|x|√(x²-1))");
         //System.out.println(Engine.toExpression("2*3").infix());
     }
 
@@ -72,6 +75,8 @@ public class _Math_Evaluation_Library_Tests_ {
 
                 new Simplify_Tests("Simplify"),
                 new Engine_Tests("Engine"),
+                new LaTeX_Tests("LaTeX"),
+                new Complex_Number_Tests("Complex Numbers"),
                 new Unit_Conversion_Tests("Unit Conversion"),
                 new Summation_Tests("Summation"),
                 new Combinatorics_Tests("Combinatorics"),

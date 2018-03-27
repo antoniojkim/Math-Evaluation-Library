@@ -20,6 +20,7 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("-1", -1);
         evaluationTest("2*3-2", 4);
         evaluationTest("-e", -2.71828182845904523536);
+        evaluationTest("sin(pi/6)", 0.5);
         evaluationTest("exp2", 7.38905609893065);
         evaluationTest("64∨2", 66);
         evaluationTest("floor_2(63)", 32);
@@ -54,7 +55,7 @@ public class Engine_Tests extends _Tests_{
         InfixToPostfixTest("heron(6, 6, 6)", "heron 6 6 6");
         evaluationTest("heron(6, 6, 6)", 15.588457268119896);
 
-        evaluationTest("proj([1, 2], [3, 4])", "11/25·[3, 4] = [33/25, 132/25] is the projection of [1, 2] onto [3, 4]");
+        evaluationTest("proj([1, 2], [3, 4])", "11/25·[3, 4] = [33/25, 44/25] equals the projection of [1, 2] onto [3, 4]");
 
         syntaxTest("-5x²y+3y+8", "-5*x²*y+3*y+8");
         InfixToPostfixTest("-5x²y+3y+8", "-5 x 2 ^ * y * 3 y * + 8 +");
@@ -62,15 +63,12 @@ public class Engine_Tests extends _Tests_{
         //
         syntaxTest("x-+3", "x-3");
 
-        evaluationTest("n≔3", 3);
-        evaluationTest("(n)*{n}", 9);
+        evaluationTest("n≔3*8/4+5", "11");
+        evaluationTest("(n)*{n}", 121);
 
         evaluationTest("f:=x^2", "x²");
         InfixToPostfixTest("f(2)", "2 2 ^");
         evaluationTest("f(2)", 4);
-
-        evaluationTest("b≔Bin(10, 0.5, x)", "Bin(10, 0.5, x)");
-        evaluationTest("b(3)", 0.1171875);
     }
 
     public void syntaxTest(String input, String expected){

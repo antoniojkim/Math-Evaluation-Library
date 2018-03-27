@@ -112,7 +112,7 @@ public class _Tests_ {
             System.out.println("\n"+test_name+" Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
-            System.out.println("     Postfix:   "+toExpression(input).postfix());
+//            System.out.println("     Postfix:   "+toExpression(input).postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);
             System.exit(1);

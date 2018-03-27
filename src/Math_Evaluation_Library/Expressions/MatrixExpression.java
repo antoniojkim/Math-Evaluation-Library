@@ -1,6 +1,7 @@
 package Math_Evaluation_Library.Expressions;
 
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
+import Math_Evaluation_Library.Miscellaneous.Fraction;
 import org.jblas.DoubleMatrix;
 
 import java.util.ArrayList;
@@ -23,10 +24,10 @@ public class MatrixExpression extends Expression {
         this.m = m;
     }
 
-    public DoubleMatrix getMatrix(){
+    public DoubleMatrix doubleMatrix(){
         return m;
     }
-    public String getStrMatrix(){
+    public String strMatrix(){
         if (strMatrix == null)  strMatrix = _Matrix_.toStrMatrix(m);
         return strMatrix;
     }
@@ -47,23 +48,47 @@ public class MatrixExpression extends Expression {
 
     @Override
     public boolean equals(Expression e) {
-        return e instanceof MatrixExpression && m.equals(((MatrixExpression) e).getMatrix());
+        return e instanceof MatrixExpression && m.equals(((MatrixExpression) e).doubleMatrix());
     }
 
     @Override
     public List<Double> getNumbers() {
-        return new ArrayList<>();
+        List<Double> numbers = new ArrayList<>(m.toArray().length);
+        for (double n : m.toArray()){
+            numbers.add(n);
+        }
+        return numbers;
     }
 
     @Override
     public String infix() {
-        return getStrMatrix();
+        return strMatrix();
     }
 
     @Override
     public String postfix() {
-        return getStrMatrix();
+        return strMatrix();
     }
 
-    @Override public String hardcode(String spacing) { return spacing+"new "+getClass().getSimpleName()+"(\""+getStrMatrix()+"\")"; }
+    @Override
+    public String toTeX() {
+        StringBuilder TeX = new StringBuilder();
+        TeX.append("\\begin{bmatrix} ");
+        double[][] values = m.toArray2();
+        for (int i = 0; i<values.length; i++){
+            if (i != 0){
+                TeX.append(" \\\\ ");
+            }
+            for (int j = 0; j<values[i].length; j++){
+                if (j != 0){
+                    TeX.append(" & ");
+                }
+                TeX.append(Fraction.toExpression(values[i][j]).simplify().toTeX());
+            }
+        }
+        TeX.append(" \\end{bmatrix}");
+        return TeX.toString();
+    }
+
+    @Override public String hardcode(String spacing) { return spacing+"new "+getClass().getSimpleName()+"(\""+ strMatrix()+"\")"; }
 }

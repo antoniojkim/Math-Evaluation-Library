@@ -5,11 +5,10 @@
 */
 package Math_Evaluation_Library;
 
-import Math_Evaluation_Library.Objects.Fraction;
+import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Objects.MathObject;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
 
@@ -17,49 +16,49 @@ import java.util.List;
 */
 public class Sort {
     
-    public static void quicksort(List<Fraction> list){
-        Fraction[] array = new Fraction[list.size()];
-        for (int a = 0; a<array.length; a++){
-            array[a] = list.get(a);
-        }
-        quicksort(array, true);
-        list.clear();
-        for (int a = 0; a<array.length; a++){
-            list.add(array[a]);
-        }
-    }
-    public static void quicksort(Fraction[] array){
-        quicksort(array, true);
-    }
-    public static void quicksort(Fraction[] array, boolean ascending){
-        quicksort(array, 0, array.length-1, ascending);
-    }
-    private static void quicksort(Fraction[] array, int first, int last, boolean ascending){
-        if (first >= last){
-            return;
-        }
-        Fraction pivot = array[first];
-        int pos = last;
-        if (ascending){
-            for (int a = last; a>first; a--){
-                if (array[a].getValue() > pivot.getValue()){
-                    swap(array, pos, a);
-                    pos--;
-                }
-            }
-        }
-        else{
-            for (int a = last; a>first; a--){
-                if (array[a].getValue() < pivot.getValue()){
-                    swap(array, pos, a);
-                    pos--;
-                }
-            }
-        }
-        swap(array, first, pos);
-        quicksort(array, first, pos-1, ascending);
-        quicksort(array, pos+1, last, ascending);
-    }
+//    public static void quicksort(List<Fraction> list){
+//        Fraction[] array = new Fraction[list.size()];
+//        for (int a = 0; a<array.length; a++){
+//            array[a] = list.get(a);
+//        }
+//        quicksort(array, true);
+//        list.clear();
+//        for (int a = 0; a<array.length; a++){
+//            list.add(array[a]);
+//        }
+//    }
+//    public static void quicksort(Fraction[] array){
+//        quicksort(array, true);
+//    }
+//    public static void quicksort(Fraction[] array, boolean ascending){
+//        quicksort(array, 0, array.length-1, ascending);
+//    }
+//    private static void quicksort(Fraction[] array, int first, int last, boolean ascending){
+//        if (first >= last){
+//            return;
+//        }
+//        Fraction pivot = array[first];
+//        int pos = last;
+//        if (ascending){
+//            for (int a = last; a>first; a--){
+//                if (array[a].getValue() > pivot.getValue()){
+//                    swap(array, pos, a);
+//                    pos--;
+//                }
+//            }
+//        }
+//        else{
+//            for (int a = last; a>first; a--){
+//                if (array[a].getValue() < pivot.getValue()){
+//                    swap(array, pos, a);
+//                    pos--;
+//                }
+//            }
+//        }
+//        swap(array, first, pos);
+//        quicksort(array, first, pos-1, ascending);
+//        quicksort(array, pos+1, last, ascending);
+//    }
 
     public static void quicksort(int[] array){
         quicksort(array, true);
