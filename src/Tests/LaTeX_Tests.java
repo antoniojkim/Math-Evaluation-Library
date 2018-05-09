@@ -16,6 +16,7 @@ public class LaTeX_Tests extends _Tests_{
     @Override
     public void run(){
         LaTeX_Test("2*3-2", "2\\times 3-2");
+        LaTeX_Test("$$(2*3-2)", "2\\times 3-2");
         LaTeX_Test("-e", "-e");
 
         LaTeX_Test("-1/(|-3|√(2²-1))", "\\dfrac{-1}{\\left|-3\\right|\\sqrt{{2}^{2}-1}}");
@@ -31,6 +32,7 @@ public class LaTeX_Tests extends _Tests_{
         LaTeX_Test("nint(sin(cosx), 1, 3)", "\\int_{1}^{3} \\sin\\left(\\cos\\left(x\\right)\\right) dx");
 
         LaTeX_Test("{{1,2,3},{3,2,1},{1,2,3}}*{{4,5,6},{6,5,4},{4,6,5}}", "\\begin{bmatrix} 1 & 2 & 3 \\\\ 3 & 2 & 1 \\\\ 1 & 2 & 3 \\end{bmatrix}\\begin{bmatrix} 4 & 5 & 6 \\\\ 6 & 5 & 4 \\\\ 4 & 6 & 5 \\end{bmatrix}");
+        LaTeX_Test("$$({{1,2,3},{3,2,1},{1,2,3}}*{{4,5,6},{6,5,4},{4,6,5}})", "\\begin{bmatrix} 1 & 2 & 3 \\\\ 3 & 2 & 1 \\\\ 1 & 2 & 3 \\end{bmatrix}\\begin{bmatrix} 4 & 5 & 6 \\\\ 6 & 5 & 4 \\\\ 4 & 6 & 5 \\end{bmatrix}");
         LaTeX_Test("{{1,2,3},{3,2,1},{1,2,3}}^-1", "\\begin{bmatrix} -\\dfrac{1}{12} & \\dfrac{1}{3} & -\\dfrac{1}{12} \\\\ \\dfrac{1}{24} & \\dfrac{1}{12} & \\dfrac{1}{24} \\\\ \\dfrac{1}{6} & -\\dfrac{1}{6} & \\dfrac{1}{6} \\end{bmatrix}");
         LaTeX_Test("RREF({{1,2,3},{3,2,1},{1,2,3}})", "\\operatorname{RREF}\\begin{bmatrix} 1 & 2 & 3 \\\\ 3 & 2 & 1 \\\\ 1 & 2 & 3 \\end{bmatrix}");
         LaTeX_Test("RREF({{1,2,3},{3,2,1},{1,2,3}}*{{4,5,6},{6,5,4},{4,6,5}})", "\\operatorname{RREF}\\left(\\begin{bmatrix} 1 & 2 & 3 \\\\ 3 & 2 & 1 \\\\ 1 & 2 & 3 \\end{bmatrix}\\begin{bmatrix} 4 & 5 & 6 \\\\ 6 & 5 & 4 \\\\ 4 & 6 & 5 \\end{bmatrix}\\right)");
@@ -47,6 +49,7 @@ public class LaTeX_Tests extends _Tests_{
             System.out.println("\nLaTeX Test Failed:");
             System.out.println("     Input:     "+input);
 //            System.out.println("     Input:     "+e.hardcode("     "));
+//            System.out.println("     Input:     "+e.postfix());
             System.out.println("     Output:    $"+e.toTeX()+"$");
             System.out.println("     Expected:  $"+expected+"$");
             System.exit(1);

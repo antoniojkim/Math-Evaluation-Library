@@ -8,6 +8,7 @@ import Math_Evaluation_Library.Geometry.Geometric;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
 import Math_Evaluation_Library.Statistics.RandomVariables;
 import Math_Evaluation_Library.Statistics.Stats;
@@ -334,6 +335,61 @@ public class MultiParamFunctions{
 //                    return INVALID;
 //                }
 //            });
+        map.put("frbin", new MultiParamFunction("frbin", 1, "frbin(x) transforms a binary string into a decimal value")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                long num = _Number_.fromBinary(parameters[0].evaluate().toString());
+                if (num != -1){
+                    return new NumberExpression(num, false);
+                }
+                return new InvalidExpression("Invalid Argument Error:  frbin expected integer");
+            }
+
+            @Override
+            public Expression[] convert(String[] parameters) {
+                char[] array = parameters[0].toCharArray();
+                for (char c : array){
+                    if (c != '0' && c != '1'){
+                        return new Expression[]{toExpression(parameters[0])};
+                    }
+                }
+                return new Expression[]{new StringExpression(parameters[0])};
+            }
+        });
+        map.put("frb₁₆", new MultiParamFunction("frhex", 1, "frhex(x) transforms a hex string into a decimal value")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                try{
+                    return new NumberExpression(Long.parseLong(parameters[0].evaluate().toString(), 16), false);
+                } catch (NumberFormatException ignored){}
+                return new InvalidExpression("Invalid Argument Error:  invalid hexadecimal number - "+parameters[0].evaluate().toString());
+            }
+
+            char[] hexArray = "0123456789abcdef".toCharArray();
+            @Override
+            public Expression[] convert(String[] parameters) {
+                char[] array = parameters[0].trim().toLowerCase().toCharArray();
+                for (char c : array){
+                    if (Search.linearSearch(hexArray, c) == -1){
+                        return new Expression[]{toExpression(parameters[0])};
+                    }
+                }
+                return new Expression[]{new StringExpression(parameters[0])};
+            }
+        });
+        map.put("tob₁₆", new MultiParamFunction("tohex", 1, "tohex(x) produces the hex form of x")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                double num = parameters[0].valueOf();
+                if (num%1 == 0){
+                    return new StringExpression(Long.toHexString((long)num));
+                }
+                return new InvalidExpression("Invalid Argument Error:  tohex expected integer");
+            }
+        });
         map.put("elasd",  new MultiParamFunction("elasd",    4, "elasd(q₁, q₂, p₁, p₂) calculates the elasticity of demand:  ((q₂-q₁)/(q₂+q₁))/((p₂-p₁)/(p₂+p₁))")
         {
             @Override
@@ -885,6 +941,17 @@ public class MultiParamFunctions{
                     return new NumberExpression(Stats.stnDev(data));
                 }
                 return new InvalidExpression("Invalid Number of Arguments:  stndv(a₁,…,aₙ)");
+            }
+        });
+        map.put("strln", new MultiParamFunction("strln", 1, "strln(str) calculates the length of string str") {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                return new NumberExpression(parameters[0].toString().length());
+            }
+
+            @Override
+            public Expression[] convert(String[] parameters) {
+                return new Expression[]{new StringExpression(parameters[0])};
             }
         });
         map.put("unif",  new MultiParamFunction("unif",     3, "unif(a, b, x) calculates the uniform distribution from a to b at x")

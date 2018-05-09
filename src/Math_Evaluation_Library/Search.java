@@ -133,6 +133,12 @@ public class Search {
         }
         return -1;
     }
+    public static int linearSearch(char[] array, char num){
+        for (int i = 0; i<array.length; i++){
+            if (array[i] == num)    return i;
+        }
+        return -1;
+    }
 
     public static int binarySearchIndex(List<String> list, String item){
         int low = 0;

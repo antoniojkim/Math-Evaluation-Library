@@ -20,8 +20,8 @@ public class Const {
             if (char1 == '√' && char2 == '2') {
                 return sqrt2;
             }
-            if (char1 == '-' && char2 == '∞') {
-                return str;
+            if (char1 == '-') {
+                return "-"+getConstant(char2);
             }
         }
         return "NaC"; // Not a Constant

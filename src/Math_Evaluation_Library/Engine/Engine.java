@@ -17,6 +17,9 @@ import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
 import java.util.*;
 
+import static Math_Evaluation_Library.Constants.StringReplacements.textFunctionReplacements;
+import static Math_Evaluation_Library.Engine.TextFunctions.getTextFunction;
+import static Math_Evaluation_Library.Engine.TextFunctions.isTextFunction;
 import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.getMultiParamFunction;
 import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.isMultiParamFunction;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
@@ -272,7 +275,7 @@ public class Engine {
                     Expression f = Fraction.toExpression(ev.valueOf());
                     String infix = f.infix();
                     if (f instanceof NumberExpression || infix.contains("Infinity") || function.trim().contains(infix) || infix.length() > 12) {
-                        return "= " + f.valueOf();
+                        return "= " + infix;
                     } else if (evaluated.length() > 13) {
                         return "=  " + infix + " ≈ " + f.valueOf();
                     }
@@ -294,44 +297,36 @@ public class Engine {
         return toExpression(infixFunction, false);
     }
     public static Expression toExpression(String infixFunction, boolean displayFormat){
-        infixFunction = Engine.fixSyntax(infixFunction);
 
         if (infixFunction.length() == 0)    return new InvalidExpression("Empty Input Error");
 
         String def = infixFunction;
         int lb = infixFunction.indexOf("(");
         if (lb != -1){
-            def = infixFunction.substring(0, lb);
+            def = Engine.fixSyntax(infixFunction.substring(0, lb));
         }
-        String mpf = Search.replace(def, StringReplacements.dynamicInputReplacement);
-        if (isMultiParamFunction(mpf) && (lb == -1 || lb == infixFunction.length()-1)){
-            return new StringExpression(getMultiParamFunction(mpf).getDescription());
-        }
-        if (isUnaryFunction(def) && (lb == -1 || lb == infixFunction.length()-1)){
-            return new StringExpression(getUnaryFunction(def).getDescription());
-        }
-        int textIndex = TextFunctions.textFunctionsIndex(def);
-        if (textIndex != -1){
-            if (lb == -1 || lb == infixFunction.length()-1){
-                return new StringExpression(TextFunctions.textFunctions[textIndex].getDescription());
+        if (lb == -1 || lb == infixFunction.length()-1){
+            if (isUnaryFunction(def)){
+                return new StringExpression(getUnaryFunction(def).getDescription());
             }
-            //Check text cases
+            if (isTextFunction(def)){
+                return new StringExpression(getTextFunction(def).getDescription());
+            }
+            if (isMultiParamFunction(def)){
+                return new StringExpression(getMultiParamFunction(def).getDescription());
+            }
+        }
+        else if (isTextFunction(Search.replace(def, textFunctionReplacements))){//Check text cases
             String parameters = infixFunction.substring(lb+1);
-            if (parameters.lastIndexOf(')') != -1)    parameters = parameters.substring(0, parameters.length()-1);
-            TextFunction tf = TextFunctions.textFunctions[textIndex];
+            if (parameters.endsWith(")"))    parameters = parameters.substring(0, parameters.length()-1);
+            TextFunction tf = getTextFunction(Search.replace(def, textFunctionReplacements));
             if (tf.numParameters() == null) {
                 return new StringExpression(tf.evaluate(parameters, displayFormat));
             }
             return new StringExpression(tf.evaluate(Search.split(parameters, ","), displayFormat));
         }
 
-        String constant = Const.getConstant(infixFunction);
-        if (!constant.equals("NaC"))    return new StringExpression(constant);
-        try {   return new NumberExpression(_Number_.getNumber(infixFunction));    } catch (NumberFormatException ignored){}
-
-        for (String[] formula : Formulas.formulas){
-            if (formula[0].equals(infixFunction))    return new StringExpression(formula[1]);
-        }
+        infixFunction = Engine.fixSyntax(infixFunction);
 
         Expression preprocessed = preprocessor(infixFunction);
         if (!(preprocessed instanceof InvalidExpression))    return preprocessed;
@@ -344,6 +339,16 @@ public class Engine {
                 return new UnaryExpression(neg, toExpression(infixFunction.substring(1)));
             }
         } catch (StringIndexOutOfBoundsException e){}
+
+        if (displayFormat){
+            String constant = Const.getConstant(infixFunction);
+            if (!constant.equals("NaC"))    return new StringExpression(constant);
+            try {   return new NumberExpression(_Number_.getNumber(infixFunction));    } catch (NumberFormatException ignored){}
+        }
+        for (String[] formula : Formulas.formulas){
+            if (formula[0].equals(infixFunction))    return new StringExpression(formula[1]);
+        }
+
         Stack<Expression> output = new Stack<>();
         Stack<String> stack = new Stack<>();
         StringBuilder token = new StringBuilder();//, str = new StringBuilder();
@@ -551,7 +556,9 @@ public class Engine {
                             int rb = Search.indexOf(infixFunction, ')', lb);
                             if (rb != -1 && rb > lb) {
                                 MultiParamFunction multiParamFunction = getMultiParamFunction(function);
-                                String[] parameters = Search.split(infixFunction.substring(lb + 1, rb), ",", false);
+                                String[] parameters = multiParamFunction.getNumParameters() == 1 ?
+                                        new String[]{infixFunction.substring(lb + 1, rb)} :
+                                        Search.split(infixFunction.substring(lb + 1, rb), ",", false);
                                 if (!multiParamFunction.isFlexible() && multiParamFunction.getNumParameters() != parameters.length) {
                                     return new InvalidExpression("Syntax Error - Invalid Number of Parameters.  E:" + multiParamFunction.getNumParameters() + "   A:" + parameters.length);
                                 }

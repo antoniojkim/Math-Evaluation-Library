@@ -59,7 +59,7 @@ public class _Number_ {
         return fib;
     }
 
-    public static int floor2(int x){
+    public static long floor2(long x){
         if (x < 0)  return 0;
         x |= x >> 1;
         x |= x >> 2;
@@ -71,23 +71,48 @@ public class _Number_ {
     public static double floor2(double x){
         return 1 << (int)Math.floor(Math.log(x)/Constants.ln2);
     }
-    public static String toBinary(int x){
-        int m = floor2(x);
-        String binary = "";
-        for (int a = m; a>=0; a--){
-            binary += String.valueOf((int)x/(int)Math.pow(2, a));
-            x = (int)x%(int)Math.pow(2, a);
-        }
-        return binary;
-    }
-    public static double fromBinary(String binary){
-        double num = 0;
-        char[] array = binary.toCharArray();
-        for (int a = 0; a<array.length; a++){
-            if (array[a] == '1'){
-                num += (1 << array.length-a-1);
+    public static String toBinary(long x){
+        long m = floor2(x);
+        StringBuilder binary = new StringBuilder();
+        boolean leadingZero = true;
+        for (long a = m; a>=0; a--){
+            char c = String.valueOf(x / (long) Math.pow(2, a)).charAt(0);
+            if (c != '0'){
+                leadingZero = false;
             }
-            else if (array[a] != '0'){
+            if (!leadingZero){
+                binary.append(c);
+            }
+            x %= (long)Math.pow(2, a);
+        }
+        return binary.toString();
+    }
+    public static long fromBinary(String binary){
+        long num = 0;
+        char[] array = binary.toCharArray();
+        if (array.length > 62) return -1;
+        for (char b : array) {
+            if (b == '1') {
+                num = (num << 1) | 1;
+            } else if (b == '0') {
+                num <<= 1;
+            } else {
+                return -1;
+            }
+        }
+        return num;
+    }
+
+    public static long fromHex(String binary){
+        long num = 0;
+        char[] array = binary.toCharArray();
+        if (array.length > 62) return -1;
+        for (char b : array) {
+            if (b == '1') {
+                num = (num << 1) | 1;
+            } else if (b == '0') {
+                num <<= 1;
+            } else {
                 return -1;
             }
         }

@@ -69,6 +69,9 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("f:=x^2", "x²");
         InfixToPostfixTest("f(2)", "2 2 ^");
         evaluationTest("f(2)", 4);
+
+        evaluationTest("postfix(sinx)", "x sin");
+        evaluationTest("len(100101010010101010101010101111011101111010101101010101)", 54);
     }
 
     public void syntaxTest(String input, String expected){

@@ -751,20 +751,6 @@ public class UnaryFunctions {
                 return new NumberExpression(_Number_.floor2(n));
             }
         });
-        map.put("frbin", new UnaryFunction("frbin", "frbin(x) produces the binary form of x")
-        {
-            @Override
-            public Expression evaluate(Expression x) {
-                double n = x.valueOf();
-                if (n % 1 == 0){
-                    double num = _Number_.fromBinary(_Number_.format(n));
-                    if (num != -1){
-                        return new NumberExpression(num);
-                    }
-                }
-                return new InvalidExpression("Invalid Argument Error:  frbin expected integer");
-            }
-        });
         map.put("ln", new UnaryFunction("ln", "ln(x) equals the Natural Logarithm")
         {
             @Override
@@ -1096,12 +1082,12 @@ public class UnaryFunctions {
                 return super.getIntegral(x);
             }
         });
-        map.put("tobin", new UnaryFunction("tobin", "tobin(x) transforms a binary string into a decimal value")
+        map.put("tobin", new UnaryFunction("tobin", "tobin(x) produces the binary form of x")
         {
             @Override
             public Expression evaluate(Expression x) {
                 double n = x.valueOf();
-                if (n % 1 == 0) return new NumberExpression(_Number_.getNumber(_Number_.toBinary((int)n)));
+                if (n % 1 == 0) return new StringExpression(_Number_.toBinary((long)n));
                 return new InvalidExpression("Invalid Argument Error:  tobin expected integer");
             }
         });

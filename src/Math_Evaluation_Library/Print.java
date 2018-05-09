@@ -30,6 +30,15 @@ public class Print {
             System.out.println("]");
         }
     }
+    public static void println(byte[] array){
+        if (array.length > 0) {
+            System.out.print("["+array[0]);
+            for (int i = 1; i < array.length; i++){
+                System.out.print(", "+array[i]);
+            }
+            System.out.println("]");
+        }
+    }
     public static void println(boolean[] array){
         if (array.length > 0) {
             System.out.print("["+array[0]);

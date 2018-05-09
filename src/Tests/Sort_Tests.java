@@ -1,7 +1,6 @@
 package Tests;
 
 import Math_Evaluation_Library.Constants.Constants;
-import Math_Evaluation_Library.Engine.TextFunctions;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.Objects.MathObject;
 import Math_Evaluation_Library.Sort;
@@ -17,7 +16,7 @@ public class Sort_Tests extends _Tests_ {
 
     @Override
     public void run(){
-        mathObjectSortTest("Text Functions", TextFunctions.textFunctions);
+//        mathObjectSortTest("Text Functions", TextFunctions.textFunctions);
         mathObjectSortTest("Volume Formulas", ShapeFormulas.shapes3D);
         mathObjectSortTest("Area Formulas", ShapeFormulas.shapes2D);
 

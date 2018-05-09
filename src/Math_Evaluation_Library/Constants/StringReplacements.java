@@ -31,7 +31,7 @@ public class StringReplacements {
             {"ND", "ngd"},  {"Exp", "rvxp"}, {"Γ", "gammaf"},
             {"Bin", "bd"},  {"NB", "nbd"},   {"geo", "gnb"},
             {"Var", "rvvar"},
-            {"E", "*10^"},  {"ED", "∆"}
+            {"E", "*10^"},  {"ED", "∆"},  {"TeX", "$$"},  {"tex", "$$"},  {"hex", "b₁₆"}, {"RPN", "postfix"}
     };
 
     public static final String[][] formReplacements = {
@@ -46,7 +46,8 @@ public class StringReplacements {
             {"elasy", "lasd"},   {"elasx", "lasd"},   {"elasd", "lasd"},   {"prime", "nconst"},  {"heron", "hron"},   {"newton", "nwton"},
             {"fibsum", "smfib"}, {"sumfib", "smfib"}, {"variance", "var"}, {"stdev", "stndv"},   {"stddev", "stndv"}, {"stndev", "stndv"},
             {"ceil", "up"},      {"nderiv", "dx"},    {"deriv", "diff"},   {"riemann", "riman"}, {"randomint", "randint"}, {"randomQ", "randq"}, {"randomq", "randq"},
-            {"gcf", "gcd"},      {"erf", "gaussrf"},  {"gammaf", "Γ"},
+            {"gcf", "gcd"},      {"erf", "gaussrf"},  {"gammaf", "Γ"},     {"postfix", "RPN"},
+            {"len", "strln"},    {"strlen", "strln"}, {"count", "strln"},
 
             {"pi", "π"}, {"e_m", "γ"}, {"e", "ℯ"}, {"gr", "ϕ"}
     };
@@ -69,8 +70,7 @@ public class StringReplacements {
     public static final String[][] textFunctionReplacements = {
             {"antideriv", "int"}, {"antidiff", "int"}, {"cmplx", "complex"},
             {"directF", "slopeF"}, {"perpendicular", "perp"}, {"plt", "plot"}, {"primf", "primef"}, {"projection", "proj"},
-            {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "postfix"},
-            {"len", "strln"}, {"strlen", "strln"}, {"count", "strln"}
+            {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "RPN"}, {"postfix", "RPN"}
     };
 
 }
