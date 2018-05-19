@@ -5,11 +5,19 @@ package Math_Evaluation_Library.Objects;
  */
 public class TextFunction extends MathObject {
 
+    public static int maxStrLength = 7;
+    public static int minStrLength = 1;
     private int[] numParameters;
     private String description = "";
 
     public TextFunction (String function, int... numParameters){
         this.function = function;
+        if (function.length() > maxStrLength){
+            maxStrLength = function.length();
+        }
+        else if (function.length() < minStrLength){
+            minStrLength = function.length();
+        }
         if (numParameters.length > 0) this.numParameters = numParameters;
     }
     public TextFunction (String function, String description, int... numParameters){

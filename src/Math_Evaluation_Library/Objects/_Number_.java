@@ -135,7 +135,6 @@ public class _Number_ {
         return (num > 0 ? "+" : (num < 0 ? "-" : ""));
     }
 
-
     public static boolean isNumber(double num){
         String str = String.valueOf(num).toLowerCase();
         if (str.contains("nan") || str.contains("infinity") || str.contains("error")){

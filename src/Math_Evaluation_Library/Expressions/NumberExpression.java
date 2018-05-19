@@ -21,6 +21,10 @@ public class NumberExpression extends Expression {
     public NumberExpression(String str){
         n = MathRound.round(_Number_.getNumber(str, true), 14);
     }
+    public NumberExpression(long n){
+        this.n = n;
+        formatted = String.valueOf(n);
+    }
     public NumberExpression(double n){
         this(n, true);
     }

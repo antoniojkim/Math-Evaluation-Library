@@ -4,6 +4,7 @@ import Math_Evaluation_Library.Search;
 import Math_Evaluation_Library.Sort;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -17,6 +18,74 @@ public class GreekLetters {
     public static final int NUM_GREEK_LOWERCASE = 24;
     public static final int NUM_GREEK_VARIANTS = 6;
 
+    public static final int maxStrLength = 10;
+    public static final int minStrLength = 2;
+
+    public static HashMap<String, String> greekLetterMap = createGreekLetterMap();
+
+    public static HashMap<String, String> createGreekLetterMap(){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("alpha", "α");
+        map.put("Alpha", "Α");
+        map.put("beta", "β");
+        map.put("Beta", "Β");
+        map.put("gamma", "γ");
+        map.put("Gamma", "Γ");
+        map.put("delta", "δ");
+        map.put("Delta", "Δ");
+        map.put("epsilon", "ε");
+        map.put("Epsilon", "Ε");
+        map.put("vareps", "ϵ");
+        map.put("varepsilon", "ϵ");
+        map.put("zeta", "ζ");
+        map.put("Zeta", "Ζ");
+        map.put("eta", "η");
+        map.put("Eta", "Η");
+        map.put("iota", "ι");
+        map.put("Iota", "Ι");
+        map.put("kappa", "κ");
+        map.put("Kappa", "Κ");
+        map.put("theta", "θ");
+        map.put("Theta", "Θ");
+        map.put("vartheta", "ϑ");
+        map.put("lambda", "λ");
+        map.put("Lambda", "Λ");
+        map.put("mu", "μ");
+        map.put("Mu", "Μ");
+        map.put("nu", "ν");
+        map.put("Nu", "Ν");
+        map.put("xi", "ξ");
+        map.put("Xi", "Ξ");
+        map.put("pi", "π");
+        map.put("Pi", "Π");
+        map.put("varpi", "ϖ");
+        map.put("omicron", "ο");
+        map.put("Omicron", "Ο");
+        map.put("rho", "ρ");
+        map.put("Rho", "Ρ");
+        map.put("varrho", "ϱ");
+        map.put("sigma", "σ");
+        map.put("Sigma", "Σ");
+        map.put("varsigma", "ς");
+        map.put("tau", "τ");
+        map.put("Tau", "Τ");
+        map.put("upsilon", "υ");
+        map.put("Upsilon", "Υ");
+        map.put("phi", "φ");
+        map.put("Phi", "Φ");
+        map.put("varphi", "ϕ");
+        map.put("chi", "χ");
+        map.put("Chi", "Χ");
+        map.put("psi", "ψ");
+        map.put("Psi", "Ψ");
+        map.put("omega", "ω");
+        map.put("Omega", "Ω");
+        return map;
+    }
+    public static boolean isGreekLetter(String letterStr){
+        return greekLetterMap.containsKey(letterStr);
+    }
+
     public static String[][] greekLetterPairs = {
         {"alpha", "α"},   {"Alpha", "Α"},   {"beta", "β"}, {"Beta", "Β"},   {"gamma", "γ"},  {"Gamma", "Γ"}, {"delta", "δ"}, {"Delta", "Δ"},    {"epsilon", "ε"}, {"Epsilon", "Ε"}, {"varepsilon", "ϵ"},
         {"zeta", "ζ"},    {"Zeta", "Ζ"},    {"eta", "η"},  {"Eta", "Η"},    {"iota", "ι"},   {"Iota", "Ι"},  {"kappa", "κ"}, {"Kappa", "Κ"},    {"theta", "θ"},   {"Theta", "Θ"},   {"vartheta", "ϑ"},  
@@ -25,13 +94,8 @@ public class GreekLetters {
         {"Upsilon", "Υ"}, {"phi", "φ"},     {"Phi", "Φ"},  {"varphi", "ϕ"}, {"chi", "χ"},    {"Chi", "Χ"},   {"psi", "ψ"},   {"Psi", "Ψ"},      {"omega", "ω"},   {"Omega", "Ω"}};
 
     public static char getGreekLetter(String letterStr){
-        if (!sorted){
-            Sort.pairQuicksort(greekLetterPairs);
-            sorted = true;
-        }
-        int index = Search.binarySearch(greekLetterPairs, letterStr);
-        if (index != -1){
-            return greekLetterPairs[index][1].charAt(0);
+        if (greekLetterMap.containsKey(letterStr)){
+            return greekLetterMap.get(letterStr).charAt(0);
         }
         return '\0';
     }

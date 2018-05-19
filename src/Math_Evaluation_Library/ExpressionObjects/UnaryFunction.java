@@ -9,7 +9,7 @@ import Math_Evaluation_Library.Expressions.*;
 public abstract class UnaryFunction {
 
     public static int maxStrLength = 7;
-    public static int minStrLength = 3;
+    public static int minStrLength = 1;
     protected String function = "";
     private String description = "";
 

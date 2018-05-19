@@ -15,11 +15,19 @@ public class _Math_Evaluation_Library_Tests_ {
     public static void main (String[] args){
 
         runTests();
-        //runTrial();
+//        runTrial();
 
     }
 
     public static void runTrial(){
+//        String input = "5⁰²(sin3)";
+//        System.out.println(Engine.fixSyntax(input));
+//        Expression e = Engine.toExpression(input);
+//        System.out.println(e.toString());
+//        System.out.println(e.toTeX());
+    }
+
+    public static void speedTest(){
 
         /*
         0.05770045938362367
@@ -81,13 +89,16 @@ public class _Math_Evaluation_Library_Tests_ {
                 new Summation_Tests("Summation"),
                 new Combinatorics_Tests("Combinatorics"),
                 new Random_Variables_Tests("Random Variables"),
+                new Stats_Tests("Statistics"),
                 //new Propositional_Logic_Tests("Propositional Logic"),
                 new Binary_Tests("Binary"),
 
                 new Derivative_Tests("Derivative"),
                 new Integral_Tests("Integral"),
 
-                new Matrix_Tests("Matrix")
+                new Matrix_Tests("Matrix"),
+
+                new Fraction_Tests("Fraction")
         };
 
         long overallStart = System.currentTimeMillis();

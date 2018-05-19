@@ -28,6 +28,11 @@ public class VariableExpression extends Expression {
         set = true;
         val = e;
     }
+    public VariableExpression(String var, double n){
+        this.var = var;
+        set = true;
+        val = new NumberExpression(n);
+    }
     public VariableExpression(char var, Expression e){
         this(String.valueOf(var), e);
     }

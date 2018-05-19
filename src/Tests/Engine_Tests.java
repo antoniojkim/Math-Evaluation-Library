@@ -26,6 +26,7 @@ public class Engine_Tests extends _Tests_{
         evaluationTest("floor_2(63)", 32);
         evaluationTest("floor_2(64)", 64);
         evaluationTest("floor_2(65)", 64);
+        evaluationTest("ln(ln10/ln2)/ln3", 1704233/1559534.0);
 
         InfixToPostfixTest("sin{i}", "i sin");
         InfixToPostfixTest("sec²x", "x sec 2 ^");

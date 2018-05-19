@@ -679,7 +679,7 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Argument Error:  LCM requires integer arguments");
             }
         });
-        map.put("logab",  new MultiParamFunction("logab",   -1, "logab(a) calculates log₁₀(a). logab(a, b) calculates logₐ(b)")
+        map.put("logab",  new MultiParamFunction("log",   -1, "log(a) calculates log₁₀(a). log(a, b) calculates logₐ(b)")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
@@ -697,11 +697,11 @@ public class MultiParamFunctions{
             @Override
             public Expression evaluate(Expression[] parameters) {
                 if (parameters.length > 0){
-                    double largest = parameters[0].valueOf();
-                    for (int b = 1; b<parameters.length; b++){
-                        largest = Math.max(largest, parameters[b].valueOf());
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
                     }
-                    return new NumberExpression(largest);
+                    return new NumberExpression(Stats.getMax(values));
                 }
                 return new InvalidExpression("Invalid Number of Argument Error:  max(a₁,…,aₙ)");
             }
@@ -711,13 +711,105 @@ public class MultiParamFunctions{
             @Override
             public Expression evaluate(Expression[] parameters) {
                 if (parameters.length > 0){
-                    double smallest = parameters[0].valueOf();
-                    for (int b = 1; b<parameters.length; b++){
-                        smallest = Math.min(smallest, parameters[b].valueOf());
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
                     }
-                    return new NumberExpression(smallest);
+                    return new NumberExpression(Stats.getMin(values));
                 }
                 return new InvalidExpression("Invalid Number of Argument Error:  min(a₁,…,aₙ)");
+            }
+        });
+        map.put("mdn",  new MultiParamFunction("median",     -1, "median(a₁,…,aₙ) calculates the median of a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
+                    }
+                    return new NumberExpression(Stats.getQuartiles(values)[1]);
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  median(a₁,…,aₙ)");
+            }
+        });
+        map.put("IQR",  new MultiParamFunction("IQR",     -1, "IQR(a₁,…,aₙ) calculates the Inter Quartile Range of a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
+                    }
+                    double[] quartiles = Stats.getQuartiles(values);
+                    return new NumberExpression(quartiles[2]-quartiles[0]);
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  IQR(a₁,…,aₙ)");
+            }
+        });
+        map.put("spread",  new MultiParamFunction("spread",     -1, "spread(a₁,…,aₙ) gives the 5 number summary for a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
+                    }
+                    String min = _Number_.format(Stats.getMin(values));
+                    String max = _Number_.format(Stats.getMax(values));
+                    double[] quartiles = Stats.getQuartiles(values);
+                    return new StringExpression(
+                            min+", "+_Number_.format(quartiles[0])+", "
+                                    +_Number_.format(quartiles[1])+", "
+                                    +_Number_.format(quartiles[2])+", "+max);
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  spread(a₁,…,aₙ)");
+            }
+        });
+        map.put("kurt",  new MultiParamFunction("kurt",     -1, "kurt(a₁,…,aₙ) gives sample kurtosis a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
+                    }
+                    return new NumberExpression(Stats.kurtosis(values));
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  kurt(a₁,…,aₙ)");
+            }
+        });
+        map.put("skew",  new MultiParamFunction("skew",     -1, "skew(a₁,…,aₙ) gives sample skewness of a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double[] values = new double[parameters.length];
+                    for (int i = 0; i<values.length; ++i){
+                        values[i] = parameters[i].valueOf();
+                    }
+                    return new NumberExpression(Stats.skewness(values));
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  skew(a₁,…,aₙ)");
+            }
+        });
+        map.put("corr",  new MultiParamFunction("corr",     -1, "corr(x₁,y₁,x₂,y₂,…,xₙ,yₙ) gives sample skewness of x₁,y₁,x₂,y₂,…,xₙ,yₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0 && parameters.length%2 == 0){
+                    double[][] values = new double[parameters.length/2][2];
+                    for (int i = 0; i<parameters.length; i += 2){
+                        values[i/2][0] = parameters[i].valueOf();
+                        values[i/2][1] = parameters[i+1].valueOf();
+                    }
+                    return new NumberExpression(Stats.correlation(values));
+                }
+                return new InvalidExpression("Invalid Number of Argument Error:  corr(x₁,y₁,x₂,y₂,…,xₙ,yₙ)");
             }
         });
         map.put("mnd",  new MultiParamFunction("mnd",     -1, "mnd(n,p₁,…,pₙ,"+x+"₁,…,"+x+"ₙ); n trials, probabilities p; calculates P(x₁,…,xₙ) for (x₁,…,xₙ) ~ Multinomial Distribution")
@@ -772,7 +864,7 @@ public class MultiParamFunctions{
                         }
                     }
                 }
-                return new InvalidExpression("Invalid Argument Error:  cdf expected a random variable as input");
+                return new InvalidExpression("Invalid Argument Error:  pdf expected a random variable as input");
             }
         });
         map.put("poi",  new RandomVariable("poi",         -1, "poi(λ); X ~ Poisson Distribution")
@@ -943,6 +1035,20 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Number of Arguments:  stndv(a₁,…,aₙ)");
             }
         });
+        map.put("stndv_",  new MultiParamFunction("stndv_",   -1, "stndv_(a₁,…,aₙ) calculates the standard deviation of a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 1){
+                    double[] data = new double[parameters.length];
+                    for (int b = 0; b<data.length; b++){
+                        data[b] = parameters[b].valueOf();
+                    }
+                    return new NumberExpression(Math.sqrt(Stats.varianceGeneral(data)));
+                }
+                return new InvalidExpression("Invalid Number of Arguments:  stndv(a₁,…,aₙ)");
+            }
+        });
         map.put("strln", new MultiParamFunction("strln", 1, "strln(str) calculates the length of string str") {
             @Override
             public Expression evaluate(Expression[] parameters) {
@@ -1001,6 +1107,20 @@ public class MultiParamFunctions{
                         data[b] = parameters[b].valueOf();
                     }
                     return new NumberExpression(Stats.variance(data));
+                }
+                return new InvalidExpression("Invalid Number of Arguments Error:  var(a₁,…,aₙ)");
+            }
+        });
+        map.put("var_",  new MultiParamFunction("var_",     -1, "var_(a₁,…,aₙ) calculates the general variance of a₁,…,aₙ")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 1){
+                    double[] data = new double[parameters.length];
+                    for (int b = 0; b<data.length; b++){
+                        data[b] = parameters[b].valueOf();
+                    }
+                    return new NumberExpression(Stats.varianceGeneral(data));
                 }
                 return new InvalidExpression("Invalid Number of Arguments Error:  var(a₁,…,aₙ)");
             }

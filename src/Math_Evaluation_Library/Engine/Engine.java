@@ -1,9 +1,6 @@
 package Math_Evaluation_Library.Engine;
 
-import Math_Evaluation_Library.Constants.Const;
-import Math_Evaluation_Library.Constants.Constants;
-import Math_Evaluation_Library.Constants.Scripts;
-import Math_Evaluation_Library.Constants.StringReplacements;
+import Math_Evaluation_Library.Constants.*;
 import Math_Evaluation_Library.ExpressionObjects.MultiParamFunction;
 import Math_Evaluation_Library.ExpressionObjects.Operator;
 import Math_Evaluation_Library.ExpressionObjects.UnaryFunction;
@@ -17,13 +14,15 @@ import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
 import java.util.*;
 
-import static Math_Evaluation_Library.Constants.StringReplacements.textFunctionReplacements;
-import static Math_Evaluation_Library.Engine.TextFunctions.getTextFunction;
-import static Math_Evaluation_Library.Engine.TextFunctions.isTextFunction;
+import static Math_Evaluation_Library.Constants.GreekLetters.getGreekLetter;
+import static Math_Evaluation_Library.Constants.GreekLetters.isGreekLetter;
+import static Math_Evaluation_Library.Constants.StringReplacements.*;
 import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.getMultiParamFunction;
 import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.isMultiParamFunction;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.isOperator;
+import static Math_Evaluation_Library.ExpressionObjects.TextFunctions.getTextFunction;
+import static Math_Evaluation_Library.ExpressionObjects.TextFunctions.isTextFunction;
 import static Math_Evaluation_Library.ExpressionObjects.UnaryFunctions.getUnaryFunction;
 import static Math_Evaluation_Library.ExpressionObjects.UnaryFunctions.isUnaryFunction;
 import static java.lang.Double.NaN;
@@ -64,9 +63,7 @@ public class Engine {
     }
 
     public static String fixSyntax(String function) {
-        if (function.length() == 0){
-            return "";
-        }
+        if (function.length() == 0)    return "";
         error = "Math Error";
         // Find abs brackets
         List<Integer> absBracketIndices = Search.getIndices(function, "|");
@@ -77,18 +74,130 @@ public class Engine {
             function = function.substring(0, open) + "(abs(" + function.substring(open + 1, close) + "))" + function.substring(close + 1);
         }
         function = Search.replace(function, " ", "");
-        function = Search.replace(function, StringReplacements.dynamicInputReplacement);
-        function = Search.replace(function, StringReplacements.capitalInstances);
-        function = function.toLowerCase();
-        function = Search.replace(function, StringReplacements.formReplacements);
+//        function = Search.replace(function, StringReplacements.dynamicInputReplacement);
+//        function = Search.replace(function, StringReplacements.capitalInstances);
+        check: for (int i = 0; i<function.length(); ++i) {
+            for (int j = Math.min(StringReplacements.maxDynamicInputLen, function.length() - i);
+                 j >= StringReplacements.minDynamicInputLen; --j) {
+                String f = function.substring(i, i + j);
+                if (dynamicInputMap.containsKey(f)) {
+                    function = function.substring(0, i) + dynamicInputMap.get(f) + function.substring(i + j);
+                    i += j - 1;
+                    continue check;
+                }
+            }
+            for (int j = Math.min(StringReplacements.maxCapitalInstancesLen, function.length() - i);
+                 j >= StringReplacements.minCapitalInstancesLen; --j) {
+                String f = function.substring(i, i + j);
+                if (capitalInstancesMap.containsKey(f)) {
+                    function = function.substring(0, i) + capitalInstancesMap.get(f) + function.substring(i + j);
+                    i += j - 1;
+                    continue check;
+                }
+            }
+//            for (int j = Math.min(StringReplacements.maxFormReplacementsLen, function.length()-i);
+//                 j >= StringReplacements.minFormReplacementsLen; --j){
+//                String f = function.substring(i, i+j);
+//                if (formReplacementsMap.containsKey(f)){
+//                    function = function.substring(0, i)+formReplacementsMap.get(f)+function.substring(i+j);
+//                    i += j-1;
+//                    continue check;
+//                }
+//            }
+//            for (int j = Math.min(StringReplacements.maxFormReplacements2Len, function.length()-i);
+//                 j >= StringReplacements.minFormReplacements2Len; --j){
+//                String f = function.substring(i, i+j);
+//                if (formReplacements2Map.containsKey(f)){
+//                    function = function.substring(0, i)+formReplacements2Map.get(f)+function.substring(i+j);
+//                    i += j-1;
+//                    continue check;
+//                }
+//            }
+        }
+        boolean previousCharacterIsNum = false;
+        check: for (int i = 0; i<function.length(); ++i){
+            char f1 = function.charAt(i);
+            if (Character.isDigit(f1)){
+                previousCharacterIsNum = true;
+                continue check;
+            }
+            else if (previousCharacterIsNum){
+                previousCharacterIsNum = false;
+                if (f1 == 'E'){
+                    function = function.substring(0, i)+"*10^"+function.substring(i+1);
+                    i += 3;
+                    continue check;
+                }
+                else if (isOperator(f1)){
+                    continue check;
+                }
+            }
+            for (int j = Math.min(UnaryFunction.maxStrLength, function.length()-i);
+                 j >= UnaryFunction.minStrLength; --j){
+                String f = function.substring(i, i+j);
+                boolean b = false;
+                if (isUnaryFunction(f) || (b = isUnaryFunction(f.toLowerCase()))){
+                    if (b) function = function.substring(0, i)+f.toLowerCase()+function.substring(i+j);
+                    i += j-1;
+                    continue check;
+                }
+            }
+            for (int j = Math.min(MultiParamFunction.maxStrLength, function.length()-i);
+                 j >= MultiParamFunction.minStrLength; --j){
+                String f = function.substring(i, i+j);
+                boolean b = false;
+                if (isMultiParamFunction(f) || (b = isMultiParamFunction(f.toLowerCase()))){
+                    if (b) function = function.substring(0, i)+f.toLowerCase()+function.substring(i+j);
+                    i += j-1;
+                    continue check;
+                }
+            }
+            for (int j = Math.min(TextFunction.maxStrLength, function.length()-i);
+                 j >= TextFunction.minStrLength; --j){
+                String f = function.substring(i, i+j);
+                boolean b = false;
+                if (isTextFunction(f) || (b = isTextFunction(f.toLowerCase()))){
+                    if (b) function = function.substring(0, i)+f.toLowerCase()+function.substring(i+j);
+                    i += j-1;
+                    continue check;
+                }
+            }
+            for (int j = Math.min(GreekLetters.maxStrLength, function.length()-i);
+                 j >= GreekLetters.minStrLength; --j){
+                String f = function.substring(i, i+j);
+                if (isGreekLetter(f)){
+                    function = function.substring(0, i)+getGreekLetter(f)+function.substring(i+j);
+                    continue check;
+                }
+            }
+            for (int j = Math.min(StringReplacements.maxFormReplacementsLen, function.length()-i);
+                 j >= StringReplacements.minFormReplacementsLen; --j){
+                String f = function.substring(i, i+j);
+                if (formReplacementsMap.containsKey(f)){
+                    function = function.substring(0, i)+formReplacementsMap.get(f)+function.substring(i+j);
+                    i -= 1;
+                    continue check;
+                }
+            }
+            for (int j = Math.min(StringReplacements.maxFormReplacements2Len, function.length()-i);
+                 j >= StringReplacements.minFormReplacements2Len; --j){
+                String f = function.substring(i, i+j);
+                if (formReplacements2Map.containsKey(f)){
+                    function = function.substring(0, i)+formReplacements2Map.get(f)+function.substring(i+j);
+                    i -= 1;
+                    continue check;
+                }
+            }
+        }
+
+//        function = Search.replace(function, StringReplacements.formReplacements);
         function = Search.replace(function, "ans", String.valueOf(ans));
-        //Implicit Multiplication
         try {
             for (int a = 1; a < function.length(); a++) {
                 char f = function.charAt(a);
                 char f1 = function.charAt(a-1);
-                boolean implicitContainsf1 = implicit.containsKey(f1);
-                if (implicitContainsf1) {
+                //Implicit Multiplication
+                if (implicit.containsKey(f1)) {
                     if (checkImplicit.containsKey(f)) {
                         function = function.substring(0, a) + "*" + function.substring(a);
                         f = function.charAt(a);
@@ -96,14 +205,14 @@ public class Engine {
                 }
                 if (a > 1 && Scripts.isSuperScript(f1) && checkImplicit.containsKey(f)) {
                     char f2 = function.charAt(a-2);
-                    if (implicit.containsKey(f2)){
+                    if (implicit.containsKey(f2) || Scripts.isSuperScript(f2)){
                         function = function.substring(0, a) + "*" + function.substring(a);
-                        f = function.charAt(a);
+                        f2 = function.charAt(a);
                     }
                 }
             }
         } catch (StringIndexOutOfBoundsException e){ return (error = "Invalid Input Error - Found while fixing implicit multiplication"); }
-        function = Search.replace(function, StringReplacements.formReplacements2);
+//        function = Search.replace(function, StringReplacements.formReplacements2);
         int numLbracket = 0;
         int numRbracket = 0;
         for (int a = 0; a < function.length(); a++) {
@@ -114,10 +223,12 @@ public class Engine {
                 numRbracket++;
             }
         }
+        StringBuilder functionBuilder = new StringBuilder(function);
         while (numRbracket < numLbracket){
-            function += ")";
+            functionBuilder.append(")");
             numRbracket++;
         }
+        function = functionBuilder.toString();
         return function;
     }
 
@@ -274,7 +385,7 @@ public class Engine {
                 } else {
                     Expression f = Fraction.toExpression(ev.valueOf());
                     String infix = f.infix();
-                    if (f instanceof NumberExpression || infix.contains("Infinity") || function.trim().contains(infix) || infix.length() > 12) {
+                    if (f instanceof NumberExpression || infix.contains("Infinity") || function.trim().contains(infix)) {
                         return "= " + infix;
                     } else if (evaluated.length() > 13) {
                         return "=  " + infix + " ≈ " + f.valueOf();
@@ -458,7 +569,7 @@ public class Engine {
                             String single = infixFunction.substring(i + 1, end);
                             if (!single.contains(",")) {
                                 if (variables.containsKey(single)){
-                                    output.push(new NumberExpression(variables.get(single)));
+                                    output.push(new VariableExpression(single, variables.get(single)));
                                     i = end;
                                 }
                                 else{

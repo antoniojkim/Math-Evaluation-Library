@@ -369,7 +369,7 @@ public class Fraction{
     public static Expression toExpression(double num){
         if (num%1 == 0) return new NumberExpression(num);
 
-        double[] fraction = getFraction(num);
+        long[] fraction = getFraction(num);
         if (fraction != null && String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
 //            System.out.println("Found "+fraction[0]+"/"+fraction[1]+"  in "+fraction[3]+" iterations");
             if (fraction[2] < 0)
@@ -381,13 +381,17 @@ public class Fraction{
             boolean neg = num < 0;
             fraction = getFraction(num*num);
             if (fraction != null){
-                fraction[1] = Math.sqrt(fraction[1]);
-                if (fraction[1]%1 == 0 && String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
+                System.out.println(fraction);
+                double sqrt = Math.sqrt(fraction[1]);
+                if (sqrt%1 == 0 && String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
 //                    System.out.println("Found √"+fraction[0]+"/"+fraction[1]+"  in "+fraction[3]+" iterations");
                     if (neg)
-                        return new UnaryExpression("neg", new OperatorExpression("√", new NumberExpression(fraction[0])).divide(fraction[1]));
+                        return new UnaryExpression("neg", new OperatorExpression("√", new NumberExpression(fraction[0])).divide(sqrt));
                     else
-                        return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(fraction[1]);
+                        return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(sqrt);
+                }
+                else{
+                    return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(fraction[1]);
                 }
             }
         }
@@ -416,23 +420,25 @@ public class Fraction{
 //        if (Trig.asec(num)%1 == 0)  return new UnaryExpression("sec", new NumberExpression(Trig.asec(num)));
 //        if (Trig.acot(num)%1 == 0)  return new UnaryExpression("cot", new NumberExpression(Trig.acot(num)));
 
-        if (Math.exp(num)%1 == 0)   return new UnaryExpression("ln", new NumberExpression(Math.exp(num)));
-        if (Math.pow(10, num)%1 == 0)   return new UnaryExpression("log", new NumberExpression(Math.pow(10, num)));
+        double n = Math.exp(num);
+        if (Math.abs(n) <= Long.MAX_VALUE && n%1 == 0)   return new UnaryExpression("ln", new NumberExpression(n));
+        n = Math.pow(10, num);
+        if (Math.abs(n) <= Long.MAX_VALUE && n%1 == 0)   return new UnaryExpression("log", new NumberExpression(n));
 
         if (Math.exp(1/num)%1 == 0)   return new OperatorExpression("/", new NumberExpression(1), new UnaryExpression("ln", new NumberExpression(Math.exp(1/num))));
         if (Math.pow(10, 1/num)%1 == 0)   return new OperatorExpression("/", new NumberExpression(1), new UnaryExpression("log", new NumberExpression(Math.pow(10, 1/num))));
 
         return new NumberExpression(num);
     }
-    private static double[] getFraction(double x0){
-        int sign = x0 < 0 ? -1 : 1;
+    private static long[] getFraction(double x0){
+        double sign = x0 < 0 ? -1 : 1;
         double g = Math.abs(x0);
-        double a = 0, b = 1, c = 1, d = 0;
-        double s;
+        long a = 0, b = 1, c = 1, d = 0;
+        long s;
         int iter = 0;
-        double numerator = 0, denominator = 1;
+        long numerator = 0, denominator = 1;
         while (iter++ < 1e6){
-            s = Math.floor(g);
+            s = (long)Math.floor(g);
             numerator = a + s*c;
             denominator = b + s*d;
             a = c;
@@ -441,7 +447,7 @@ public class Fraction{
             d = denominator;
             g = 1.0/(g-s);
             if(error>Math.abs(sign*numerator/denominator-x0)){
-                return new double[]{numerator, denominator, sign, iter};
+                return new long[]{numerator, denominator, (long)sign, iter};
             }
         }
         return null;
