@@ -5,6 +5,8 @@ import Math_Evaluation_Library.ExpressionObjects.MultiParamFunction;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Math_Evaluation_Library.ExpressionObjects.MultiParamFunctions.getMultiParamFunction;
+
 /**
  * Created by Antonio on 2017-11-23.
  */
@@ -13,14 +15,27 @@ public class MultiParamExpression extends Expression {
     MultiParamFunction function;
     Expression[] parameters;
 
-    public MultiParamExpression(MultiParamFunction function, String... parameters){
-        this.function = function;
-        if (parameters.length == 1 && parameters[0].length() == 0){
-            this.parameters = new Expression[]{};
-        }
-        else{
-            this.parameters = function.convert(parameters);
-        }
+//    public MultiParamExpression(String function, String... parameters){
+//        this.function = getMultiParamFunction(function);
+//        if (parameters.length == 1 && parameters[0].length() == 0){
+//            this.parameters = new Expression[]{};
+//        }
+//        else{
+//            this.parameters = this.function.convert(parameters);
+//        }
+//    }
+//    public MultiParamExpression(MultiParamFunction function, String... parameters){
+//        this.function = function;
+//        if (parameters.length == 1 && parameters[0].length() == 0){
+//            this.parameters = new Expression[]{};
+//        }
+//        else{
+//            this.parameters = function.convert(parameters);
+//        }
+//    }
+    public MultiParamExpression(String function, Expression[] parameters){
+        this.function = getMultiParamFunction(function);
+        this.parameters = parameters;
     }
     public MultiParamExpression(MultiParamFunction function, Expression[] parameters){
         this.function = function;
@@ -119,7 +134,7 @@ public class MultiParamExpression extends Expression {
     public String postfix() {
         StringBuilder postfix = new StringBuilder(function.getFunction());
         for (Expression e : parameters){
-            postfix.append(" ").append(e.infix());
+            postfix.append(" ").append(e.postfix());
         }
         return postfix.toString();
     }

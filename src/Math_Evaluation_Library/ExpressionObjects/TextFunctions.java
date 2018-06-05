@@ -14,7 +14,6 @@ import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
-import Math_Evaluation_Library.Objects.TextFunction;
 import Math_Evaluation_Library.Objects._Number_;
 import Math_Evaluation_Library.Sort;
 

@@ -124,13 +124,20 @@ public class Print {
     }
 
 
+    public static<E> String toString(List<E> list){
+        StringBuilder sb = new StringBuilder();
+        if (list.size() > 0) {
+            sb.append("[").append(list.get(0).toString());
+            for (int i = 1; i < list.size(); i++){
+                sb.append(", ").append(list.get(i).toString());
+            }
+            sb.append("]");
+        }
+        return sb.toString();
+    }
     public static void println(List<String> list){
         if (list.size() > 0) {
-            System.out.print("["+list.get(0));
-            for (int i = 1; i < list.size(); i++){
-                System.out.print(", "+list.get(i));
-            }
-            System.out.println("]");
+            System.out.println(toString(list));
         }
     }
 

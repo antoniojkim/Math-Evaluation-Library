@@ -19,6 +19,14 @@ public class VariableExpression extends Expression {
     public VariableExpression(){   var = Engine.var; }
     public VariableExpression(String var){
         this.var = var;
+        if (Engine.variables.containsKey(var)){
+            this.val = new NumberExpression(Engine.variables.get(var));
+            set = true;
+        }
+        else if (Engine.variableFunctions.containsKey(var)){
+            this.val = Engine.variableFunctions.get(var);
+            set = true;
+        }
     }
     public VariableExpression(char var){
         this.var = String.valueOf(var);

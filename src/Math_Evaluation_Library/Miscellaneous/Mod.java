@@ -5,19 +5,19 @@ package Math_Evaluation_Library.Miscellaneous;
  */
 public class Mod {
 
-    public static int gcf (int num1, int num2){
+    public static long gcf (long num1, long num2){
         return gcd(num1, num2);
     }
-    public static int gcd (int num1, int num2){
-        int high = Math.abs(Math.max(num1, num2));
-        int low = Math.abs(Math.min(num1, num2));
-        int remainder = high%low;
+    public static long gcd (long num1, long num2){
+        long high = Math.abs(Math.max(num1, num2));
+        long low = Math.abs(Math.min(num1, num2));
+        long remainder = high%low;
         if (remainder == 0){
             return low;
         }
         return gcd(low, remainder);
     }
-    public static int lcm (int num1, int num2){
+    public static long lcm (long num1, long num2){
         return num1*num2/gcd(num1, num2);
     }
 

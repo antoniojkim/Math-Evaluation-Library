@@ -1,8 +1,11 @@
 package Math_Evaluation_Library.ExpressionObjects;
 
+import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.Expressions.Expression;
 
-import static Math_Evaluation_Library.Engine.Engine.toExpression;
+import java.util.List;
+
+import static Math_Evaluation_Library.Expressions.Expression.toExpression;
 
 /**
  * Created by Antonio on 2017-10-14.
@@ -61,10 +64,10 @@ public abstract class MultiParamFunction {
         return description;
     }
 
-    public Expression[] convert(String[] parameters){
-        Expression[] ets = new Expression[parameters.length];
-        for (int i = 0; i<parameters.length; ++i){
-            ets[i] = toExpression(parameters[i]);
+    public Expression[] convert(List<List<Scanner.Token>> parameters){
+        Expression[] ets = new Expression[parameters.size()];
+        for (int j = 0; j<parameters.size(); ++j){
+            ets[j] = toExpression(parameters.get(j));
         }
         return ets;
     }

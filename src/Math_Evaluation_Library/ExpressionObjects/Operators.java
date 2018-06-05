@@ -384,7 +384,7 @@ public class Operators {
                                     new NumberExpression(y.valueOf()+1)),
                             new NumberExpression(y.valueOf()+1));
                 }
-                else if (x instanceof ConstantExpression && ((ConstantExpression) x).getConstant() == 'ℯ' &&
+                else if (x instanceof ConstantExpression && ((ConstantExpression) x).getConstant() == 'e' &&
                         y instanceof VariableExpression){
                     return new OperatorExpression(Operators.getOperator("^"), x, y);
                 }

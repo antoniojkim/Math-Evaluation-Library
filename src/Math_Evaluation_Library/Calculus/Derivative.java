@@ -45,7 +45,7 @@ public class Derivative {
                     new OperatorExpression("*", x.calculateDerivative(),
                             new OperatorExpression("^", x, new NumberExpression(y.valueOf()-1))));
         }
-        else if (x instanceof ConstantExpression && ((ConstantExpression) x).getConstant() == 'ℯ'){
+        else if (x instanceof ConstantExpression && ((ConstantExpression) x).getConstant() == 'e'){
             return new OperatorExpression("*",
                     new OperatorExpression("^", x, y),
                     y.calculateDerivative());

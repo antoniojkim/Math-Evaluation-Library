@@ -16,7 +16,7 @@ public class Complex_Number_Tests extends _Tests_{
         evaluationTest("(2+3i)-(3+4i)", "-1-i");
         evaluationTest("(2+3i)*(3+4i)", "-6+17i");
         evaluationTest("(2+3i)/(3+4i)", "0.72+0.04i");
-        evaluationTest("sin(2+3i)", "NaN");
+        evaluationTest("sin(2+3i)", "9.15449914691143-4.168906959966565i");
     }
 
 }

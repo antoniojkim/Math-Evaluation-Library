@@ -54,7 +54,7 @@ public class Constants {
         }
     }
 
-    public static char[] constantChar = {'γ', 'π', 'ϕ', 'ℯ', '∞'};
+    public static char[] constantChar = {'e', 'γ', 'π', 'ϕ', '∞'};
     public static boolean isConstant(String str){
         if (str.length() == 1){
             return isConstant(str.charAt(0));

@@ -3,6 +3,7 @@ package Math_Evaluation_Library.Expressions;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.Miscellaneous.Fraction;
 import org.jblas.DoubleMatrix;
+import org.jblas.Solve;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,12 @@ public class MatrixExpression extends Expression {
 
     public MatrixExpression(String strMatrix){
         m = _Matrix_.toDoubleMatrix(strMatrix);
+    }
+    public MatrixExpression(double[] values){
+        m = new DoubleMatrix(values);
+    }
+    public MatrixExpression(double[][] values){
+        m = new DoubleMatrix(values);
     }
     public MatrixExpression(DoubleMatrix m){
         this.m = m;
@@ -58,6 +65,17 @@ public class MatrixExpression extends Expression {
             numbers.add(n);
         }
         return numbers;
+    }
+
+    public MatrixExpression invert(){
+        m = Solve.pinv(m);
+        strMatrix = null;
+        return this;
+    }
+    public MatrixExpression transpose(){
+        m = m.transpose();
+        strMatrix = null;
+        return this;
     }
 
     @Override

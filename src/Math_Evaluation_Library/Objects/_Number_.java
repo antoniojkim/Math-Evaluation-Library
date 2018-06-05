@@ -102,6 +102,17 @@ public class _Number_ {
         }
         return num;
     }
+    public static String toTwosComplement(long x){
+        if (x >= 0){
+            return toBinary(x);
+        }
+        x = -x;
+
+        long f = floor2(x);
+        if (x != f)    f <<= 1;
+
+        return "10"+toBinary(f-x);
+    }
 
     public static long fromHex(String binary){
         long num = 0;
@@ -135,6 +146,14 @@ public class _Number_ {
         return (num > 0 ? "+" : (num < 0 ? "-" : ""));
     }
 
+    public static long isPerfectSquare(long num){
+        long sqrt = (long) Math.sqrt(num);
+        if (num == sqrt*sqrt){
+            return sqrt;
+        }
+        return -1;
+    }
+
     public static boolean isNumber(double num){
         String str = String.valueOf(num).toLowerCase();
         if (str.contains("nan") || str.contains("infinity") || str.contains("error")){
@@ -147,17 +166,39 @@ public class _Number_ {
         if (lstr.contains("error") || lstr.contains("nan") || lstr.contains("infinity")){
             return false;
         }
-        try{
-            double num = Double.parseDouble(str);
+        else if (Constants.isConstant(str)){
             return true;
-        }catch(NumberFormatException e){}
-        return isNumber(Constants.getConstant(str));
+        }
+        char[] array = str.toCharArray();
+        boolean negativeCheck = false;
+        boolean point = false;
+        boolean isNumber = false;
+        for (char c : array){
+            if (c >= '0' && c <= '9') {
+                isNumber = true;
+            } else {
+                if (!negativeCheck && c == '-'){
+                    negativeCheck = true;
+                    continue;
+                }
+                if (!point && c == '.'){
+                    point = true;
+                    continue;
+                }
+                return false;
+            }
+        }
+        return isNumber;
     }
     public static boolean isNumber(char c){
+        return isNumber(c, true);
+//        return Constants.;
+    }
+    public static boolean isNumber(char c, boolean checkConstants){
         if (c >= 48 && c <= 57) {//c >= 0 && c <= 9
             return true;
         }
-        return Constants.isConstant(c);
+        return checkConstants && Constants.isConstant(c);
 //        return Constants.;
     }
 

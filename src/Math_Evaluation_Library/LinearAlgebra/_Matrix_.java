@@ -1,11 +1,18 @@
 package Math_Evaluation_Library.LinearAlgebra;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Engine.Scanner;
+import Math_Evaluation_Library.Expressions.Expression;
+import Math_Evaluation_Library.Expressions.InvalidExpression;
+import Math_Evaluation_Library.Expressions.MatrixExpression;
 import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Objects._Number_;
+import Math_Evaluation_Library.Print;
 import Math_Evaluation_Library.Search;
 import org.jblas.DoubleMatrix;
 import org.jblas.Solve;
+
+import java.util.List;
 
 import static java.lang.Double.NaN;
 
@@ -374,6 +381,41 @@ public class _Matrix_ {
     //      {1 2 3; 3 2 1; 1 2 3}
     //      [[1,2,3],[3,2,1],[1,2,3]]*[[4,5,6],[6,5,4],[4,6,5]]
     //      {{1,2,3},{3,2,1},{1,2,3}}*{{4,5,6},{6,5,4},{4,6,5}}
+    public static Expression toExpression(List<Scanner.Token> tokens, int start){
+        return toExpression(tokens, start, tokens.size());
+    }
+    public static Expression toExpression(List<Scanner.Token> tokens, int start, int end){
+        if (start < tokens.size()){
+            Scanner.TokenType startType = tokens.get(start).getType();
+            if (startType == Scanner.TokenType.LCURLY ||
+                    startType == Scanner.TokenType.LSQUARE ||
+                    startType == Scanner.TokenType.LPAREN){
+                List<List<Scanner.Token>> parameters = Search.splitTokens(tokens, start+1, Scanner.TokenType.COMMA, end);
+                Expression[] expressions = new Expression[parameters.size()];
+                boolean isNumber = false, isMatrix = false;
+                for (int i = 0; i<expressions.length; ++i){
+                    expressions[i] = Expression.toExpression(parameters.get(i));
+                }
+                double[][] values = new double[expressions.length][];
+                boolean transpose = true;
+                for (int i = 0; i<values.length; ++i){
+                    if (expressions[i] instanceof MatrixExpression){
+                        values[i] = ((MatrixExpression)expressions[i]).doubleMatrix().data;
+                        transpose = false;
+                    }
+                    else {
+                        values[i] = new double[]{expressions[i].valueOf()};
+                    }
+                }
+                MatrixExpression me = new MatrixExpression(values);
+                if (transpose) {
+                    me.transpose();
+                }
+                return me;
+            }
+        }
+        return new InvalidExpression("Invalid Matrix:  "+ Print.toString(tokens));
+    }
     public static DoubleMatrix toDoubleMatrix(String strMatrix){
         try{
             if (_Number_.isNumber(strMatrix)){

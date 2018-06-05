@@ -6,6 +6,7 @@
 package Math_Evaluation_Library;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.Objects.MathObject;
 import Math_Evaluation_Library.Objects.VarNum;
 
@@ -270,6 +271,124 @@ public class Search {
             return indices.size() != 0;
         }
         return true;
+    }
+
+    public static List<Integer> searchTokens(List<Scanner.Token> tokens, Scanner.TokenType type){
+        return searchTokens(tokens, type, 0, tokens.size(), true);
+    }
+    public static List<Integer> searchTokens(List<Scanner.Token> tokens, Scanner.TokenType type, int start){
+        return searchTokens(tokens, type, start, tokens.size(), true);
+    }
+    public static List<Integer> searchTokens(List<Scanner.Token> tokens, Scanner.TokenType type, int start, int end){
+        return searchTokens(tokens, type, start, end, true);
+    }
+    public static List<Integer> searchTokens(List<Scanner.Token> tokens, Scanner.TokenType type, int start, int end, boolean brackets){
+        List<Integer> indices = new ArrayList<>();
+        int bracket = 0, hbracket = 0, cbracket = 0;
+        for (int j = start; j<end; ++j){
+            if (tokens.get(j).getType() == type){
+                if (!brackets || (bracket == 0 && hbracket == 0 && cbracket == 0)) indices.add(j);
+            }
+            if (tokens.get(j).getType() == Scanner.TokenType.LPAREN){
+                ++bracket;
+            } else if (tokens.get(j).getType() == Scanner.TokenType.LSQUARE){
+                ++hbracket;
+            } else if (tokens.get(j).getType() == Scanner.TokenType.LCURLY){
+                ++cbracket;
+            }
+            else if (tokens.get(j).getType() == Scanner.TokenType.RPAREN){
+                --bracket;
+                if (bracket < 0){
+                    indices.add(j);
+                    break;
+                }
+            } else if (tokens.get(j).getType() == Scanner.TokenType.RSQUARE){
+                --hbracket;
+                if (hbracket < 0){
+                    indices.add(j);
+                    break;
+                }
+            } else if (tokens.get(j).getType() == Scanner.TokenType.RCURLY){
+                --cbracket;
+                if (cbracket < 0){
+                    indices.add(j);
+                    break;
+                }
+            }
+        }
+        return indices;
+    }
+    public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens){
+        return splitTokens(tokens, 0, Scanner.TokenType.COMMA, tokens.size());
+    }
+    public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start){
+        return splitTokens(tokens, start, Scanner.TokenType.COMMA, tokens.size());
+    }
+    public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start, Scanner.TokenType type){
+        return splitTokens(tokens, start, type, tokens.size());
+    }
+    public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start, Scanner.TokenType type, int end){
+        List<List<Scanner.Token>> lists = new ArrayList<>();
+        List<Integer> commas = searchTokens(tokens, type, start, end);
+        if (!commas.isEmpty()){
+            commas.add(0, start-1);
+            Scanner.TokenType tokenType = tokens.get(commas.get(commas.size()-1)).getType();
+            if (tokenType != Scanner.TokenType.RPAREN && tokenType != Scanner.TokenType.RSQUARE &&
+                    tokenType != Scanner.TokenType.RCURLY){
+                commas.add(end);
+            }
+            for (int i = 1; i<commas.size(); ++i){
+                List<Scanner.Token> sublist = tokens.subList(commas.get(i-1)+1, commas.get(i));
+                if (!sublist.isEmpty()){
+                    lists.add(tokens.subList(commas.get(i-1)+1, commas.get(i)));
+                }
+            }
+        }
+        else{
+            List<Scanner.Token> sublist = tokens.subList(start, end);
+            if (!sublist.isEmpty()){
+                lists.add(new ArrayList<>(sublist));
+            }
+        }
+        return lists;
+    }
+    public static boolean containsToken(List<Scanner.Token> tokens, Scanner.TokenType type){
+        return tokenIndex(tokens, type, 0, tokens.size(), true) != -1;
+    }
+    public static boolean containsToken(List<Scanner.Token> tokens, Scanner.TokenType type, int start){
+        return tokenIndex(tokens, type, start, tokens.size(), true) != -1;
+    }
+    public static boolean containsToken(List<Scanner.Token> tokens, Scanner.TokenType type, int start, int end){
+        return tokenIndex(tokens, type, start, end, true) != -1;
+    }
+    public static int tokenIndex(List<Scanner.Token> tokens, Scanner.TokenType type){
+        return tokenIndex(tokens, type, 0, tokens.size(), true);
+    }
+    public static int tokenIndex(List<Scanner.Token> tokens, Scanner.TokenType type, int start){
+        return tokenIndex(tokens, type, start, tokens.size(), true);
+    }
+    public static int tokenIndex(List<Scanner.Token> tokens, Scanner.TokenType type, int start, int end){
+        return tokenIndex(tokens, type, start, end, true);
+    }
+    public static int tokenIndex(List<Scanner.Token> tokens, Scanner.TokenType type, int start, int end, boolean brackets){
+        int bracket = 0;
+        for (int j = start; j<end; ++j){
+            if (tokens.get(j).getType() == type){
+                if (!brackets || bracket == 0) return j;
+            }
+            if (tokens.get(j).getType() == Scanner.TokenType.LPAREN ||
+                    tokens.get(j).getType() == Scanner.TokenType.LSQUARE ||
+                    tokens.get(j).getType() == Scanner.TokenType.LCURLY){
+                ++bracket;
+            }
+            else if (tokens.get(j).getType() == Scanner.TokenType.RPAREN ||
+                    tokens.get(j).getType() == Scanner.TokenType.RSQUARE ||
+                    tokens.get(j).getType() == Scanner.TokenType.RCURLY){
+                --bracket;
+                if (bracket < 0)    break;
+            }
+        }
+        return -1;
     }
 
     public static String replace(String text, String... searchReplace) {

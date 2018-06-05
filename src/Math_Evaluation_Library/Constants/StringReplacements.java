@@ -19,10 +19,18 @@ public class StringReplacements {
 
             {"sum", "∑"}, {"product", "∏"},   {"nint", "∫"},  {"dist", "∆"},
 
-            {"<->", "↔"}, {"d->", "↓"}, {"!^", "↓"}, {"->", "→"}, {"_=", "≡"}, {"\\|", separator}, {"|\\", separator}, {"||", separator},
+            {"<->", "↔"}, {"d->", "↓"}, {"!^", "↓"}, {"->", "→"}, {"_=", "≡"}, {"\\|", separator}, {"|\\", separator},
             {"=s", "⩵"}, {"==", "⩵"}, {":=", "≔"}, {"xor", "⊕"}, {"floor_2", "floor₂"},
             {"\\and", "∧"}, {"\\or", "∨"}, {"\\iff", "↔"}, {"\\not", "¬"},
-            {"<<", "≪"},  {">>", "≫"},  {"@", "C"}, {"}I", "}ᴵ"}, {"}^-1", "}ᴵ"}, {"]I", "]ᴵ"}, {"]^-1", "]ᴵ"}
+            {"<<", "≪"},  {">>", "≫"},  {"@", "C"},
+
+            {"}I", "}ᴵ"}, {"}^-1", "}ᴵ"}, {"]I", "]ᴵ"}, {"]^-1", "]ᴵ"},
+            {"}T", "}ᵀ"}, {"}^T", "}ᵀ"}, {"]T", "]ᵀ"}, {"]^T", "]ᵀ"},
+
+            {"-+", "-"},  {"+-", "-"},    {"--", "+"},  {"++", "+"},
+            {"−", "-"},   {"÷", "/"},    {"×", "*"},  {"**", "^"}, {"⋅", "·"},   {"\\.", "·"}, {"\\dot", "·"}, {"··", "^"},
+            {"=_", "≡"},  {"=>", "⇒"},  {"\\=", "≈"},  {"!=", "≠"},
+            {"°c", "°C"}, {"°f", "°F"},  {"\\em", "γ"}, {"\\gr", "ϕ"}
     };
     public static int maxDynamicInputLen = 7;
     public static int minDynamicInputLen = 1;
@@ -41,75 +49,20 @@ public class StringReplacements {
         return map;
     }
 
-    public static final String[][] capitalInstances = {
-            {"RREF", "rowr"},{"RREf", "rowr"},{"RCEF", "rowc"},{"RCEf", "rowc"},
-//            {"P", "npr"},   {"C", "@"},
-            {"}t", "}ᵀ"},   {"}T", "}ᵀ"},    {"}⁻¹", "}ᴵ"},
-            {"]t", "]ᵀ"},   {"]T", "]ᵀ"},    {"]⁻¹", "]ᴵ"},
-//            {"ND", "ngd"},  {"Exp", "rvxp"}, {"Γ", "gammaf"},
-//            {"Bin", "bd"},  {"NB", "nbd"},
+    public static final String[][] functionReplacements = {
+            {"RREf", "RREF"}, {"RCEf", "RCEF"},
+            {"ED", "∆"},  {"TeX", "$$"},  {"tex", "$$"},  {"hex", "b₁₆"},
             {"geo", "gnb"},
-//            {"Var", "rvvar"},
-//            {"E", "*10^"},
-            {"ED", "∆"},  {"TeX", "$$"},  {"tex", "$$"},  {"hex", "b₁₆"}
-    };
-    public static int maxCapitalInstancesLen = 4;
-    public static int minCapitalInstancesLen = 1;
-    public static final HashMap<String, String> capitalInstancesMap = createCapitalInstancesMap();
-    private static HashMap<String, String> createCapitalInstancesMap(){
-        HashMap<String, String> map = new HashMap<>();
-        for (String[] pair : capitalInstances){
-            map.put(pair[0], pair[1]);
-            if (pair[0].length() > maxCapitalInstancesLen){
-                maxCapitalInstancesLen = pair[0].length();
-            }
-            else if (pair[0].length() < minCapitalInstancesLen){
-                minCapitalInstancesLen = pair[0].length();
-            }
-        }
-        return map;
-    }
-
-    public static final String[][] formReplacements = {
-            {"npr", "P"}, {"@", "C"},    {"-+", "-"},  {"+-", "-"},    {"--", "+"},  {"++", "+"},
-            {"−", "-"},   {"÷", "/"},    {"×", "*"},  {"**", "^"}, {"⋅", "·"},   {"\\.", "·"}, {"\\dot", "·"}, {"··", "^"},
-            {"=_", "≡"},
-//                {"=>", "⇒"},  {"\\=", "≈"},  {"!=", "≠"},
-            {"°c", "°C"}, {"°f", "°F"},
 
             {"ave", "avg"},      {"mean", "avg"},
-//            {"sec", "scnt"},
-//            {"aexp", "axp"},
-//            {"exp", "axp"},
             {"coslaw", "c_law"},
-            {"1n1p", "lp"},      {"1og1p", "lp"},     {"1og1p", "lp"},     {"log(", "logab("},   {"deg", "dg"},       {"det", "dt"},
-            {"elasy", "lasd"},   {"elasx", "lasd"},   {"elasd", "lasd"},   {"prime", "nconst"},  {"heron", "hron"},   {"newton", "nwton"},
+            {"1n1p", "lp"},      {"1og1p", "lp"},     {"1og1p", "lp"},     {"log(", "logab("},   {"dg", "deg"},       {"dt", "det"},
+            {"elasy", "lasd"},   {"elasx", "lasd"},
             {"fibsum", "smfib"}, {"sumfib", "smfib"}, {"variance", "var"}, {"stdev", "stndv"},   {"stddev", "stndv"}, {"stndev", "stndv"},
-            {"ceil", "up"},      {"nderiv", "dx"},    {"deriv", "diff"},   {"riemann", "riman"}, {"randomint", "randint"}, {"randomQ", "randq"}, {"randomq", "randq"},
+            {"ceil", "up"},      {"nderiv", "dx"},    {"diff", "deriv"},   {"randomint", "randint"}, {"randomQ", "randq"}, {"randomq", "randq"},
             {"gcf", "gcd"},      {"erf", "gaussrf"},  {"gammaf", "Γ"},     {"postfix", "RPN"},
             {"len", "strln"},    {"strlen", "strln"}, {"count", "strln"},  {"median", "mdn"},    {"iqr", "raniq"},
-
-            {"pi", "π"}, {"e_m", "γ"}, {"e", "ℯ"}, {"gr", "ϕ"}
-    };
-    public static int maxFormReplacementsLen = 8;
-    public static int minFormReplacementsLen = 1;
-    public static final HashMap<String, String> formReplacementsMap = createFormReplacementsMap();
-    public static HashMap<String, String> createFormReplacementsMap(){
-        HashMap<String, String> map = new HashMap<>();
-        for (String[] pair : formReplacements){
-            map.put(pair[0], pair[1]);
-            if (pair[0].length() > maxFormReplacementsLen){
-                maxFormReplacementsLen = pair[0].length();
-            }
-            else if (pair[0].length() < minFormReplacementsLen){
-                minFormReplacementsLen = pair[0].length();
-            }
-        }
-        return map;
-    }
-
-    public static final String[][] formReplacements2 = {
-            {"intmax", "2147483647"}, {"intmin", "-2147483648"}, {"hparg", "graph"}, {"dg", "deg"}, {"dt", "det"},
+            {"totwoc", "totwo"},
 
             {"axp", "exp"},     {"up", "ceil"},      {"gaussrf", "erf"},
             {"scnt", "sec"},    {"/sec", "cos"},     {"/csc", "sin"},     {"/cot", "tan"},
@@ -117,46 +70,27 @@ public class StringReplacements {
             {"atan", "arctan"}, {"tan⁻¹", "arctan"}, {"asec", "arcsec"},  {"sec⁻¹", "arcsec"},
             {"acsc", "arccsc"}, {"csc⁻¹", "arccsc"}, {"acot", "arccot"},  {"cot⁻¹", "arccot"},
 
-            {"diff", "deriv"}, {"riman", "riemann"}, {"max\\*", "max"}, {"lasd", "elasd"}, {"nconst", "prime"},
-            {"hron", "heron"}, {"nwton", "newton"},  {"nbd", "NB"},     {"bd", "Bin"},     {"gnb", "geo"},
+            {"nbd", "NB"},     {"bd", "Bin"},     {"gnb", "geo"},
             {"ngd", "ND"},     {"rvxp", "Exp"},      {"rvvar", "Var"},  {"Cdf", "cdf"},    {"Pdf", "pdf"},    {"pf", "pdf"},
 
-            {"rowr", "RREF"},  {"rowc", "RCEF"}
-    };
-    public static int maxFormReplacements2Len = 7;
-    public static int minFormReplacements2Len = 2;
-    public static final HashMap<String, String> formReplacements2Map = createFormReplacements2Map();
-    private static HashMap<String, String> createFormReplacements2Map(){
-        HashMap<String, String> map = new HashMap<>();
-        for (String[] pair : formReplacements2){
-            map.put(pair[0], pair[1]);
-            if (pair[0].length() > maxFormReplacements2Len){
-                maxFormReplacements2Len = pair[0].length();
-            }
-            else if (pair[0].length() < minFormReplacements2Len){
-                minFormReplacements2Len = pair[0].length();
-            }
-        }
-        return map;
-    }
+            {"rowr", "RREF"},  {"rowc", "RCEF"},
 
-    public static final String[][] textFunctionReplacements = {
             {"antideriv", "int"}, {"antidiff", "int"}, {"cmplx", "complex"},
             {"directF", "slopeF"}, {"perpendicular", "perp"}, {"plt", "plot"}, {"primf", "primef"}, {"projection", "proj"},
             {"df", "slopeF"}, {"sf", "slopeF"}, {"diff", "deriv"}, {"congruence", "≡"}, {"parse", "RPN"}, {"postfix", "RPN"}
     };
-    public static int maxTextFunctionReplacementsLen = 7;
-    public static int minTextFunctionReplacementsLen = 2;
-    public static final HashMap<String, String> textFunctionReplacementsMap = createTextFunctionReplacementsMap();
-    private static HashMap<String, String> createTextFunctionReplacementsMap(){
+    public static int maxFunctionReplacementsLen = 13;
+    public static int minFunctionReplacementsLen = 2;
+    public static final HashMap<String, String> functionReplacementsMap = createFunctionReplacementsMap();
+    public static HashMap<String, String> createFunctionReplacementsMap(){
         HashMap<String, String> map = new HashMap<>();
-        for (String[] pair : textFunctionReplacements){
+        for (String[] pair : functionReplacements){
             map.put(pair[0], pair[1]);
-            if (pair[0].length() > maxTextFunctionReplacementsLen){
-                maxTextFunctionReplacementsLen = pair[0].length();
+            if (pair[0].length() > maxFunctionReplacementsLen){
+                maxFunctionReplacementsLen = pair[0].length();
             }
-            else if (pair[0].length() < minTextFunctionReplacementsLen){
-                minTextFunctionReplacementsLen = pair[0].length();
+            else if (pair[0].length() < minFunctionReplacementsLen){
+                minFunctionReplacementsLen = pair[0].length();
             }
         }
         return map;

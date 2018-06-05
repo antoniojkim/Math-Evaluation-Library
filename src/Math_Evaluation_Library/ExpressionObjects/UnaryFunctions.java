@@ -515,6 +515,13 @@ public class UnaryFunctions {
         {
             @Override
             public Expression evaluate(Expression x) {
+                if (x instanceof ComplexExpression){
+                    ComplexExpression ce = (ComplexExpression) x;
+                    return new ComplexExpression(
+                            Math.cos(ce.getReal())*Math.cosh(ce.getImaginary()),
+                            Math.sin(ce.getReal())*Math.sinh(ce.getImaginary())
+                    );
+                }
                 return new NumberExpression(Math.cos(x.valueOf()));
             }
             @Override
@@ -988,6 +995,13 @@ public class UnaryFunctions {
         {
             @Override
             public Expression evaluate(Expression x) {
+                if (x instanceof ComplexExpression){
+                    ComplexExpression ce = (ComplexExpression) x;
+                    return new ComplexExpression(
+                            Math.sin(ce.getReal())*Math.cosh(ce.getImaginary()),
+                            Math.cos(ce.getReal())*Math.sinh(ce.getImaginary())
+                    );
+                }
                 return new NumberExpression(Math.sin(x.valueOf()));
             }
             @Override
@@ -1080,15 +1094,6 @@ public class UnaryFunctions {
                             new UnaryExpression(getUnaryFunction("cosh"), x));
                 }
                 return super.getIntegral(x);
-            }
-        });
-        map.put("tobin", new UnaryFunction("tobin", "tobin(x) produces the binary form of x")
-        {
-            @Override
-            public Expression evaluate(Expression x) {
-                double n = x.valueOf();
-                if (n % 1 == 0) return new StringExpression(_Number_.toBinary((long)n));
-                return new InvalidExpression("Invalid Argument Error:  tobin expected integer");
             }
         });
         map.put("Var", new UnaryFunction("Var", "Var(X) calculates variance of X")

@@ -16,10 +16,15 @@ public class _Math_Evaluation_Library_Tests_ {
 
         runTests();
 //        runTrial();
-
     }
 
     public static void runTrial(){
+//        new Scanner_Tests("Scanner").run();
+//        new Postfix_Tests("Postfix").run();
+//        new Fraction_Tests("Fraction").run();
+//        new Random_Variables_Tests("RV").evaluationTest("Exp(hyp())", "Exp(X ~ Hypergeometric(N, r, n)) = n×r/N");
+//        new Engine_Tests("Engine").evaluationTest("exp2", 7.38905609893065);
+//        new Simplify_Tests("Simplify").simplificationTest("sin(1-i)", "sin(1-i)");
 //        String input = "5⁰²(sin3)";
 //        System.out.println(Engine.fixSyntax(input));
 //        Expression e = Engine.toExpression(input);
@@ -81,6 +86,8 @@ public class _Math_Evaluation_Library_Tests_ {
                 new Search_Tests("Search"),
                 new Script_Tests("Script"),
 
+                new Scanner_Tests("Scanner"),
+                new Postfix_Tests("Postfix"),
                 new Simplify_Tests("Simplify"),
                 new Engine_Tests("Engine"),
                 new LaTeX_Tests("LaTeX"),

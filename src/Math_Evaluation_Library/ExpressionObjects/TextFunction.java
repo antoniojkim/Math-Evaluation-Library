@@ -1,4 +1,6 @@
-package Math_Evaluation_Library.Objects;
+package Math_Evaluation_Library.ExpressionObjects;
+
+import Math_Evaluation_Library.Objects.MathObject;
 
 /**
  * Created by Antonio on 2017-10-19.

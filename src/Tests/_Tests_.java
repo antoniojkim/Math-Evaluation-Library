@@ -3,6 +3,8 @@ package Tests;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Expressions.Expression;
 
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
+
 /**
  * Created by Antonio on 2017-07-11.
  */
@@ -111,7 +113,7 @@ public class _Tests_ {
             System.out.println("\n"+test_name+" Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
-//            System.out.println("     Postfix:   "+toExpression(input).postfix());
+            System.out.println("     Postfix:   "+toExpression(input).postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);
             System.exit(1);
@@ -120,7 +122,7 @@ public class _Tests_ {
     }
     public void evaluationTest(String input, double expected){
         input = input.trim();
-        Expression e = Engine.toExpression(input);
+        Expression e = toExpression(input);
         double evaluated = e.valueOf();
         if ((!String.valueOf(expected).equals("NaN") && String.valueOf(evaluated).equals("NaN"))
                 || Math.abs(evaluated-expected) > 1E-14){
@@ -131,6 +133,23 @@ public class _Tests_ {
             System.out.println("     Postfix:   "+e.postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);
+            System.exit(1);
+        }
+        incrementNumTests();
+    }
+    public void evaluationTest(String input, double lower, double upper){
+        input = input.trim();
+        Expression e = toExpression(input);
+        double evaluated = e.valueOf();
+        if (String.valueOf(evaluated).equals("NaN")
+                || evaluated < lower || evaluated > upper){
+            String syntax = Engine.fixSyntax(input).trim();
+            System.out.println("\n"+test_name+" Test Failed:");
+            System.out.println("     Input:     "+input);
+            System.out.println("     Syntax:    "+syntax);
+            System.out.println("     Postfix:   "+e.postfix());
+            System.out.println("     Actual:    "+evaluated);
+            System.out.println("     Expected: ∈ ["+lower+", "+upper+"]");
             System.exit(1);
         }
         incrementNumTests();

@@ -12,6 +12,10 @@ public class ConstantExpression extends NumberExpression {
 
     char constant;
 
+    public ConstantExpression(String var){
+        super(Constants.getConstant(var), false);
+        this.constant = var.charAt(var.length()-1);
+    }
     public ConstantExpression(char var){
         super(Constants.getConstant(var), false);
         this.constant = var;

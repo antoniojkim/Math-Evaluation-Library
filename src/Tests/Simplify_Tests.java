@@ -1,5 +1,7 @@
 package Tests;
 
+import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Miscellaneous.Simplify;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
@@ -69,13 +71,15 @@ public class Simplify_Tests extends _Tests_ {
 
     public void simplificationTest(String input, String expected){
         input = input.trim();
-        String simplified = Simplify.simplify(input).infix().trim();
+        Expression simplified = Simplify.simplify(input);
         expected = expected.trim();
-        if (!simplified.equals(expected)){
+        if (!simplified.infix().trim().equals(expected)){
             System.out.println("\nSimplification Test Failed:");
             System.out.println("     Input:         "+input);
+            System.out.println("     Syntax:        "+Engine.fixSyntax(input));
             System.out.println("     Postfix:       "+toExpression(input).postfix());
-            System.out.println("     Simplified:    "+simplified);
+            System.out.println("     Simplified:    "+simplified.postfix());
+            System.out.println("     Simplified:    "+simplified.infix().trim());
             System.out.println("     Expected:      "+expected);
             System.exit(1);
         }

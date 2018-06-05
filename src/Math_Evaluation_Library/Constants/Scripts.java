@@ -71,7 +71,7 @@ public class Scripts {
     public static boolean isSuperScript(char superScript){
         for (char script : superScripts){
             if (script == superScript){
-                return true;
+                return script != '\0';
             }
         }
         return false;
@@ -95,7 +95,7 @@ public class Scripts {
     public static boolean isSubScript(char subScript){
         for (char script : subScripts){
             if (script == subScript){
-                return true;
+                return script != '\0';
             }
         }
         return false;

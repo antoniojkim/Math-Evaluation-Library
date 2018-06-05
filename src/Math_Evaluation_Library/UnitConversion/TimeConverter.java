@@ -7,6 +7,24 @@ import java.util.List;
  * Created by Antonio on 2017-07-22.
  */
 public class TimeConverter extends UnitConverter {
+    
+    public static void main(String[] args){
+
+        List<String> tempUnit1 = new ArrayList<>();
+        List<String> tempUnit2 = new ArrayList<>();
+        List<Double> tempRelation = new ArrayList<>();
+        
+        tempUnit1.add("s");         tempUnit2.add("min");       tempRelation.add(60.0);
+        tempUnit1.add("s");         tempUnit2.add("h");         tempRelation.add(3600.0);
+        tempUnit1.add("s");         tempUnit2.add("d");         tempRelation.add(86400.0);
+        tempUnit1.add("s");         tempUnit2.add("wk");        tempRelation.add(604800.0);
+        tempUnit1.add("s");         tempUnit2.add("fn");        tempRelation.add(1209600.0);
+        tempUnit1.add("s");         tempUnit2.add("mth");       tempRelation.add(2629746.0);
+        tempUnit1.add("s");         tempUnit2.add("yr");        tempRelation.add(3.1556952E7);
+        tempUnit1.add("s");         tempUnit2.add("dc");        tempRelation.add(3.1556952E8);
+        tempUnit1.add("s");         tempUnit2.add("c");         tempRelation.add(3.1556952E9);
+        tempUnit1.add("s");         tempUnit2.add("ml");        tempRelation.add(3.1556952E10);
+    }
 
     public TimeConverter(){
 
@@ -25,11 +43,11 @@ public class TimeConverter extends UnitConverter {
         tempUnit1.add("ns");        tempUnit2.add("d");         tempRelation.add(8.64E13);
         tempUnit1.add("ns");        tempUnit2.add("wk");        tempRelation.add(6.048E14);
         tempUnit1.add("ns");        tempUnit2.add("fn");        tempRelation.add(1.2096E15);
-        tempUnit1.add("ns");        tempUnit2.add("mth");       tempRelation.add(2.62982296584E15);
-        tempUnit1.add("ns");        tempUnit2.add("yr");        tempRelation.add(3.1536E16);
-        tempUnit1.add("ns");        tempUnit2.add("dc");        tempRelation.add(3.1536E17);
-        tempUnit1.add("ns");        tempUnit2.add("c");         tempRelation.add(3.1536E18);
-        tempUnit1.add("ns");        tempUnit2.add("ml");        tempRelation.add(3.1536E19);
+        tempUnit1.add("ns");        tempUnit2.add("mth");       tempRelation.add(2.629746E15);
+        tempUnit1.add("ns");        tempUnit2.add("yr");        tempRelation.add(3.1556952E16);
+        tempUnit1.add("ns");        tempUnit2.add("dc");        tempRelation.add(3.1556952E17);
+        tempUnit1.add("ns");        tempUnit2.add("c");         tempRelation.add(3.1556952E18);
+        tempUnit1.add("ns");        tempUnit2.add("ml");        tempRelation.add(3.1556952E19);
 
         tempUnit1.add("us");        tempUnit2.add("ms");        tempRelation.add(1000.0);
         tempUnit1.add("us");        tempUnit2.add("s");         tempRelation.add(1000000.0);
@@ -38,11 +56,11 @@ public class TimeConverter extends UnitConverter {
         tempUnit1.add("us");        tempUnit2.add("d");         tempRelation.add(8.64E10);
         tempUnit1.add("us");        tempUnit2.add("wk");        tempRelation.add(6.048E11);
         tempUnit1.add("us");        tempUnit2.add("fn");        tempRelation.add(1.2096E12);
-        tempUnit1.add("us");        tempUnit2.add("mth");       tempRelation.add(2.62982296584E12);
-        tempUnit1.add("us");        tempUnit2.add("yr");        tempRelation.add(3.1536E13);
-        tempUnit1.add("us");        tempUnit2.add("dc");        tempRelation.add(3.1536E14);
-        tempUnit1.add("us");        tempUnit2.add("c");         tempRelation.add(3.1536E15);
-        tempUnit1.add("us");        tempUnit2.add("ml");        tempRelation.add(3.1536E16);
+        tempUnit1.add("us");        tempUnit2.add("mth");       tempRelation.add(2.629746E12);
+        tempUnit1.add("us");        tempUnit2.add("yr");        tempRelation.add(3.1556952E13);
+        tempUnit1.add("us");        tempUnit2.add("dc");        tempRelation.add(3.1556952E14);
+        tempUnit1.add("us");        tempUnit2.add("c");         tempRelation.add(3.1556952E15);
+        tempUnit1.add("us");        tempUnit2.add("ml");        tempRelation.add(3.1556952E16);
 
         tempUnit1.add("ms");        tempUnit2.add("s");         tempRelation.add(1000.0);
         tempUnit1.add("ms");        tempUnit2.add("min");       tempRelation.add(60000.0);
@@ -50,28 +68,28 @@ public class TimeConverter extends UnitConverter {
         tempUnit1.add("ms");        tempUnit2.add("d");         tempRelation.add(8.64E7);
         tempUnit1.add("ms");        tempUnit2.add("wk");        tempRelation.add(6.048E8);
         tempUnit1.add("ms");        tempUnit2.add("fn");        tempRelation.add(1.2096E9);
-        tempUnit1.add("ms");        tempUnit2.add("mth");       tempRelation.add(2.62982296584E9);
-        tempUnit1.add("ms");        tempUnit2.add("yr");        tempRelation.add(3.1536E10);
-        tempUnit1.add("ms");        tempUnit2.add("dc");        tempRelation.add(3.1536E11);
-        tempUnit1.add("ms");        tempUnit2.add("c");         tempRelation.add(3.1536E12);
-        tempUnit1.add("ms");        tempUnit2.add("ml");        tempRelation.add(3.1536E13);
+        tempUnit1.add("ms");        tempUnit2.add("mth");       tempRelation.add(2.629746E9);
+        tempUnit1.add("ms");        tempUnit2.add("yr");        tempRelation.add(3.1556952E10);
+        tempUnit1.add("ms");        tempUnit2.add("dc");        tempRelation.add(3.1556952E11);
+        tempUnit1.add("ms");        tempUnit2.add("c");         tempRelation.add(3.1556952E12);
+        tempUnit1.add("ms");        tempUnit2.add("ml");        tempRelation.add(3.1556952E13);
 
         tempUnit1.add("s");         tempUnit2.add("min");       tempRelation.add(60.0);
         tempUnit1.add("s");         tempUnit2.add("h");         tempRelation.add(3600.0);
         tempUnit1.add("s");         tempUnit2.add("d");         tempRelation.add(86400.0);
         tempUnit1.add("s");         tempUnit2.add("wk");        tempRelation.add(604800.0);
         tempUnit1.add("s");         tempUnit2.add("fn");        tempRelation.add(1209600.0);
-        tempUnit1.add("s");         tempUnit2.add("mth");       tempRelation.add(2629822.96584);
-        tempUnit1.add("s");         tempUnit2.add("yr");        tempRelation.add(3.1536E7);
-        tempUnit1.add("s");         tempUnit2.add("dc");        tempRelation.add(3.1536E8);
-        tempUnit1.add("s");         tempUnit2.add("c");         tempRelation.add(3.1536E9);
-        tempUnit1.add("s");         tempUnit2.add("ml");        tempRelation.add(3.1536E10);
+        tempUnit1.add("s");         tempUnit2.add("mth");       tempRelation.add(2629746.0);
+        tempUnit1.add("s");         tempUnit2.add("yr");        tempRelation.add(3.1556952E7);
+        tempUnit1.add("s");         tempUnit2.add("dc");        tempRelation.add(3.1556952E8);
+        tempUnit1.add("s");         tempUnit2.add("c");         tempRelation.add(3.1556952E9);
+        tempUnit1.add("s");         tempUnit2.add("ml");        tempRelation.add(3.1556952E10);
 
         tempUnit1.add("min");       tempUnit2.add("h");         tempRelation.add(60.0);
         tempUnit1.add("min");       tempUnit2.add("d");         tempRelation.add(1440.0);
         tempUnit1.add("min");       tempUnit2.add("wk");        tempRelation.add(10080.0);
         tempUnit1.add("min");       tempUnit2.add("fn");        tempRelation.add(20160.0);
-        tempUnit1.add("min");       tempUnit2.add("mth");       tempRelation.add(43830.382764);
+        tempUnit1.add("min");       tempUnit2.add("mth");       tempRelation.add(43829.1);
         tempUnit1.add("min");       tempUnit2.add("yr");        tempRelation.add(525600.0);
         tempUnit1.add("min");       tempUnit2.add("dc");        tempRelation.add(5256000.0);
         tempUnit1.add("min");       tempUnit2.add("c");         tempRelation.add(5.256E7);
@@ -80,7 +98,7 @@ public class TimeConverter extends UnitConverter {
         tempUnit1.add("h");         tempUnit2.add("d");         tempRelation.add(24.0);
         tempUnit1.add("h");         tempUnit2.add("wk");        tempRelation.add(168.0);
         tempUnit1.add("h");         tempUnit2.add("fn");        tempRelation.add(336.0);
-        tempUnit1.add("h");         tempUnit2.add("mth");       tempRelation.add(730.5063794);
+        tempUnit1.add("h");         tempUnit2.add("mth");       tempRelation.add(730.485);
         tempUnit1.add("h");         tempUnit2.add("yr");        tempRelation.add(8760.0);
         tempUnit1.add("h");         tempUnit2.add("dc");        tempRelation.add(87600.0);
         tempUnit1.add("h");         tempUnit2.add("c");         tempRelation.add(876000.0);
@@ -88,14 +106,14 @@ public class TimeConverter extends UnitConverter {
 
         tempUnit1.add("d");         tempUnit2.add("wk");        tempRelation.add(7.0);
         tempUnit1.add("d");         tempUnit2.add("fn");        tempRelation.add(14.0);
-        tempUnit1.add("d");         tempUnit2.add("mth");       tempRelation.add(30.437765808333335);
-        tempUnit1.add("d");         tempUnit2.add("yr");        tempRelation.add(365.0);
+        tempUnit1.add("d");         tempUnit2.add("mth");       tempRelation.add(30.436875);
+        tempUnit1.add("d");         tempUnit2.add("yr");        tempRelation.add(365.242);
         tempUnit1.add("d");         tempUnit2.add("dc");        tempRelation.add(3650.0);
         tempUnit1.add("d");         tempUnit2.add("c");         tempRelation.add(36500.0);
         tempUnit1.add("d");         tempUnit2.add("ml");        tempRelation.add(365000.0);
 
         tempUnit1.add("wk");        tempUnit2.add("fn");        tempRelation.add(2.0);
-        tempUnit1.add("wk");        tempUnit2.add("mth");       tempRelation.add(4.348252258333334);
+        tempUnit1.add("wk");        tempUnit2.add("mth");       tempRelation.add(4.348125);
         tempUnit1.add("wk");        tempUnit2.add("yr");        tempRelation.add(52.142857142857146);
         tempUnit1.add("wk");        tempUnit2.add("dc");        tempRelation.add(521.4285714285714);
         tempUnit1.add("wk");        tempUnit2.add("c");         tempRelation.add(5214.285714285715);

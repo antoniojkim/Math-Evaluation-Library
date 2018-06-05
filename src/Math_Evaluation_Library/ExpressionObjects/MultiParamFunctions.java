@@ -3,6 +3,7 @@ package Math_Evaluation_Library.ExpressionObjects;
 import Math_Evaluation_Library.Calculus.Integral;
 import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.Expressions.*;
 import Math_Evaluation_Library.Geometry.Geometric;
 import Math_Evaluation_Library.Miscellaneous.Mod;
@@ -14,11 +15,14 @@ import Math_Evaluation_Library.Statistics.RandomVariables;
 import Math_Evaluation_Library.Statistics.Stats;
 import Math_Evaluation_Library.UnitConversion._UnitConversion_;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static Math_Evaluation_Library.Engine.Engine.*;
+import static Math_Evaluation_Library.Engine.Engine.var;
+import static Math_Evaluation_Library.Engine.Engine.x;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;
+import static Math_Evaluation_Library.Expressions.Expression.toExpression;
 
 /**
  * Created by Antonio on 2017-07-22.
@@ -347,17 +351,102 @@ public class MultiParamFunctions{
             }
 
             @Override
-            public Expression[] convert(String[] parameters) {
-                char[] array = parameters[0].toCharArray();
+            public Expression[] convert(List<List<Scanner.Token>> parameters) {
+                String parameter = Scanner.join(parameters.get(0)).toLowerCase();
+                char[] array = parameter.toCharArray();
                 for (char c : array){
                     if (c != '0' && c != '1'){
-                        return new Expression[]{toExpression(parameters[0])};
+                        List<Scanner.Token> tokens = new ArrayList<>();
+                        for (List<Scanner.Token> params : parameters){
+                            tokens.addAll(params);
+                        }
+                        return new Expression[]{toExpression(tokens)};
                     }
                 }
-                return new Expression[]{new StringExpression(parameters[0])};
+                return new Expression[]{new StringExpression(parameter)};
             }
         });
-        map.put("frb₁₆", new MultiParamFunction("frhex", 1, "frhex(x) transforms a hex string into a decimal value")
+        map.put("tobin", new MultiParamFunction("tobin", -1, "tobin(x) produces the binary form of x")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double n = parameters[0].valueOf();
+                    if (n % 1 == 0){
+                        String binary = _Number_.toBinary((long)n);
+                        if (parameters.length > 1){
+                            int padding = (int)parameters[1].valueOf();
+                            StringBuilder sb = new StringBuilder("");
+                            for (int i = binary.length(); i<padding; ++i){
+                                sb.append("0");
+                            }
+                            binary = sb.toString()+binary;
+                        }
+                        return new StringExpression(binary);
+                    }
+                    return new InvalidExpression("Invalid Argument Error:  tobin expected integer");
+                }
+                return new InvalidExpression("Invalid Argument Error:  tobin expected at least one argument");
+            }
+        });
+        map.put("totwo", new MultiParamFunction("totwo", -1, "totwo(x) produces the two's complement form of x")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                if (parameters.length > 0){
+                    double n = parameters[0].valueOf();
+                    if (n % 1 == 0){
+                        String binary = _Number_.toTwosComplement((long)n);
+                        if (parameters.length > 1){
+                            int padding = (int)parameters[1].valueOf();
+                            StringBuilder sb = new StringBuilder("");
+                            for (int i = binary.length(); i<padding; ++i){
+                                sb.append(n >= 0 ? "0" : "1");
+                            }
+                            binary = sb.toString()+binary;
+                        }
+                        if (n > 0 && binary.charAt(0) == '1'){
+                            binary = "0"+binary;
+                        }
+                        return new StringExpression(binary);
+                    }
+                    return new InvalidExpression("Invalid Argument Error:  totwo expected integer");
+                }
+                return new InvalidExpression("Invalid Argument Error:  totwo expected at least one argument");
+            }
+        });
+        map.put("frtwo", new MultiParamFunction("frtwo", 1, "frtwo(x) transforms a two's complement string into a decimal value")
+        {
+            @Override
+            public Expression evaluate(Expression[] parameters) {
+                String twosComplement = Search.replace(parameters[0].evaluate().toString(), " ", "");
+                long num = _Number_.fromBinary(twosComplement.substring(1));
+                if (num != -1){
+                    if (twosComplement.charAt(0) == '1'){
+                        return new NumberExpression((-(1 << twosComplement.length()-1)+num), false);
+                    }
+                    return new NumberExpression(num, false);
+                }
+                return new InvalidExpression("Invalid Argument Error:  frbin expected integer");
+            }
+
+            @Override
+            public Expression[] convert(List<List<Scanner.Token>> parameters) {
+                String parameter = Scanner.join(parameters.get(0)).toLowerCase();
+                char[] array = parameter.toCharArray();
+                for (char c : array){
+                    if (c != '0' && c != '1'){
+                        List<Scanner.Token> tokens = new ArrayList<>();
+                        for (List<Scanner.Token> params : parameters){
+                            tokens.addAll(params);
+                        }
+                        return new Expression[]{toExpression(tokens)};
+                    }
+                }
+                return new Expression[]{new StringExpression(parameter)};
+            }
+        });
+        map.put("frhex", new MultiParamFunction("frhex", 1, "frhex(x) transforms a hex string into a decimal value")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
@@ -369,17 +458,18 @@ public class MultiParamFunctions{
 
             char[] hexArray = "0123456789abcdef".toCharArray();
             @Override
-            public Expression[] convert(String[] parameters) {
-                char[] array = parameters[0].trim().toLowerCase().toCharArray();
+            public Expression[] convert(List<List<Scanner.Token>> parameters) {
+                String parameter = Scanner.join(parameters.get(0)).toLowerCase();
+                char[] array = parameter.toCharArray();
                 for (char c : array){
                     if (Search.linearSearch(hexArray, c) == -1){
-                        return new Expression[]{toExpression(parameters[0])};
+                        return super.convert(parameters);
                     }
                 }
-                return new Expression[]{new StringExpression(parameters[0])};
+                return new Expression[]{new StringExpression(parameter)};
             }
         });
-        map.put("tob₁₆", new MultiParamFunction("tohex", 1, "tohex(x) produces the hex form of x")
+        map.put("tohex", new MultiParamFunction("tohex", 1, "tohex(x) produces the hex form of x")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
@@ -1010,12 +1100,14 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Number of Arguments:  riemann(ƒ, a, b, n, {l, r, m})");
             }
             @Override
-            public Expression[] convert(String[] parameters){
-                if (parameters.length == 5){
+            public Expression[] convert(List<List<Scanner.Token>> parameters){
+                if (parameters.size() == 5){
                     return new Expression[]{
-                            toExpression(parameters[0]), toExpression(parameters[1]),
-                            toExpression(parameters[2]), toExpression(parameters[3]),
-                            new StringExpression(parameters[4])
+                            toExpression(parameters.get(0)),
+                            toExpression(parameters.get(1)),
+                            toExpression(parameters.get(2)),
+                            toExpression(parameters.get(3)),
+                            new StringExpression(Scanner.join(parameters.get(4)))
                     };
                 }
                 return super.convert(parameters);
@@ -1056,8 +1148,19 @@ public class MultiParamFunctions{
             }
 
             @Override
-            public Expression[] convert(String[] parameters) {
-                return new Expression[]{new StringExpression(parameters[0])};
+            public Expression[] convert(List<List<Scanner.Token>> parameters) {
+                List<Scanner.Token> tokens = new ArrayList<>();
+                boolean start = true;
+                for (List<Scanner.Token> params : parameters){
+                    if (!start){
+                        tokens.add(new Scanner.Token(Scanner.TokenType.COMMA, ","));
+                    }
+                    else{
+                        start = false;
+                    }
+                    tokens.addAll(params);
+                }
+                return new Expression[]{new StringExpression(Scanner.join(tokens))};
             }
         });
         map.put("unif",  new MultiParamFunction("unif",     3, "unif(a, b, x) calculates the uniform distribution from a to b at x")
@@ -1086,12 +1189,12 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Number of Arguments Error:  unit");
             }
             @Override
-            public Expression[] convert(String[] parameters){
-                if (parameters.length == 3){
+            public Expression[] convert(List<List<Scanner.Token>> parameters){
+                if (parameters.size() == 3){
                     return new Expression[]{
-                            toExpression(parameters[0]),
-                            new StringExpression(parameters[1]),
-                            new StringExpression(parameters[2])
+                            toExpression(parameters.get(0)),
+                            new StringExpression(Scanner.join(parameters.get(1))),
+                            new StringExpression(Scanner.join(parameters.get(2)))
                     };
                 }
                 return super.convert(parameters);
@@ -1196,11 +1299,31 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Number of Arguments Error:  ∏(ƒ, i, n)");
             }
             @Override
-            public Expression[] convert(String[] parameters){
-                if (parameters.length == 4){
+            public Expression[] convert(List<List<Scanner.Token>> parameters){
+                if (parameters.size() == 3){
+                    String[] joined = {
+                            Scanner.join(parameters.get(0)),
+                            Scanner.join(parameters.get(1)),
+                            Scanner.join(parameters.get(2))
+                    };
                     return new Expression[]{
-                            toExpression(parameters[0]), new StringExpression(parameters[1]),
-                            toExpression(parameters[2]), toExpression(parameters[3])
+                            joined[0].equals("i") ? new StringExpression("i") : toExpression(parameters.get(0)),
+                            toExpression(parameters.get(1)),
+                            joined[2].equals("n") ? new StringExpression("n") : toExpression(parameters.get(2))
+                    };
+                }
+                if (parameters.size() == 4){
+                    String[] joined = {
+                            Scanner.join(parameters.get(0)),
+                            Scanner.join(parameters.get(1)),
+                            Scanner.join(parameters.get(2)),
+                            Scanner.join(parameters.get(3))
+                    };
+                    return new Expression[]{
+                            (joined[0].equals("i") ? new StringExpression("i") : toExpression(parameters.get(0))),
+                            new StringExpression(joined[1]),
+                            toExpression(parameters.get(2)),
+                            (joined[3].equals("n") ? new StringExpression("n") : toExpression(parameters.get(3)))
                     };
                 }
                 return super.convert(parameters);
@@ -1292,19 +1415,31 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Arguments Error:  ∑(ƒ, i, n)");
             }
             @Override
-            public Expression[] convert(String[] parameters){
-                if (parameters.length == 3){
+            public Expression[] convert(List<List<Scanner.Token>> parameters){
+                if (parameters.size() == 3){
+                    String[] joined = {
+                            Scanner.join(parameters.get(0)),
+                            Scanner.join(parameters.get(1)),
+                            Scanner.join(parameters.get(2))
+                    };
                     return new Expression[]{
-                            (parameters[0].equals("i") ? new StringExpression("i") : toExpression(parameters[0])),
-                            toExpression(parameters[1]),
-                            (parameters[2].equals("n") ? new StringExpression("n") : toExpression(parameters[2]))
+                            joined[0].equals("i") ? new StringExpression("i") : toExpression(parameters.get(0)),
+                            toExpression(parameters.get(1)),
+                            joined[2].equals("n") ? new StringExpression("n") : toExpression(parameters.get(2))
                     };
                 }
-                if (parameters.length == 4){
+                if (parameters.size() == 4){
+                    String[] joined = {
+                            Scanner.join(parameters.get(0)),
+                            Scanner.join(parameters.get(1)),
+                            Scanner.join(parameters.get(2)),
+                            Scanner.join(parameters.get(3))
+                    };
                     return new Expression[]{
-                            (parameters[0].equals("i") ? new StringExpression("i") : toExpression(parameters[0])),
-                            new StringExpression(parameters[1]), toExpression(parameters[2]),
-                            (parameters[3].equals("n") ? new StringExpression("n") : toExpression(parameters[3]))
+                            (joined[0].equals("i") ? new StringExpression("i") : toExpression(parameters.get(0))),
+                            new StringExpression(joined[1]),
+                            toExpression(parameters.get(2)),
+                            (joined[3].equals("n") ? new StringExpression("n") : toExpression(parameters.get(3)))
                     };
                 }
                 return super.convert(parameters);

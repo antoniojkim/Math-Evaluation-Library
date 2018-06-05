@@ -1,5 +1,7 @@
 package Math_Evaluation_Library.UnitConversion;
 
+import Math_Evaluation_Library.Engine.Scanner;
+import Math_Evaluation_Library.Objects.Pair;
 import Math_Evaluation_Library.Objects._Number_;
 
 import java.util.ArrayList;
@@ -81,6 +83,37 @@ public class _UnitConversion_ {
     }
 
     private static List<UnitConverter> converters = new ArrayList<>();
+
+    public static boolean isUnit(String unit){
+        if (converters.isEmpty()){
+            addAllConverters();
+        }
+        for (UnitConverter uc : converters){
+            if (uc.isUnit(unit)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public static Pair<String, Integer> getUnit(List<Scanner.Token> tokens, int end){
+        if (end >= 0 && _UnitConversion_.isUnit(tokens.get(end).getLexeme())){
+            StringBuilder sb = new StringBuilder();
+            --end;
+            if (end >= 0 && tokens.get(end).getType() == Scanner.TokenType.OPERATOR &&
+                    tokens.get(end).getLast() == '/' &&
+                    _UnitConversion_.isUnit(tokens.get(end-1).getLexeme())){
+                sb.append(tokens.get(end-1).getLexeme())
+                        .append(tokens.get(end).getLexeme())
+                        .append(tokens.get(end+1).getLexeme());
+                end -= 2;
+            }
+            else{
+                sb.append(tokens.get(end+1).getLexeme());
+            }
+            return new Pair<>(sb.toString(), end);
+        }
+        return null;
+    }
 
     private static void addAllConverters(){
         converters.add(new DistanceConverter());

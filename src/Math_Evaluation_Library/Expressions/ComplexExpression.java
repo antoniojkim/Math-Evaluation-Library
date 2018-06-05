@@ -25,7 +25,7 @@ public class ComplexExpression extends NumberExpression {
 
     @Override
     public double valueOf() {
-        return NaN;
+        return imaginary == 0 ? n : NaN;
     }
     public double getReal() {
         return n;

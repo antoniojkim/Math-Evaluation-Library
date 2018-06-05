@@ -6,6 +6,7 @@
 package Math_Evaluation_Library.Miscellaneous;
 
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Objects._Number_;
 
 /**
 
@@ -365,53 +366,77 @@ public class Fraction{
 //        System.out.println();
 //    }
 
-    private static final double error = 1e-14;
+    public static long[] reduce(long[] fraction){
+        if (fraction.length == 2){
+            long gcd = Mod.gcd(fraction[0], fraction[1]);
+            if (gcd != 1){
+                fraction[0] /= gcd;
+                fraction[1] /= gcd;
+            }
+        }
+        return fraction;
+    }
+
+    private static final double error = 1e-13;
     public static Expression toExpression(double num){
+        num = MathRound.round(num, 13);
         if (num%1 == 0) return new NumberExpression(num);
 
         long[] fraction = getFraction(num);
-        if (fraction != null && String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
+        if (fraction != null){
 //            System.out.println("Found "+fraction[0]+"/"+fraction[1]+"  in "+fraction[3]+" iterations");
-            if (fraction[2] < 0)
-                return new UnaryExpression("neg", new NumberExpression(fraction[0]).divide(fraction[1]));
-            else
-                return new NumberExpression(fraction[0]).divide(fraction[1]);
+            if (String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
+                fraction = reduce(fraction);
+                return new NumberExpression(fraction[0]).divide(fraction[1]).negate(fraction[2] < 0);
+            }
         }
-        else{
-            boolean neg = num < 0;
-            fraction = getFraction(num*num);
-            if (fraction != null){
-                System.out.println(fraction);
-                double sqrt = Math.sqrt(fraction[1]);
-                if (sqrt%1 == 0 && String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() < 15){
+        boolean neg = num < 0;
+        fraction = getFraction(num*num);
+        if (fraction != null){
+//            System.out.println(fraction[0]+"/"+fraction[1]);
+            fraction = reduce(fraction);
+            long sqrt1 = _Number_.isPerfectSquare(fraction[1]);
+            long sqrt0 = _Number_.isPerfectSquare(fraction[0]);
+            if (sqrt0 != -1 && sqrt1 != -1){
+                if (String.valueOf(sqrt0).length()+String.valueOf(sqrt1).length() >= 15)
+                    return new NumberExpression(num);
+                return new OperatorExpression("√", new NumberExpression(sqrt0).divide(sqrt1)).negate(neg);
+            }
+            else if (sqrt0 != -1){
 //                    System.out.println("Found √"+fraction[0]+"/"+fraction[1]+"  in "+fraction[3]+" iterations");
-                    if (neg)
-                        return new UnaryExpression("neg", new OperatorExpression("√", new NumberExpression(fraction[0])).divide(sqrt));
-                    else
-                        return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(sqrt);
-                }
-                else{
-                    return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(fraction[1]);
-                }
+                if (String.valueOf(sqrt0).length()+String.valueOf(fraction[1]).length() >= 15)
+                    return new NumberExpression(num);
+                return new NumberExpression(fraction[0]).divide(new OperatorExpression("√", sqrt1)).negate(neg);
+            }
+            else if (sqrt1 != -1){
+//                    System.out.println("Found √"+fraction[0]+"/"+fraction[1]+"  in "+fraction[3]+" iterations");
+                if (String.valueOf(fraction[0]).length()+String.valueOf(sqrt1).length() >= 15)
+                    return new NumberExpression(num);
+                return new OperatorExpression("√", new NumberExpression(fraction[0])).divide(sqrt1).negate(neg);
+            }
+            else{
+                if (String.valueOf(fraction[0]).length()+String.valueOf(fraction[1]).length() >= 15)
+                    return new NumberExpression(num);
+                return new OperatorExpression("√", new NumberExpression(fraction[0]).divide(fraction[1])).negate(neg);
             }
         }
 
         if (num == Math.PI) return new ConstantExpression('π', Math.PI);
-        if (num == Math.E)  return new ConstantExpression('ℯ', Math.E);
+        if (num == Math.E)  return new ConstantExpression('e', Math.E);
 
         if (num%Math.PI == 0)   return new NumberExpression(num/Math.PI).multiply(new ConstantExpression('π', Math.PI));
         if (Math.PI%num == 0)   return new ConstantExpression('π', Math.PI).divide(Math.PI/num);
         if ((num*Math.PI)%1 == 0)   return new NumberExpression(num*Math.PI).divide(new ConstantExpression('π', Math.PI));
 
-        if (num%Math.E == 0)    return new NumberExpression(num/Math.E).multiply(new ConstantExpression('ℯ', Math.E));
-        if (Math.E%num == 0)    return new ConstantExpression('ℯ', Math.E).divide(Math.E/num);
-        if ((num*Math.E)%1 == 0)   return new NumberExpression(num*Math.E).divide(new ConstantExpression('ℯ', Math.E));
+        if (num%Math.E == 0)    return new NumberExpression(num/Math.E).multiply(new ConstantExpression('e', Math.E));
+        if (Math.E%num == 0)    return new ConstantExpression('e', Math.E).divide(Math.E/num);
+        if ((num*Math.E)%1 == 0)   return new NumberExpression(num*Math.E).divide(new ConstantExpression('e', Math.E));
 
         if ((Math.PI-num)%1 == 0)   return new ConstantExpression('π', Math.PI).subtract(Math.PI-num);
-        if ((Math.E-num)%1 == 0)    return new ConstantExpression('ℯ', Math.E).subtract(Math.E-num);
+        if ((Math.E-num)%1 == 0)    return new ConstantExpression('e', Math.E).subtract(Math.E-num);
 
         if ((num-Math.PI)%1 == 0)   return new NumberExpression(num-Math.PI).subtract(new ConstantExpression('π', Math.PI));
-        if ((num-Math.E)%1 == 0)    return new NumberExpression(num-Math.E).subtract(new ConstantExpression('ℯ', Math.E));
+        if ((num-Math.E)%1 == 0)    return new NumberExpression(num-Math.E).subtract(new ConstantExpression('e', Math.E));
 
 //        if (Math.asin(num)%1 == 0)  return new UnaryExpression("sin", new NumberExpression(Math.asin(num)));
 //        if (Math.acos(num)%1 == 0)  return new UnaryExpression("cos", new NumberExpression(Math.acos(num)));

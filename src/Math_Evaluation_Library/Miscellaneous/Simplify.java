@@ -187,7 +187,7 @@ public class Simplify {
     public static Expression simplifyMultiplication(Expression e1, Expression e2){
         Expression s1 = e1.simplify(), s2 = e2.simplify();
         if (s1.equals(s2)){
-            return new OperatorExpression("^", s1, new NumberExpression(2));
+            return simplifyExponent(s1, new NumberExpression(2));
         }
         else if (s1 instanceof NumberExpression){
             if (s2 instanceof NumberExpression){

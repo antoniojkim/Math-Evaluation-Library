@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Math Evaluation Library:jar">
+    <output-path>$PROJECT_DIR$</output-path>
+    <root id="archive" name="Math Evaluation Library.jar">
+      <element id="module-output" name="Math Evaluation Library" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jblas-1.2.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

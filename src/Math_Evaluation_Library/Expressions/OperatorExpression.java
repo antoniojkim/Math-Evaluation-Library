@@ -18,6 +18,9 @@ public class OperatorExpression extends Expression {
     public OperatorExpression(String operator, Expression param1){
         this(Operators.getOperator(operator), param1);
     }
+    public OperatorExpression(String operator, double param1){
+        this(Operators.getOperator(operator), new NumberExpression(param1));
+    }
     public OperatorExpression(Operator operator, Expression param1){
         this.operator = operator;
         this.param1 = param1;

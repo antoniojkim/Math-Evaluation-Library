@@ -18,6 +18,7 @@ public class Fraction_Tests extends Engine_Tests {
 
         fractionTest("0.75", "3/4");
         fractionTest("√(7171/16)", "√7171/4");
+        fractionTest("ln32/ln2", "5");
 
     }
 
@@ -26,7 +27,7 @@ public class Fraction_Tests extends Engine_Tests {
         double n = e.valueOf();
         Expression f = Fraction.toExpression(n);
         double fn = f.valueOf();
-        if (!(n == fn && f.toString().equals(expected))){
+        if (!(f.toString().equals(expected))){
             String syntax = Engine.fixSyntax(input).trim();
             System.out.println("\nFraction Test Failed:");
             System.out.println("     Input:     "+input);
