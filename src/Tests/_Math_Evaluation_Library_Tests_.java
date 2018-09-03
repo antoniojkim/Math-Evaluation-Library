@@ -2,6 +2,10 @@ package Tests;
 
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Expressions.Expression;
+import Math_Evaluation_Library.Objects._Number_;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -15,11 +19,24 @@ public class _Math_Evaluation_Library_Tests_ {
     public static void main (String[] args){
 
         runTests();
-//        runTrial();
+        runTrial();
+
+//        long[] nums = {170, -129, -128, -127, 127, 128, 129, -4, 14};
+//
+//        for (long n : nums){
+//            System.out.println("Number:            "+n);
+//            System.out.println("Binary:            "+Long.toBinaryString(n));
+//            System.out.println("-Binary:           "+Long.toBinaryString(-n));
+//            System.out.println("Highest one bit:   "+Long.highestOneBit(n));
+//            System.out.println("floor2:            "+ _Number_.floor2(n));
+//            System.out.println("ln2:               "+ _Number_.log2(n));
+//            System.out.println();
+//        }
     }
 
     public static void runTrial(){
 //        new Scanner_Tests("Scanner").run();
+//        new Scanner_Tests("Scanner").scannerTest("frhex(0x4e5ab)", "frhex ( 0x4e5ab )");
 //        new Postfix_Tests("Postfix").run();
 //        new Fraction_Tests("Fraction").run();
 //        new Random_Variables_Tests("RV").evaluationTest("Exp(hyp())", "Exp(X ~ Hypergeometric(N, r, n)) = n×r/N");
@@ -33,6 +50,17 @@ public class _Math_Evaluation_Library_Tests_ {
     }
 
     public static void speedTest(){
+        double min = -50.0;
+        double max = 50.0;
+        double step = 0.005;
+        long start = System.nanoTime();
+        Expression e = Engine.toExpression("ln(sin(x)*cos(x)+3)/x^3");
+        ArrayList numbers = new ArrayList<Double>((int) ((max-min)/step));
+        for (double i = min; i<=max; i += step){
+            numbers.add(e.evaluate(i));
+        }
+        long end = System.nanoTime();
+        System.out.println("Took "+((end-start)/1000000.0)+" Milliseconds to compute "+(int) ((max-min)/step)+" points");
 
         /*
         0.05770045938362367
@@ -42,34 +70,34 @@ public class _Math_Evaluation_Library_Tests_ {
         3 3 1 2 + * sin * 4 5 8 + / ln +
          */
 
-        String function = "sin(cos(tan(x)))";
-        Expression e = Engine.toExpression(function);
-        System.out.println(e.infix());
-        System.out.println(e.postfix());
-//        System.out.println(pre.evaluate(4));
-//        System.out.println(Engine.evaluate(function, 4));
-        int trials = 1;
-        double avg = 0;
-        long start = 0, end = 0;
-        double sum = 0;
-        for (int i = 0; i<trials; ++i){
-            start = System.nanoTime();
-            Expression evaluated = e.calculateDerivative();
-//            Expression integral = e.calculateIntegral();
-            end = System.nanoTime();
-            avg += (end-start);
-            System.out.println(evaluated.infix());
-//            System.out.println(n1);
-//            if (n2 instanceof MatrixExpression){
-//                System.out.println(((MatrixExpression)n2.evaluateExpression()).strMatrix());
-//            }
-//            else{
-//                System.out.println(n2.evaluate());
-//            }
-        }
-        System.out.println(trials+" trials");
-        System.out.println("Average:   "+(avg/(trials*1000000.0)));
-        System.out.println("Total:     "+(avg/(1000000.0)));
+//        String function = "sin(cos(tan(x)))";
+//        Expression e = Engine.toExpression(function);
+//        System.out.println(e.infix());
+//        System.out.println(e.postfix());
+////        System.out.println(pre.evaluate(4));
+////        System.out.println(Engine.evaluate(function, 4));
+//        int trials = 1;
+//        double avg = 0;
+//        long start = 0, end = 0;
+//        double sum = 0;
+//        for (int i = 0; i<trials; ++i){
+//            start = System.nanoTime();
+//            Expression evaluated = e.calculateDerivative();
+////            Expression integral = e.calculateIntegral();
+//            end = System.nanoTime();
+//            avg += (end-start);
+//            System.out.println(evaluated.infix());
+////            System.out.println(n1);
+////            if (n2 instanceof MatrixExpression){
+////                System.out.println(((MatrixExpression)n2.evaluateExpression()).strMatrix());
+////            }
+////            else{
+////                System.out.println(n2.evaluate());
+////            }
+//        }
+//        System.out.println(trials+" trials");
+//        System.out.println("Average:   "+(avg/(trials*1000000.0)));
+//        System.out.println("Total:     "+(avg/(1000000.0)));
 
     }
 

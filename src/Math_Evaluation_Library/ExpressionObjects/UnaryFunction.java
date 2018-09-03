@@ -2,6 +2,8 @@ package Math_Evaluation_Library.ExpressionObjects;
 
 import Math_Evaluation_Library.Constants.PredefinedTeX;
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ComplexExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 
 /**
  * Created by Antonio on 2017-10-14.

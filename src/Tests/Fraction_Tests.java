@@ -19,6 +19,8 @@ public class Fraction_Tests extends Engine_Tests {
         fractionTest("0.75", "3/4");
         fractionTest("√(7171/16)", "√7171/4");
         fractionTest("ln32/ln2", "5");
+        fractionTest("ln32/ln2", "5");
+        fractionTest("arcsin(0.70710678118655)", "π/4");
 
     }
 

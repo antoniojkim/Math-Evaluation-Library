@@ -1,6 +1,7 @@
 package Math_Evaluation_Library.Calculus;
 
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
@@ -17,6 +18,10 @@ public class Integral {
         return value(function, a, b);
     }
     public static double value(Expression f, double a, double b){
+        Expression evaluated = f.evaluate();
+        if (evaluated.isValid()){
+            return evaluated.valueOf()*(b-a);
+        }
         Expression integral = f.calculateIntegral();
         if (integral.isValid()){
             return integral.valueAt(b)-integral.valueAt(a);

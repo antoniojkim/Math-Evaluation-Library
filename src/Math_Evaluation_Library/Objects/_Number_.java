@@ -60,32 +60,49 @@ public class _Number_ {
     }
 
     public static long floor2(long x){
-        if (x < 0)  return 0;
-        x |= x >> 1;
-        x |= x >> 2;
-        x |= x >> 4;
-        x |= x >> 8;
-        x |= x >> 16;
-        return (x+1) >> 1;
+//        if (x < 0)  return 0;
+//        x |= x >> 1;
+//        x |= x >> 2;
+//        x |= x >> 4;
+//        x |= x >> 8;
+//        x |= x >> 16;
+//        return (x+1) >> 1;
+        return Long.highestOneBit(x);
     }
     public static double floor2(double x){
         return 1 << (int)Math.floor(Math.log(x)/Constants.ln2);
     }
+    public static long log2(long x){
+        long log = 0;
+        if((x & 0xffff0000) != 0) { x >>= 16; log = 16; }
+        if(x >= 256) { x >>= 8; log += 8; }
+        if(x >= 16)  { x >>= 4; log += 4; }
+        if(x >= 4)   { x >>= 2; log += 2; }
+        return log + ( x >> 1 );
+    }
+    public static int binlog( int bits ) // returns 0 for bits=0
+    {
+        int log = 0;
+        if( ( bits & 0xffff0000 ) != 0 ) { bits >>>= 16; log = 16; }
+        if( bits >= 256 ) { bits >>>= 8; log += 8; }
+        if( bits >= 16  ) { bits >>>= 4; log += 4; }
+        if( bits >= 4   ) { bits >>>= 2; log += 2; }
+        return log + ( bits >>> 1 );
+    }
     public static String toBinary(long x){
-        long m = floor2(x);
-        StringBuilder binary = new StringBuilder();
-        boolean leadingZero = true;
-        for (long a = m; a>=0; a--){
-            char c = String.valueOf(x / (long) Math.pow(2, a)).charAt(0);
-            if (c != '0'){
-                leadingZero = false;
+        return toBinary(x, 0);
+    }
+    public static String toBinary(long x, long padding){
+        x = Math.abs(x);
+        String binary = Long.toBinaryString(x);
+        if (padding > binary.length()){
+            StringBuilder pad = new StringBuilder();
+            for (int i = binary.length(); i<padding; ++i){
+                pad.append("0");
             }
-            if (!leadingZero){
-                binary.append(c);
-            }
-            x %= (long)Math.pow(2, a);
+            return pad.toString()+binary;
         }
-        return binary.toString();
+        return binary;
     }
     public static long fromBinary(String binary){
         long num = 0;
@@ -104,14 +121,33 @@ public class _Number_ {
     }
     public static String toTwosComplement(long x){
         if (x >= 0){
-            return toBinary(x);
+            String binary = toBinary(x);
+            if (x > 0 && binary.charAt(0) == '1'){
+                return "0"+binary;
+            }
+            return binary;
         }
         x = -x;
 
-        long f = floor2(x);
-        if (x != f)    f <<= 1;
+        long f = floor2(x) << 1;
 
-        return "10"+toBinary(f-x);
+        return "1"+toBinary(f-x, log2(f));
+    }
+    public static String toBinary(double x){
+        return toBinary(x, 0);
+    }
+    public static String toBinary(double x, long padding){
+        String binary = padding == 32 ?
+                Integer.toBinaryString(Float.floatToIntBits((float)x)):
+                Long.toBinaryString(Double.doubleToLongBits(x));
+        if (padding > binary.length()){
+            StringBuilder pad = new StringBuilder();
+            for (int i = binary.length(); i<padding; ++i){
+                pad.append("0");
+            }
+            return pad.toString()+binary;
+        }
+        return binary;
     }
 
     public static long fromHex(String binary){
@@ -200,6 +236,12 @@ public class _Number_ {
         }
         return checkConstants && Constants.isConstant(c);
 //        return Constants.;
+    }
+    public static boolean isInteger(double num){
+        return isInteger(num, 1e-13);
+    }
+    public static boolean isInteger(double num, double error){
+        return Math.abs(Math.round(num)-num) <= error;
     }
 
 

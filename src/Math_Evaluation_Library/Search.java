@@ -324,6 +324,9 @@ public class Search {
     public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start){
         return splitTokens(tokens, start, Scanner.TokenType.COMMA, tokens.size());
     }
+    public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start, int end){
+        return splitTokens(tokens, start, Scanner.TokenType.COMMA, end);
+    }
     public static List<List<Scanner.Token>> splitTokens(List<Scanner.Token> tokens, int start, Scanner.TokenType type){
         return splitTokens(tokens, start, type, tokens.size());
     }

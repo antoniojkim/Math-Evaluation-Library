@@ -1,6 +1,7 @@
 package Tests;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.Expressions.Expression;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
@@ -113,6 +114,7 @@ public class _Tests_ {
             System.out.println("\n"+test_name+" Test Failed:");
             System.out.println("     Input:     "+input);
             System.out.println("     Syntax:    "+syntax);
+            System.out.println("     Scanned:   "+Scanner_Tests.tokensToString(Scanner.scan(syntax)));
             System.out.println("     Postfix:   "+toExpression(input).postfix());
             System.out.println("     Actual:    "+evaluated);
             System.out.println("     Expected:  "+expected);

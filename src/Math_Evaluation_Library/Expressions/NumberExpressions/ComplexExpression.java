@@ -1,5 +1,6 @@
-package Math_Evaluation_Library.Expressions;
+package Math_Evaluation_Library.Expressions.NumberExpressions;
 
+import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Objects._Number_;
 
 import static java.lang.Double.NaN;

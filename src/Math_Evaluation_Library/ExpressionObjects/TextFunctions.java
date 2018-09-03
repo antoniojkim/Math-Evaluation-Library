@@ -5,7 +5,7 @@ import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Constants.Scripts;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Expressions.Expression;
-import Math_Evaluation_Library.Expressions.NumberExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.Expressions.VariableExpression;
 import Math_Evaluation_Library.Geometry.ShapeFormulas;
 import Math_Evaluation_Library.GraphingTechnology.DirectionField;

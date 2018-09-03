@@ -3,6 +3,9 @@ package Math_Evaluation_Library.Miscellaneous;
 import Math_Evaluation_Library.ExpressionObjects.Operator;
 import Math_Evaluation_Library.ExpressionObjects.UnaryFunction;
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ComplexExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ConstantExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;
 import static Math_Evaluation_Library.ExpressionObjects.Operators.getOperator;

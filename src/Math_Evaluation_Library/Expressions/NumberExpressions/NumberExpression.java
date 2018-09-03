@@ -1,6 +1,9 @@
-package Math_Evaluation_Library.Expressions;
+package Math_Evaluation_Library.Expressions.NumberExpressions;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.Expression;
+import Math_Evaluation_Library.Expressions.OperatorExpression;
+import Math_Evaluation_Library.Expressions.VariableExpression;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 import Math_Evaluation_Library.Objects._Number_;
 

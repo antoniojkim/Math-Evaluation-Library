@@ -2,6 +2,8 @@ package Math_Evaluation_Library.Calculus;
 
 import Math_Evaluation_Library.ExpressionObjects.Operators;
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ConstantExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.Miscellaneous.MathRound;
 
 import static Math_Evaluation_Library.Engine.Engine.toExpression;

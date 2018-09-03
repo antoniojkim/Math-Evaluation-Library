@@ -23,7 +23,7 @@ import static Math_Evaluation_Library.ExpressionObjects.UnaryFunctions.isUnaryFu
 public class Scanner {
 
     public enum TokenType {
-        NUM, COMMA, SEMICOLON, STR,
+        NUM, HEX, COMMA, SEMICOLON, STR,
         LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY, ABS,
         SUPERSCRIPT, SUBSCRIPT,
         OPERATOR, DOT, RIGHTARROW
@@ -166,8 +166,12 @@ public class Scanner {
             TokenType type = toTokenType(c);
             if (type != currentType){
                 if (token.length() > 0 &&
-                        !(currentType ==  TokenType.NUM && type == TokenType.DOT) &&
-                        !(currentType ==  TokenType.DOT && type == TokenType.NUM) &&
+                        !(currentType == TokenType.NUM && type == TokenType.DOT) &&
+                        !(currentType == TokenType.NUM && type == TokenType.STR &&
+                                token.length() == 1 && token.charAt(0) == '0' && c == 'x') &&
+                        !(currentType == TokenType.HEX && (type == TokenType.NUM || type == TokenType.STR) &&
+                                ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) &&
+                        !(currentType == TokenType.DOT && type == TokenType.NUM) &&
                         !(currentType == TokenType.OPERATOR && type == TokenType.STR &&
                                 (token.charAt(0) == 'P' || token.charAt(0) == 'C' || c == 'F')) &&
                         !(currentType == TokenType.OPERATOR && type == TokenType.NUM &&
@@ -190,7 +194,18 @@ public class Scanner {
                         currentType = TokenType.NUM;
                     }
                     else{
-                        currentType = type;
+                        if (currentType == TokenType.NUM && type == TokenType.STR &&
+                                token.length() == 1 && token.charAt(0) == '0' && c == 'x'){
+                            currentType = TokenType.HEX;
+                        }
+                        else if (currentType == TokenType.HEX && (type == TokenType.NUM || type == TokenType.STR) &&
+                                ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))){
+                            token.append(String.valueOf(c).toLowerCase());
+                            continue scan;
+                        }
+                        else{
+                            currentType = type;
+                        }
                     }
                 }
                 if (currentType == TokenType.STR){

@@ -6,6 +6,9 @@ import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.ExpressionObjects.MultiParamFunction;
 import Math_Evaluation_Library.ExpressionObjects.Operator;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ComplexExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ConstantExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.Miscellaneous.Fraction;
 import Math_Evaluation_Library.Objects.Pair;
@@ -44,10 +47,7 @@ public abstract class Expression {
     }
     public abstract Expression evaluate();
     public Expression evaluate(double x){
-        set(Engine.var, x);
-        Expression n = evaluate();
-        unset(Engine.var);
-        return n;
+        return evaluate(new NumberExpression(x));
     }
     public Expression evaluate(Expression x){
         set(Engine.var, x);
@@ -114,30 +114,48 @@ public abstract class Expression {
     public Expression simplify(){   return this;    }
 
     public Expression add(double e){
+        if (e == 0){
+            return this;
+        }
         return add(new NumberExpression(e));
     }
     public Expression add(Expression e){
         return new OperatorExpression("+", this, e);
     }
     public Expression subtract(double e){
+        if (e == 0){
+            return this;
+        }
         return subtract(new NumberExpression(e));
     }
     public Expression subtract(Expression e){
         return new OperatorExpression("-", this, e);
     }
     public Expression times(double e){
-        return multiply(new NumberExpression(e));
+        return multiply(e);
     }
     public Expression times(Expression e){
         return multiply(e);
     }
     public Expression multiply(double e){
+        if (e == 1){
+            return this;
+        }
+        else if (e == -1){
+            return negate();
+        }
         return multiply(new NumberExpression(e));
     }
     public Expression multiply(Expression e){
         return new OperatorExpression("*", this, e);
     }
     public Expression divide(double e){
+        if (e == 1){
+            return this;
+        }
+        else if (e == -1){
+            return negate();
+        }
         return divide(new NumberExpression(e));
     }
     public Expression divide(Expression e){
@@ -150,6 +168,9 @@ public abstract class Expression {
         return new OperatorExpression("%", this, e);
     }
     public Expression pow(double e){
+        if (e == 1){
+            return this;
+        }
         return pow(new NumberExpression(e));
     }
     public Expression pow(Expression e){
@@ -163,6 +184,12 @@ public abstract class Expression {
             return new UnaryExpression("neg", this);
         }
         return this;
+    }
+    public Expression sqrt(){
+        return new OperatorExpression("√", this);
+    }
+    public Expression cbrt(){
+        return new OperatorExpression("∛", this);
     }
 
     public static Expression toExpression(List<Scanner.Token> tokens){
@@ -326,14 +353,15 @@ public abstract class Expression {
                         return new InvalidExpression("Missing Left Parenthesis:   "+Print.toString(tokens));
                     }
                     MultiParamFunction multiParamFunction = getMultiParamFunction(token.getLexeme());
-                    List<List<Scanner.Token>> parameters = Search.splitTokens(tokens, i+2);
+                    int rb = Search.tokenIndex(tokens, Scanner.TokenType.RPAREN, i+2);
+                    List<List<Scanner.Token>> parameters = Search.splitTokens(tokens, i+2, rb+1);
                     if (!multiParamFunction.isFlexible() && multiParamFunction.getNumParameters() != parameters.size()) {
                         return new InvalidExpression("Syntax Error - Invalid Number of Parameters.  " +
                                 "E:" + multiParamFunction.getNumParameters() + "   A:" + parameters.size());
                     }
                     Expression[] params = multiParamFunction.convert(parameters);
                     output.push(new MultiParamExpression(multiParamFunction, params));
-                    i = Search.tokenIndex(tokens, Scanner.TokenType.RPAREN, i+2);
+                    i = rb;
                 }
                 else if (isUnaryFunction(token.getLexeme())){
                     if (stack.empty() || stack.peek().equals("(") ||
@@ -347,6 +375,21 @@ public abstract class Expression {
                     } else if (!stack.isEmpty()) {
                         output.push(new UnaryExpression(stack.pop(), output.pop()));
                     }
+                }
+                else if (Engine.variableFunctions.containsKey(token.getLexeme())){
+                    if (tokens.get(i+1).getType() != Scanner.TokenType.LPAREN){
+                        return new InvalidExpression("Missing Left Parenthesis:   "+Print.toString(tokens));
+                    }
+                    int rb = Search.tokenIndex(tokens, Scanner.TokenType.RPAREN, i+2);
+                    List<List<Scanner.Token>> parameters = Search.splitTokens(tokens, i+2, rb+1);
+                    Expression e = toExpression(parameters.get(0));
+                    Expression f = Engine.variableFunctions.get(token.getLexeme());
+                    f.set(Engine.var, e);
+                    output.push(f);
+                    i = rb;
+                }
+                else if (Engine.variables.containsKey(token.getLexeme())){
+                    output.push(new VariableExpression(token.getLexeme()));
                 }
                 else if (token.getLexeme().equals("intmax")) {
                     output.push(new NumberExpression(2147483647));

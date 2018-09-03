@@ -1,6 +1,7 @@
 package Math_Evaluation_Library.Expressions;
 
 import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class VariableExpression extends Expression {
         this.var = var;
         if (Engine.variables.containsKey(var)){
             this.val = new NumberExpression(Engine.variables.get(var));
+            System.out.println(var+"   "+this.val);
             set = true;
         }
         else if (Engine.variableFunctions.containsKey(var)){
@@ -29,7 +31,7 @@ public class VariableExpression extends Expression {
         }
     }
     public VariableExpression(char var){
-        this.var = String.valueOf(var);
+        this(String.valueOf(var));
     }
     public VariableExpression(String var, Expression e){
         this.var = var;
@@ -48,6 +50,10 @@ public class VariableExpression extends Expression {
     @Override
     public Expression evaluate() {
         return set ? val : new InvalidExpression("Unset Variable Error: "+var);
+    }
+    @Override
+    public Expression evaluate(Expression e) {
+        return set ? val : (var.equals(Engine.var) ? e : new InvalidExpression("Unset Variable Error: "+var));
     }
 
     @Override

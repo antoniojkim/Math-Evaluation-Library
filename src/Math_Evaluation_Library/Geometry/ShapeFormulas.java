@@ -1,6 +1,6 @@
 package Math_Evaluation_Library.Geometry;
 
-import Math_Evaluation_Library.Expressions.ConstantExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ConstantExpression;
 import Math_Evaluation_Library.Expressions.Expression;
 import Math_Evaluation_Library.Expressions.InvalidExpression;
 import Math_Evaluation_Library.Miscellaneous.Fraction;

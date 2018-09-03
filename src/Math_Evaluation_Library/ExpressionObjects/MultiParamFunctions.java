@@ -5,6 +5,7 @@ import Math_Evaluation_Library.Calculus.Roots;
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Engine.Scanner;
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.Geometry.Geometric;
 import Math_Evaluation_Library.Miscellaneous.Mod;
 import Math_Evaluation_Library.Miscellaneous._Random_;
@@ -339,12 +340,22 @@ public class MultiParamFunctions{
 //                    return INVALID;
 //                }
 //            });
-        map.put("frbin", new MultiParamFunction("frbin", 1, "frbin(x) transforms a binary string into a decimal value")
+        map.put("frbin", new MultiParamFunction("frbin", -1, "frbin(x) transforms a binary string into a decimal value")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
+                if (parameters.length == 0){
+                    return new InvalidExpression("frbin expects at least one parameter");
+                }
                 long num = _Number_.fromBinary(parameters[0].evaluate().toString());
                 if (num != -1){
+                    if (parameters.length > 1){
+                        switch(parameters[1].evaluate().toString()){
+                            case "h": return new StringExpression(Long.toHexString(num));
+                            case "t": return new StringExpression(_Number_.toTwosComplement(num));
+                            default : break;
+                        }
+                    }
                     return new NumberExpression(num, false);
                 }
                 return new InvalidExpression("Invalid Argument Error:  frbin expected integer");
@@ -360,8 +371,18 @@ public class MultiParamFunctions{
                         for (List<Scanner.Token> params : parameters){
                             tokens.addAll(params);
                         }
+                        if (parameters.size() > 1 && parameters.get(1).size() == 1){
+                            return new Expression[]{
+                                    toExpression(tokens),
+                                    new StringExpression(Scanner.join(parameters.get(1)).toLowerCase())};
+                        }
                         return new Expression[]{toExpression(tokens)};
                     }
+                }
+                if (parameters.size() > 1 && parameters.get(1).size() == 1){
+                    return new Expression[]{
+                            new StringExpression(parameter),
+                            new StringExpression(Scanner.join(parameters.get(1)).toLowerCase())};
                 }
                 return new Expression[]{new StringExpression(parameter)};
             }
@@ -372,19 +393,14 @@ public class MultiParamFunctions{
             public Expression evaluate(Expression[] parameters) {
                 if (parameters.length > 0){
                     double n = parameters[0].valueOf();
-                    if (n % 1 == 0){
-                        String binary = _Number_.toBinary((long)n);
-                        if (parameters.length > 1){
-                            int padding = (int)parameters[1].valueOf();
-                            StringBuilder sb = new StringBuilder("");
-                            for (int i = binary.length(); i<padding; ++i){
-                                sb.append("0");
-                            }
-                            binary = sb.toString()+binary;
-                        }
-                        return new StringExpression(binary);
+                    int padding = 0;
+                    if (parameters.length > 1){
+                        padding = (int)parameters[1].valueOf();
                     }
-                    return new InvalidExpression("Invalid Argument Error:  tobin expected integer");
+                    if (n % 1 == 0){
+                        return new StringExpression(_Number_.toBinary((long)n, padding));
+                    }
+                    return new StringExpression(_Number_.toBinary(n, (n < 0 || padding == 32) ? padding : 64));
                 }
                 return new InvalidExpression("Invalid Argument Error:  tobin expected at least one argument");
             }
@@ -405,9 +421,6 @@ public class MultiParamFunctions{
                             }
                             binary = sb.toString()+binary;
                         }
-                        if (n > 0 && binary.charAt(0) == '1'){
-                            binary = "0"+binary;
-                        }
                         return new StringExpression(binary);
                     }
                     return new InvalidExpression("Invalid Argument Error:  totwo expected integer");
@@ -415,13 +428,23 @@ public class MultiParamFunctions{
                 return new InvalidExpression("Invalid Argument Error:  totwo expected at least one argument");
             }
         });
-        map.put("frtwo", new MultiParamFunction("frtwo", 1, "frtwo(x) transforms a two's complement string into a decimal value")
+        map.put("frtwo", new MultiParamFunction("frtwo", -1, "frtwo(x) transforms a two's complement string into a decimal value")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
+                if (parameters.length == 0){
+                    return new InvalidExpression("frtwo expects at least one parameter");
+                }
                 String twosComplement = Search.replace(parameters[0].evaluate().toString(), " ", "");
                 long num = _Number_.fromBinary(twosComplement.substring(1));
                 if (num != -1){
+                    if (parameters.length > 1){
+                        switch(parameters[1].evaluate().toString()){
+                            case "h": return new StringExpression(Long.toHexString(num));
+                            case "b": return new StringExpression(_Number_.toBinary(num));
+                            default : break;
+                        }
+                    }
                     if (twosComplement.charAt(0) == '1'){
                         return new NumberExpression((-(1 << twosComplement.length()-1)+num), false);
                     }
@@ -440,18 +463,39 @@ public class MultiParamFunctions{
                         for (List<Scanner.Token> params : parameters){
                             tokens.addAll(params);
                         }
+                        if (parameters.size() > 1 && parameters.get(1).size() == 1){
+                            return new Expression[]{
+                                    toExpression(tokens),
+                                    new StringExpression(Scanner.join(parameters.get(1)).toLowerCase())};
+                        }
                         return new Expression[]{toExpression(tokens)};
                     }
+                }
+                if (parameters.size() > 1 && parameters.get(1).size() == 1){
+                    return new Expression[]{
+                            new StringExpression(parameter),
+                            new StringExpression(Scanner.join(parameters.get(1)).toLowerCase())};
                 }
                 return new Expression[]{new StringExpression(parameter)};
             }
         });
-        map.put("frhex", new MultiParamFunction("frhex", 1, "frhex(x) transforms a hex string into a decimal value")
+        map.put("frhex", new MultiParamFunction("frhex", -1, "frhex(x) transforms a hex string into a decimal value")
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
+                if (parameters.length == 0){
+                    return new InvalidExpression("frhex expects at least one parameter");
+                }
                 try{
-                    return new NumberExpression(Long.parseLong(parameters[0].evaluate().toString(), 16), false);
+                    long num = Long.parseLong(parameters[0].evaluate().toString(), 16);
+                    if (parameters.length > 1){
+                        switch(parameters[1].evaluate().toString()){
+                            case "b": return new StringExpression(_Number_.toBinary(num));
+                            case "t": return new StringExpression(_Number_.toTwosComplement(num));
+                            default : break;
+                        }
+                    }
+                    return new NumberExpression(num, false);
                 } catch (NumberFormatException ignored){}
                 return new InvalidExpression("Invalid Argument Error:  invalid hexadecimal number - "+parameters[0].evaluate().toString());
             }
@@ -460,11 +504,19 @@ public class MultiParamFunctions{
             @Override
             public Expression[] convert(List<List<Scanner.Token>> parameters) {
                 String parameter = Scanner.join(parameters.get(0)).toLowerCase();
+                if (parameter.startsWith("0x")){
+                    parameter = parameter.substring(2);
+                }
                 char[] array = parameter.toCharArray();
                 for (char c : array){
                     if (Search.linearSearch(hexArray, c) == -1){
                         return super.convert(parameters);
                     }
+                }
+                if (parameters.size() > 1 && parameters.get(1).size() == 1){
+                    return new Expression[]{
+                            new StringExpression(parameter),
+                            new StringExpression(Scanner.join(parameters.get(1)).toLowerCase())};
                 }
                 return new Expression[]{new StringExpression(parameter)};
             }
@@ -473,11 +525,21 @@ public class MultiParamFunctions{
         {
             @Override
             public Expression evaluate(Expression[] parameters) {
+                boolean treatAsNumber = true;
+                if (parameters.length > 1 && parameters[1].evaluate().toString().equals("b")){
+                    treatAsNumber = false;
+                }
+                if (!treatAsNumber && parameters[0] instanceof StringExpression){
+                    long num = _Number_.fromBinary(parameters[0].evaluate().toString());
+                    if (num != -1){
+                        return new StringExpression(Long.toHexString(num));
+                    }
+                }
                 double num = parameters[0].valueOf();
                 if (num%1 == 0){
                     return new StringExpression(Long.toHexString((long)num));
                 }
-                return new InvalidExpression("Invalid Argument Error:  tohex expected integer");
+                return new InvalidExpression("Invalid Argument Error:  tohex expected integer or binary string");
             }
         });
         map.put("elasd",  new MultiParamFunction("elasd",    4, "elasd(q₁, q₂, p₁, p₂) calculates the elasticity of demand:  ((q₂-q₁)/(q₂+q₁))/((p₂-p₁)/(p₂+p₁))")

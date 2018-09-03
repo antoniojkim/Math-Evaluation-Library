@@ -49,6 +49,8 @@ public class Postfix_Tests extends Engine_Tests {
 
         postfixTest("xx", "x x *");
         postfixTest("xy", "x y *");
+        postfixTest("-(2(1+x^2+y^2)-8x^2)/(1+x^2+y^2)^3", "2 1 x 2 ^ + y 2 ^ + * 8 x 2 ^ * - 1 x 2 ^ + y 2 ^ + 3 ^ / neg");
+
         postfixTest("max(1, 2)", "max 1 2");
         postfixTest("3cos(xy)+8", "3 x y * cos * 8 +");
         postfixTest("171C50", "171 50 C");

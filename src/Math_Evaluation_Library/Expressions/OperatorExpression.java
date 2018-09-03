@@ -2,6 +2,7 @@ package Math_Evaluation_Library.Expressions;
 
 import Math_Evaluation_Library.ExpressionObjects.Operator;
 import Math_Evaluation_Library.ExpressionObjects.Operators;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 
 import java.util.ArrayList;
 import java.util.List;

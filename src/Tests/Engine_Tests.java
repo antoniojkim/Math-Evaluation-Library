@@ -1,6 +1,10 @@
 package Tests;
 
+import Math_Evaluation_Library.Engine.Engine;
+import Math_Evaluation_Library.Objects.Pair;
+
 import static Math_Evaluation_Library.Engine.Engine.separator;
+import static Math_Evaluation_Library.Engine.Engine.toExpression;
 
 /**
  * Created by Antonio on 2017-07-11.
@@ -51,10 +55,29 @@ public class Engine_Tests extends _Tests_{
 
         evaluationTest("f:=x^2", "x²");
 //        InfixToPostfixTest("f(2)", "2 2 ^");
-//        evaluationTest("f(2)", 4);
+        evaluationTest("f(2)", 4);
 
         evaluationTest("postfix(sinx)", "x sin");
         evaluationTest("len(100101010010101010101010101111011101111010101101010101)", 54);
+
+        autocorrectTest("sinpi", 5, "sinπ", 4);
+        autocorrectTest("theta", 5, "θ", 1);
+        autocorrectTest("# epsi", 6, "# epsi", 6);
+    }
+    public void autocorrectTest(String input, int inCaret, String expected, int expectedCaret){
+        input = input.trim();
+        Pair<String, Integer> autocorrected = Engine.autocorrect(input, inCaret);
+        if (!autocorrected.getA().equals(expected)){
+            System.out.println("\nAutocorrect Test Failed:");
+            System.out.println("     Input:     "+input);
+            System.out.println("     inCaret:   "+inCaret);
+            System.out.println("     Actual:    "+autocorrected.getA());
+            System.out.println("     outCaret:  "+autocorrected.getB());
+            System.out.println("     Expected:  "+expected);
+            System.out.println("     eCaret:    "+expectedCaret);
+            System.exit(1);
+        }
+        incrementNumTests();
     }
 
 

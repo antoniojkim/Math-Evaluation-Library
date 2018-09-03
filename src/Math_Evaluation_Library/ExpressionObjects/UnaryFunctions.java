@@ -2,6 +2,8 @@ package Math_Evaluation_Library.ExpressionObjects;
 
 import Math_Evaluation_Library.Engine.Engine;
 import Math_Evaluation_Library.Expressions.*;
+import Math_Evaluation_Library.Expressions.NumberExpressions.ComplexExpression;
+import Math_Evaluation_Library.Expressions.NumberExpressions.NumberExpression;
 import Math_Evaluation_Library.LinearAlgebra._Matrix_;
 import Math_Evaluation_Library.Miscellaneous.Special;
 import Math_Evaluation_Library.Objects._Number_;

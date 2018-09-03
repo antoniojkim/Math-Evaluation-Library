@@ -50,6 +50,7 @@ public class Scanner_Tests extends Engine_Tests {
 
         scannerTest("xx", "x * x");
         scannerTest("xy", "x * y");
+        scannerTest("-(2(1+x^2+y^2)-8x^2)/(1+x^2+y^2)^3", "- ( 2 * ( 1 + x ^ 2 + y ^ 2 ) - 8 * x ^ 2 ) / ( 1 + x ^ 2 + y ^ 2 ) ^ 3");
 
         scannerTest("postfix(sinx)", "RPN ( sin x )");
         scannerTest("max(1, 2)", "max ( 1 , 2 )");
@@ -82,6 +83,7 @@ public class Scanner_Tests extends Engine_Tests {
         scannerTest("randomint(1, 10)", "randint ( 1 , 10 )");
 
         scannerTest("frhex(tohex(10))", "frhex ( tohex ( 10 ) )");
+        scannerTest("frhex(0x4e5ab)", "frhex ( 0x4e5ab )");
 
 
     }
